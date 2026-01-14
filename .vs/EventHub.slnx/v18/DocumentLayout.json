@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4DC9ED38-A5CC-48F6-9EC6-208F0E608651}|EventHub.Services\\EventHub.Services.csproj|c:\\users\\hp\\desktop\\eventhub\\eventhub\\eventhub.services\\eventhub.services.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{4DC9ED38-A5CC-48F6-9EC6-208F0E608651}|EventHub.Services\\EventHub.Services.csproj|solutionrelative:eventhub.services\\eventhub.services.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DC9ED38-A5CC-48F6-9EC6-208F0E608651}|EventHub.Services\\EventHub.Services.csproj|c:\\users\\hp\\desktop\\eventhub\\eventhub\\eventhub.services\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DC9ED38-A5CC-48F6-9EC6-208F0E608651}|EventHub.Services\\EventHub.Services.csproj|solutionrelative:eventhub.services\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{55A20DF1-D797-41D9-B0F3-A11F960C72C1}|EventHub.Infrastructure\\EventHub.Infrastructure.csproj|c:\\users\\hp\\desktop\\eventhub\\eventhub\\eventhub.infrastructure\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{55A20DF1-D797-41D9-B0F3-A11F960C72C1}|EventHub.Infrastructure\\EventHub.Infrastructure.csproj|solutionrelative:eventhub.infrastructure\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{89F2C87F-624A-49E4-9C7D-7E79B13790E8}|EventHub.Core\\EventHub.Core.csproj|c:\\users\\hp\\desktop\\eventhub\\eventhub\\eventhub.core\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{89F2C87F-624A-49E4-9C7D-7E79B13790E8}|EventHub.Core\\EventHub.Core.csproj|solutionrelative:eventhub.core\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C49FEF39-C8B7-587D-33D8-F87FB4C95AF1}|EventHub\\EventHub.csproj|c:\\users\\hp\\desktop\\eventhub\\eventhub\\eventhub\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C49FEF39-C8B7-587D-33D8-F87FB4C95AF1}|EventHub\\EventHub.csproj|solutionrelative:eventhub\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -14,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -29,21 +45,77 @@
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EventHub.Services",
+              "DocumentMoniker": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Services\\EventHub.Services.csproj",
+              "RelativeDocumentMoniker": "EventHub.Services\\EventHub.Services.csproj",
+              "ToolTip": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Services\\EventHub.Services.csproj",
+              "RelativeToolTip": "EventHub.Services\\EventHub.Services.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-14T20:41:30.263Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Services\\Class1.cs",
+              "RelativeDocumentMoniker": "EventHub.Services\\Class1.cs",
+              "ToolTip": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Services\\Class1.cs",
+              "RelativeToolTip": "EventHub.Services\\Class1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-14T20:40:48.415Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Infrastructure\\Class1.cs",
+              "RelativeDocumentMoniker": "EventHub.Infrastructure\\Class1.cs",
+              "ToolTip": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Infrastructure\\Class1.cs",
+              "RelativeToolTip": "EventHub.Infrastructure\\Class1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-14T20:40:33.136Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Core\\Class1.cs",
+              "RelativeDocumentMoniker": "EventHub.Core\\Class1.cs",
+              "ToolTip": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub.Core\\Class1.cs",
+              "RelativeToolTip": "EventHub.Core\\Class1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-14T20:39:37.595Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub\\Program.cs",
               "RelativeDocumentMoniker": "EventHub\\Program.cs",
               "ToolTip": "C:\\Users\\HP\\Desktop\\EventHub\\EventHub\\EventHub\\Program.cs",
               "RelativeToolTip": "EventHub\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-14T20:29:10.035Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Bookmark",
