@@ -80,7 +80,6 @@ namespace EventHub.Core.Models
         public string OrganizerId { get; set; }
 
 
-        [Comment("I relation of participants and events ")]
         public virtual ICollection<EventParticipant> EventParticipants { get; set; }
     }
 }

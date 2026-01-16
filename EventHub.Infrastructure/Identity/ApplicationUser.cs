@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-
+﻿
 namespace EventHub.Core.Models
 {
+using Microsoft.AspNetCore.Identity;
     public class ApplicationUser : IdentityUser
     {
     }
