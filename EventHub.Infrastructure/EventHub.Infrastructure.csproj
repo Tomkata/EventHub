@@ -20,4 +20,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
+  </ItemGroup>
+
 </Project>
