@@ -27,14 +27,10 @@ namespace EventHub.Infrastructure.Configurations
                  .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasOne(x => x.OrganizerId);
-
-            builder.Property(x => x.OrganizerId)
-                .HasColumnName("ApplicationUser")
-                .HasColumnType(nameof(ApplicationUser));
-
-
-
+                .HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(x=>x.OrganizerId)
+                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
