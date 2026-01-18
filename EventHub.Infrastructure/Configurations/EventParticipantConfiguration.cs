@@ -1,13 +1,11 @@
-﻿using EventHub.Core.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace EventHub.Infrastructure.Configurations
 {
+    using EventHub.Core.Models;
+    using EventHub.Infrastructure.Data.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
     public class EventParticipantConfiguration : IEntityTypeConfiguration<EventParticipant>
     {
         public void Configure(EntityTypeBuilder<EventParticipant> builder)
@@ -25,9 +23,11 @@ namespace EventHub.Infrastructure.Configurations
 
             builder
                 .HasOne<Event>()    
-                .WithMany()
+                .WithMany(x=>x.EventParticipants)
                 .HasForeignKey(x => x.EventId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+           
 
         }
     }
