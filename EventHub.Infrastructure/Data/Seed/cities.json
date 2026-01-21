@@ -1,0 +1,182 @@
+[
+  {
+    "city": "Sofia",
+    "country": "Bulgaria",
+    "address": "1 Vitosha Blvd",
+    "zip": 1000
+  },
+  {
+    "city": "Plovdiv",
+    "country": "Bulgaria",
+    "address": "1 Main Street",
+    "zip": 4000
+  },
+  {
+    "city": "Varna",
+    "country": "Bulgaria",
+    "address": "1 Primorski Blvd",
+    "zip": 9000
+  },
+  {
+    "city": "Burgas",
+    "country": "Bulgaria",
+    "address": "1 Alexandrovska St",
+    "zip": 8000
+  },
+  {
+    "city": "Ruse",
+    "country": "Bulgaria",
+    "address": "1 Svoboda Square",
+    "zip": 7000
+  },
+  {
+    "city": "Stara Zagora",
+    "country": "Bulgaria",
+    "address": "1 Tsar Simeon Veliki Blvd",
+    "zip": 6000
+  },
+  {
+    "city": "Pleven",
+    "country": "Bulgaria",
+    "address": "1 Vasil Levski St",
+    "zip": 5800
+  },
+  {
+    "city": "Sliven",
+    "country": "Bulgaria",
+    "address": "1 Tsar Osvoboditel Blvd",
+    "zip": 8800
+  },
+  {
+    "city": "Dobrich",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria St",
+    "zip": 9300
+  },
+  {
+    "city": "Shumen",
+    "country": "Bulgaria",
+    "address": "1 Slavyanski Blvd",
+    "zip": 9700
+  },
+  {
+    "city": "Pernik",
+    "country": "Bulgaria",
+    "address": "1 Krakra St",
+    "zip": 2300
+  },
+  {
+    "city": "Haskovo",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria Blvd",
+    "zip": 6300
+  },
+  {
+    "city": "Yambol",
+    "country": "Bulgaria",
+    "address": "1 Targovska St",
+    "zip": 8600
+  },
+  {
+    "city": "Pazardzhik",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria Blvd",
+    "zip": 4400
+  },
+  {
+    "city": "Blagoevgrad",
+    "country": "Bulgaria",
+    "address": "1 Makedonia Square",
+    "zip": 2700
+  },
+  {
+    "city": "Veliko Tarnovo",
+    "country": "Bulgaria",
+    "address": "1 Nezavisimost St",
+    "zip": 5000
+  },
+  {
+    "city": "Vratsa",
+    "country": "Bulgaria",
+    "address": "1 Hristo Botev St",
+    "zip": 3000
+  },
+  {
+    "city": "Gabrovo",
+    "country": "Bulgaria",
+    "address": "1 Orlovska St",
+    "zip": 5300
+  },
+  {
+    "city": "Asenovgrad",
+    "country": "Bulgaria",
+    "address": "1 Tsar Ivan Asen II St",
+    "zip": 4230
+  },
+  {
+    "city": "Vidin",
+    "country": "Bulgaria",
+    "address": "1 Tsar Simeon Veliki St",
+    "zip": 3700
+  },
+  {
+    "city": "Kazanlak",
+    "country": "Bulgaria",
+    "address": "1 Rozova Dolina Blvd",
+    "zip": 6100
+  },
+  {
+    "city": "Kardzhali",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria Blvd",
+    "zip": 6600
+  },
+  {
+    "city": "Kyustendil",
+    "country": "Bulgaria",
+    "address": "1 Tsar Osvoboditel St",
+    "zip": 2500
+  },
+  {
+    "city": "Montana",
+    "country": "Bulgaria",
+    "address": "1 Treti Mart St",
+    "zip": 3400
+  },
+  {
+    "city": "Dimitrovgrad",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria Blvd",
+    "zip": 6400
+  },
+  {
+    "city": "Lovech",
+    "country": "Bulgaria",
+    "address": "1 Targovska St",
+    "zip": 5500
+  },
+  {
+    "city": "Silistra",
+    "country": "Bulgaria",
+    "address": "1 Simeon Veliki St",
+    "zip": 7500
+  },
+  {
+    "city": "Targovishte",
+    "country": "Bulgaria",
+    "address": "1 Vasil Levski St",
+    "zip": 7700
+  },
+  {
+    "city": "Razgrad",
+    "country": "Bulgaria",
+    "address": "1 Vasil Levski St",
+    "zip": 7200
+  },
+  {
+    "city": "Smolyan",
+    "country": "Bulgaria",
+    "address": "1 Bulgaria Blvd",
+    "zip": 4700
+  }
+]

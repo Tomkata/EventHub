@@ -12,5 +12,7 @@ namespace EventHub.Services.Interfaces
         Task UpdateAsync(Guid id,CreateEventDto dto);
 
         Task DeleteAsync(Guid id);
+
+        Task<IEnumerable<EventDto>> GetEventsAsync();
     }
 }

@@ -11,6 +11,6 @@ namespace EventHub.Services.DTOs.Event
         public string Country { get; set; }
         public string Category { get; set; }
         public int MaxParticipants { get; set; }
-        public int Participants { get; set; }
+        public int ParticipantsCount { get; set; }
     }
 }

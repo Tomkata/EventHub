@@ -3,11 +3,14 @@
 namespace EventHub
 {
     using EventHub.Infrastructure.Data;
+    using EventHub.Infrastructure.Data.Seed;
+    using EventHub.Services.Interfaces;
+    using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ namespace EventHub
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IEventService, EventService>();
 
 
             builder.Services.ConfigureApplicationCookie(options =>
@@ -37,17 +42,24 @@ namespace EventHub
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            using (var scopre = app.Services.CreateScope())
             {
-                app.UseMigrationsEndPoint();
+                var context = scopre.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await DataSeeder.SeedAsync(context);
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+
+
+                // Configure the HTTP request pipeline.
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseMigrationsEndPoint();
+                }
+                else
+                {
+                    app.UseExceptionHandler("/Home/Error");
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    app.UseHsts();
+                }
 
             app.UseHttpsRedirection();
             app.UseRouting();

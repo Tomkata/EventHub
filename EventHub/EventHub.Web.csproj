@@ -17,7 +17,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="Data\Seed\locations.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
     <ProjectReference Include="..\EventHub.Infrastructure\EventHub.Infrastructure.csproj" />

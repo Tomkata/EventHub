@@ -10,6 +10,8 @@ namespace EventHub.Services.Services
     using EventHub.Services.Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata;
+    using Microsoft.Identity.Client;
+    using System.Diagnostics.CodeAnalysis;
     using System.Security.Cryptography.X509Certificates;
 
     public class EventService : IEventService
@@ -24,11 +26,13 @@ namespace EventHub.Services.Services
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
+
             var eventEntity = await _dbContext.Events
                             .AsNoTracking()
                             .Select(x=>new
                             {
                                 x.Id,
+                                x.ImagePath,
                                 x.Title,
                                 Category = x.Category.Name,
                                 x.MaxParticipants,
@@ -82,13 +86,12 @@ namespace EventHub.Services.Services
                  City = eventEntity.City,
                  Country = eventEntity.Country,
                  Address = eventEntity.Address,
+                 ImagePath = eventEntity.ImagePath,
                  ParticipantList = participants
             };
 
             return dto;
         }
-
-
 
 
         public async Task CreateAsync(CreateEventDto dto)
@@ -105,10 +108,12 @@ namespace EventHub.Services.Services
             {
                 Title = dto.Title,
                 EventDate = dto.EventDate,
+                ImagePath = dto.ImagePath,
                 MaxParticipants = dto.MaxParticipants,
                 Description = dto.Description,
                 CategoryId = dto.CategoryId,
-                LocationId = dto.LocationId
+                LocationId = dto.LocationId,
+                OrganizerId = dto.OrganizerId
             };
 
             await _dbContext.Events.AddAsync(eventEntity);
@@ -125,6 +130,7 @@ namespace EventHub.Services.Services
             eventEntity.EventDate = dto.EventDate;
             eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
+            eventEntity.ImagePath = dto.ImagePath;
 
             await _dbContext.SaveChangesAsync();
 
@@ -149,6 +155,24 @@ namespace EventHub.Services.Services
 
             if (eventEntity == null) throw new InvalidOperationException("Invalid event id");
             return eventEntity;
+        }
+
+        public async Task<IEnumerable<EventDto>> GetEventsAsync()
+        {
+            var events = await _dbContext.Events
+                .AsNoTracking()
+                .Select(x => new EventDto
+                {
+                     Title = x.Title,
+                     Category = x.Category.Name,
+                      Country = x.Location.Country,
+                      ImagePath = x.ImagePath,
+                      MaxParticipants = x.MaxParticipants,
+                    ParticipantsCount = x.EventParticipants.Count()  
+                })
+                .ToListAsync();
+
+            return events;
         }
     }
    }
