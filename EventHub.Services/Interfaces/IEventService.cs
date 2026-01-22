@@ -1,7 +1,7 @@
 ﻿
 namespace EventHub.Services.Interfaces
 {
-    using EventHub.Services.DTOs.Event;
+    using EventHub.Core.DTOs;
 
     public interface IEventService
     {

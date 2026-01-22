@@ -4,16 +4,10 @@
 namespace EventHub.Services.Services
 {
     using EventHub.Core.Models;
+    using EventHub.Core.DTOs;
     using EventHub.Infrastructure.Data;
-    using EventHub.Infrastructure.Data.Identity;
-    using EventHub.Services.DTOs.ApplicationUser;
-    using EventHub.Services.DTOs.Event;
     using EventHub.Services.Interfaces;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata;
-    using Microsoft.Identity.Client;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Security.Cryptography.X509Certificates;
 
     public class EventService : IEventService
     {

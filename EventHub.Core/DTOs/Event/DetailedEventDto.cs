@@ -1,8 +1,7 @@
 ﻿
 
-namespace EventHub.Services.DTOs.Event
+namespace EventHub.Core.DTOs
 {
-using EventHub.Services.DTOs.ApplicationUser;
     public class DetailedEventDto
     {
         public string Title { get; set; } = null!;

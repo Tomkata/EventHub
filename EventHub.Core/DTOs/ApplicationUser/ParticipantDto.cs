@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventHub.Services.DTOs.ApplicationUser
+namespace EventHub.Core.DTOs
 {
     public class ParticipantDto
     {
