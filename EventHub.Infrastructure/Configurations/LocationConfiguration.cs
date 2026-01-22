@@ -18,10 +18,9 @@ namespace EventHub.Infrastructure.Configurations
             .IsRequired()
             .HasMaxLength(100);
 
-                    builder
-            .Property(x => x.Country)
-            .IsRequired()
-            .HasMaxLength(100);
+            builder
+.HasIndex(l => new { l.City, l.Zip })
+.IsUnique();
 
             builder
             .Property(x => x.Zip)

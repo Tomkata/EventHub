@@ -25,11 +25,6 @@ namespace EventHub.Core.Models
         public string City { get; set; }
 
 
-        [Comment("The Country where the event is located")]
-        [Required]
-        [StringLength(100)]
-        public string Country { get; set; }
-
 
         [Comment("The Zip Code of the City")]
         [Required]

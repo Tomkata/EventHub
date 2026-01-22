@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventHub.Core.DTOs.Event
+namespace EventHub.Core.DTOs
 {
     public class CreateEventDto
     {

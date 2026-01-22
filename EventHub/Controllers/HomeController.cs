@@ -1,9 +1,10 @@
-using System.Diagnostics;
-using EventHub.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.Controllers
 {
+    using System.Diagnostics;
+    using EventHub.Models;
+    using Microsoft.AspNetCore.Mvc;
+
     public class HomeController : Controller
     {
         public IActionResult Index()

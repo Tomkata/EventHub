@@ -1,8 +1,10 @@
-﻿using EventHub.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Services.Interfaces;
+    using Microsoft.AspNetCore.Mvc;
+    using EventHub.Core.ViewModels.Events;
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
@@ -18,8 +20,23 @@ namespace EventHub.Web.Controllers
 
             var allEvents = await _eventService.GetEventsAsync();
 
+            var eventList  =
+                 allEvents.Select(x => new EventListViewModel 
+                {
+                   Title = x.Title,
+                   ImagePath = x.ImagePath,
+                   Category = x.Category,
+                   CategoryId = x.CategoryId,
+                   CityId = x.CityId,
+                   CityName = x.City,
+                   MaxParticipants = x.MaxParticipants,
+                   ParticipantsCount = x.ParticipantsCount
+                } 
+            )
+                .ToList();
 
-            return View(allEvents);
+
+            return View(eventList);
         }
     }
 }

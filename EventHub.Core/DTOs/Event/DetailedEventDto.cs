@@ -12,7 +12,6 @@ namespace EventHub.Core.DTOs
         public DateTime EventDate { get; set; }
         public string OrganizerName { get; set; } = null!;
         public string City { get; set; } = null!;
-        public string Country { get; set; } = null!;
         public string Address { get; set; } = null!;        
         public List<ParticipantDto>  ParticipantList { get; set; } = new List<ParticipantDto>();
     }

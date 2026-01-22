@@ -35,7 +35,6 @@ namespace EventHub.Services.Services
                                 x.EventDate,
                                 x.Address,
                                 City = x.Location.City,
-                                Country = x.Location.Country,
                                 x.OrganizerId
                             })
                             .FirstOrDefaultAsync(x => x.Id == id);
@@ -79,7 +78,6 @@ namespace EventHub.Services.Services
                  EventDate = eventEntity.EventDate,
                  OrganizerName = organizer.UserName,
                  City = eventEntity.City,
-                 Country = eventEntity.Country,
                  Address = eventEntity.Address,
                  ImagePath = eventEntity.ImagePath,
                  ParticipantList = participants
@@ -160,13 +158,14 @@ namespace EventHub.Services.Services
                 .AsNoTracking()
                 .Select(x => new EventDto
                 {
-                     Title = x.Title,
-                     Category = x.Category.Name,
-                      Country = x.Location.Country,
+                    Title = x.Title,
+                    Category = x.Category.Name,
+                    CategoryId = x.CategoryId,
                       ImagePath = x.ImagePath,
-                      MaxParticipants = x.MaxParticipants,
-                      City = x.Location.City,
-                    ParticipantsCount = x.EventParticipants.Count()  
+                    MaxParticipants = x.MaxParticipants,
+                    CityId = x.Location.Id,
+                    City = x.Location.City,
+                    ParticipantsCount = x.EventParticipants.Count()
                 })
                 .OrderBy(x=>x.Title)
                 .ThenByDescending(x=>x.ParticipantsCount)
