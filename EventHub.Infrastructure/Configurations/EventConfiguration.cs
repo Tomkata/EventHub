@@ -19,6 +19,11 @@ namespace EventHub.Infrastructure.Configurations
                  .OnDelete(DeleteBehavior.Restrict);
 
             builder
+                .Property(x => x.Address)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder
                 .HasOne(x => x.Category)
                 .WithMany(x => x.Events)
                 .HasForeignKey(x => x.CategoryId)

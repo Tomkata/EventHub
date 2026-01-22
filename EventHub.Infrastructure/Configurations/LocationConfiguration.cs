@@ -11,10 +11,7 @@ namespace EventHub.Infrastructure.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder
-                .Property(x => x.Address)
-                .IsRequired()
-                .HasMaxLength(100);
+            
 
                     builder
             .Property(x => x.City)

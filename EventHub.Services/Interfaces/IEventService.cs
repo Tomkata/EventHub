@@ -14,5 +14,8 @@ namespace EventHub.Services.Interfaces
         Task DeleteAsync(Guid id);
 
         Task<IEnumerable<EventDto>> GetEventsAsync();
+
+        //SearchByFilter (later)
+
     }
 }

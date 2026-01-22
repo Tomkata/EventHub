@@ -66,6 +66,13 @@ namespace EventHub.Core.Models
 
 
 
+        [Comment("The Address of the Event")]
+        [Required]
+        [StringLength(200)]
+        public string Address { get; set; }
+
+
+
         [Required]
         [ForeignKey(nameof(Location))]
         public Guid LocationId { get; set; }

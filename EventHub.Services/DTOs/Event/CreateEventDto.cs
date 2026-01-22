@@ -10,6 +10,7 @@ namespace EventHub.Services.DTOs.Event
         public DateTime EventDate { get; set; }
         public int MaxParticipants { get; set; }
         public string Description { get; set; }
+        public string Address { get; set; }
         public Guid CategoryId { get; set; }
         public Guid LocationId { get; set; }
         public string OrganizerId { get; set; }

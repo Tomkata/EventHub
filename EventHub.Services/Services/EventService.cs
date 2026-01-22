@@ -1,5 +1,6 @@
 ﻿
 
+
 namespace EventHub.Services.Services
 {
     using EventHub.Core.Models;
@@ -38,7 +39,7 @@ namespace EventHub.Services.Services
                                 x.MaxParticipants,
                                 x.Description,
                                 x.EventDate,
-                                Address = x.Location.Address,
+                                x.Address,
                                 City = x.Location.City,
                                 Country = x.Location.Country,
                                 x.OrganizerId
@@ -109,6 +110,7 @@ namespace EventHub.Services.Services
                 Title = dto.Title,
                 EventDate = dto.EventDate,
                 ImagePath = dto.ImagePath,
+                Address = dto.Address,
                 MaxParticipants = dto.MaxParticipants,
                 Description = dto.Description,
                 CategoryId = dto.CategoryId,
@@ -130,6 +132,7 @@ namespace EventHub.Services.Services
             eventEntity.EventDate = dto.EventDate;
             eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
+            eventEntity.Address = dto.Address;
             eventEntity.ImagePath = dto.ImagePath;
 
             await _dbContext.SaveChangesAsync();
@@ -168,8 +171,11 @@ namespace EventHub.Services.Services
                       Country = x.Location.Country,
                       ImagePath = x.ImagePath,
                       MaxParticipants = x.MaxParticipants,
+                      City = x.Location.City,
                     ParticipantsCount = x.EventParticipants.Count()  
                 })
+                .OrderBy(x=>x.Title)
+                .ThenByDescending(x=>x.ParticipantsCount)
                 .ToListAsync();
 
             return events;

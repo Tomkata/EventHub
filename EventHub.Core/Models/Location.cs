@@ -31,12 +31,6 @@ namespace EventHub.Core.Models
         public string Country { get; set; }
 
 
-        [Comment("The Address of the location")]
-        [Required]
-        [StringLength(200)]
-        public string Address { get; set; }
-
-
         [Comment("The Zip Code of the City")]
         [Required]
         [Range(1000,9999)]
