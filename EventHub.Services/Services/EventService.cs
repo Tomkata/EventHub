@@ -33,6 +33,7 @@ namespace EventHub.Services.Services
                                 x.MaxParticipants,
                                 x.Description,
                                 x.StartDate,
+                                x.EndDate,
                                 x.Address,
                                 City = x.Location.City,
                                 x.OrganizerId
@@ -75,7 +76,8 @@ namespace EventHub.Services.Services
                  Category = eventEntity.Category,
                  MaxParticipants = eventEntity.MaxParticipants,
                  Description = eventEntity.Description,
-                 EventDate = eventEntity.EventDate,
+                 StartDate = eventEntity.StartDate,
+                 EndDate = eventEntity.EndDate,     
                  OrganizerName = organizer.UserName,
                  City = eventEntity.City,
                  Address = eventEntity.Address,
@@ -125,6 +127,8 @@ namespace EventHub.Services.Services
             eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
             eventEntity.Address = dto.Address;
+            eventEntity.StartDate = dto.StartDate;
+            eventEntity.EndDate = dto.EndDate;
             eventEntity.ImagePath = dto.ImagePath;
 
             await _dbContext.SaveChangesAsync();
@@ -161,7 +165,9 @@ namespace EventHub.Services.Services
                     Title = x.Title,
                     Category = x.Category.Name,
                     CategoryId = x.CategoryId,
-                      ImagePath = x.ImagePath,
+                    ImagePath = x.ImagePath,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
                     MaxParticipants = x.MaxParticipants,
                     CityId = x.Location.Id,
                     City = x.Location.City,

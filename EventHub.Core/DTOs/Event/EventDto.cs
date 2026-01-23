@@ -8,6 +8,8 @@
         public Guid CityId { get; set; }
         public string City { get; set; } = null!;
 
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public Guid CategoryId { get; set; }
         public string Category { get; set; } = null!;
 
