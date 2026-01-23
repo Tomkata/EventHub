@@ -42,7 +42,7 @@ namespace EventHub.Core.Models
 
 
         [Comment("The date when Event was created")]
-        [Required]  
+        [Required]      
         public DateTime CreatedAt { get; set; }
 
 

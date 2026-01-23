@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Reflection.PortableExecutable;
+using System.Threading.Channels;
 
 namespace EventHub.Core.ViewModels.Events
 {
@@ -6,6 +7,8 @@ namespace EventHub.Core.ViewModels.Events
     {
         public string Title { get; set;     } = null!;
         public string ImagePath { get; set; } = "/images/default-event.png";
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string CityName { get; set; } = null!;
         public Guid CityId { get; set; }
         public string Category { get; set; } = null!;
