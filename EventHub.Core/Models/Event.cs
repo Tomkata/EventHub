@@ -4,6 +4,8 @@ namespace EventHub.Core.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Runtime.CompilerServices;
+    using EventHub.Core.EventValidation;
     using Microsoft.EntityFrameworkCore;
 
     public class Event
@@ -40,14 +42,20 @@ namespace EventHub.Core.Models
 
 
         [Comment("The date when Event was created")]
-        [Required]
+        [Required]  
         public DateTime CreatedAt { get; set; }
 
 
 
-        [Comment("The date of the Event")]
+        [Comment("The start date of the Event")]
+        [FutureDateAttribute(ErrorMessage ="Start date must be in the future")]
         [Required]
-        public DateTime EventDate { get; set; }
+        public DateTime StartDate { get; set; }
+
+        [Comment("The end date of the event")]
+        [Required]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be after start date")]
+        public DateTime EndDate { get; set; }
 
 
         [Comment("The maximum participants capacity of the Event")]

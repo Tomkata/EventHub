@@ -32,7 +32,7 @@ namespace EventHub.Services.Services
                                 Category = x.Category.Name,
                                 x.MaxParticipants,
                                 x.Description,
-                                x.EventDate,
+                                x.StartDate,
                                 x.Address,
                                 City = x.Location.City,
                                 x.OrganizerId
@@ -100,7 +100,7 @@ namespace EventHub.Services.Services
             var eventEntity = new Event
             {
                 Title = dto.Title,
-                EventDate = dto.EventDate,
+                StartDate = dto.EventDate,
                 ImagePath = dto.ImagePath,
                 Address = dto.Address,
                 MaxParticipants = dto.MaxParticipants,
@@ -121,7 +121,7 @@ namespace EventHub.Services.Services
             eventEntity.Title = dto.Title;
             eventEntity.LocationId = dto.LocationId;
             eventEntity.CategoryId = dto.CategoryId;
-            eventEntity.EventDate = dto.EventDate;
+            eventEntity.StartDate = dto.EventDate;
             eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
             eventEntity.Address = dto.Address;

@@ -7,6 +7,7 @@ namespace EventHub.Services.Interfaces
     {
         Task<DetailedEventDto> GetByIdAsync(Guid id);
 
+
         Task CreateAsync(CreateEventDto dto);
 
         Task UpdateAsync(Guid id,CreateEventDto dto);
