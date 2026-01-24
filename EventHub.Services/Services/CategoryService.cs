@@ -20,7 +20,7 @@ namespace EventHub.Services.Services
                 .AsNoTracking()
                 .Select(x => new CategoryDto
                 {
-                    Id = x.Id
+                    Id = x.Id,
                     Name = x.Name
                 })
                 .OrderBy(x => x.Name)

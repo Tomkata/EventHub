@@ -7,14 +7,19 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.ViewModels.Events;
     using System.Security.Cryptography.Pkcs;
     using EventHub.Core.DTOs;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using EventHub.Core.ViewModels.Common;
 
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly ICategoryService _categoryService;
 
-        public EventsController(IEventService eventService)
+        public EventsController(IEventService eventService,
+                                ICategoryService categoryService)
         {
             this._eventService = eventService;
+            this._categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index()
@@ -48,7 +53,17 @@ namespace EventHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-           
+            var categories = await _categoryService.GetCategoriesForDropdownAsync();
+            var categoriesModel = categories
+                .Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                })
+                .ToList();
+
+
+            //return View();
         }
 
         
