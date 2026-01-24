@@ -8,6 +8,8 @@ namespace EventHub
     using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using System.Runtime.ConstrainedExecution;
+
     public class Program
     {
         public static async Task Main(string[] args)
@@ -21,15 +23,18 @@ namespace EventHub
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddDefaultIdentity<IdentityUser>()
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
             builder.Services.AddScoped<IEventService, EventService>();
 
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
@@ -39,12 +44,30 @@ namespace EventHub
             });
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
-            using (var scopre = app.Services.CreateScope())
+            using (var scope = app.Services.CreateScope())
             {
-                var context = scopre.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await RoleSeeder.SeedRolesAsync(roleManager);
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var adminUser = await userManager.FindByEmailAsync("tomaandreev12@gmail.com");
+                if (adminUser!=null && !await userManager.IsInRoleAsync(adminUser,"Admin"))
+                {
+                    await userManager.AddToRoleAsync(adminUser,"Admin");
+                }
+            }
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await DataSeeder.SeedAsync(context);
             }
 
@@ -63,6 +86,7 @@ namespace EventHub
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();

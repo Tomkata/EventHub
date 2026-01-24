@@ -25,7 +25,7 @@ namespace EventHub.Core.ViewModels.Events
 
         public IFormFile Image { get; set; }
 
-        public List<DropdownOptionModel> Categoeries { get; set; } = new();
+        public List<DropdownOptionModel> Categories { get; set; } = new();
         public List<DropdownOptionModel> Locations { get; set; } = new();
 
 

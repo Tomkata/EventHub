@@ -23,7 +23,7 @@ namespace EventHub.Data.Migrations
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EventHub.Core.Models.Category", b =>
-                {
+                {   
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")

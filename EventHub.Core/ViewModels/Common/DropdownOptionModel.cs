@@ -4,7 +4,9 @@ using System.Text;
 
 namespace EventHub.Core.ViewModels.Common
 {
-    internal class DropdownOptionModel
+    public class DropdownOptionModel
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

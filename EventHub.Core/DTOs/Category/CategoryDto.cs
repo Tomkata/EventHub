@@ -4,7 +4,9 @@ using System.Text;
 
 namespace EventHub.Core.DTOs.Category
 {
-    internal class CategoryDto
+    public class CategoryDto
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

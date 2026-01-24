@@ -9,17 +9,21 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using EventHub.Core.ViewModels.Common;
+    using Microsoft.AspNetCore.Authorization;
 
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
         private readonly ICategoryService _categoryService;
+        private readonly ILocationService _locationService;
 
         public EventsController(IEventService eventService,
-                                ICategoryService categoryService)
+                                ICategoryService categoryService,
+                                ILocationService locationService)
         {
             this._eventService = eventService;
             this._categoryService = categoryService;
+            this._locationService = locationService;
         }
 
         public async Task<IActionResult> Index()
@@ -62,15 +66,37 @@ namespace EventHub.Web.Controllers
                 })
                 .ToList();
 
+            var locations = await _locationService.GetLocationsForDropdownAsync();
+            var locationsModel = locations
+                .Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.City
+                })
+                .ToList();
 
-            //return View();
+            var model = new CreateEventViewModel
+            {
+                Categories = categoriesModel,
+                Locations = locationsModel
+            };
+
+
+            return View(model);
         }
 
-        
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
+            
+
+            return View("Index");
         }
 
 
