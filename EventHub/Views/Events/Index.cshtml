@@ -2,7 +2,7 @@
 
 @model IEnumerable<EventListViewModel>;
 
-<div class="list-events-page">
+<div class="list-events-page container">
     <p class="h2">All events</p>
     <hr />
 
@@ -16,25 +16,43 @@
     }
     else
     {
-        @foreach (var eventData in Model)
-        {
-                <div class="card mb-3" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="@eventData.ImagePath" class="img-fluid rounded-start" a   lt="EventImage">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@eventData.Title</h5>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Participants: @(eventData.ParticipantsCount)\@(eventData.MaxParticipants)</li>
-                                    <li class="list-group-item">City: @eventData.CityName</li>
-                                </ul>
-                            </div>
+        <div class="row mt-3 mb-3">
+            @foreach (var eventData in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4 gy-3">
+                    <div class="card h-100">
+                        <img src="~/@eventData.ImagePath" class="img-fluid card-img-top" alt="EventImage" asp-append-version="true" />
+
+                        <div class="card-body">
+                            <h5 class="card-title">@eventData.Title</h5>
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    Participants:
+                                    @(eventData.ParticipantsCount) / @(eventData.MaxParticipants)
+
+                                <li class="list-group-item d-flex justify-content-around">
+                                    <span>City: @eventData.CityName</span>
+                                    <span>Category: @eventData.Category</span>
+                                </li>
+
+                                <li class="list-group-item m-2">
+                                    <span>
+                                        Start: @eventData.StartDate.ToString("dd MMM yyyy")
+                                    </span>        
+                                    <br />
+                                    <span>
+                                        End: @eventData.EndDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </li>
+                                <div class="btn btn-primary m-2">Details</div>
+                            </ul>
+                          
                         </div>
                     </div>
                 </div>
-           
-        }
+            }
+        </div>
+
     }
 </div>

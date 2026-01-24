@@ -102,7 +102,8 @@ namespace EventHub.Services.Services
             var eventEntity = new Event
             {
                 Title = dto.Title,
-                StartDate = dto.EventDate,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
                 ImagePath = dto.ImagePath,
                 Address = dto.Address,
                 MaxParticipants = dto.MaxParticipants,
@@ -123,12 +124,12 @@ namespace EventHub.Services.Services
             eventEntity.Title = dto.Title;
             eventEntity.LocationId = dto.LocationId;
             eventEntity.CategoryId = dto.CategoryId;
-            eventEntity.StartDate = dto.EventDate;
+            eventEntity.StartDate = dto.StartDate;
+            eventEntity.EndDate = dto.EndDate;
             eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
             eventEntity.Address = dto.Address;
             eventEntity.StartDate = dto.StartDate;
-            eventEntity.EndDate = dto.EndDate;
             eventEntity.ImagePath = dto.ImagePath;
 
             await _dbContext.SaveChangesAsync();
