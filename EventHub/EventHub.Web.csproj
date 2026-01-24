@@ -27,5 +27,8 @@
     <ProjectReference Include="..\EventHub.Infrastructure\EventHub.Infrastructure.csproj" />
     <ProjectReference Include="..\EventHub.Services\EventHub.Services.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\images\events\" />
+  </ItemGroup>
 
 </Project>

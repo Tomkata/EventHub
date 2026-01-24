@@ -1,4 +1,40 @@
 ﻿@using EventHub.Core.ViewModels.Events
 
 @model IEnumerable<EventListViewModel>;
-    
+
+<div class="list-events-page">
+    <p class="h2">All events</p>
+    <hr />
+
+    @if (Model.Count() == 0)
+    {
+        <div class="d-flex container align-content-center justify-content-center">
+
+            <p class="text-danger-emphasis h4 m-auto">There is no events right now</p>
+
+        </div>
+    }
+    else
+    {
+        @foreach (var eventData in Model)
+        {
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@eventData.ImagePath" class="img-fluid rounded-start" a   lt="EventImage">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@eventData.Title</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Participants: @(eventData.ParticipantsCount)\@(eventData.MaxParticipants)</li>
+                                    <li class="list-group-item">City: @eventData.CityName</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           
+        }
+    }
+</div>

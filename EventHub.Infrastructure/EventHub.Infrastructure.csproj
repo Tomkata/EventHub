@@ -24,4 +24,8 @@
     <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Seed\images\" />
+  </ItemGroup>
+
 </Project>
