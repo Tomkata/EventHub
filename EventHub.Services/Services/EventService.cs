@@ -98,6 +98,7 @@ namespace EventHub.Services.Services
             {
                 throw new ArgumentException("Invalid CategoryId or LocationId");
             }
+            
 
             var eventEntity = new Event
             {

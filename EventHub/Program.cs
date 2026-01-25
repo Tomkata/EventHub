@@ -48,6 +48,7 @@ namespace EventHub
 
             var app = builder.Build();
 
+            //role seeder
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

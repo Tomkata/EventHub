@@ -91,10 +91,23 @@ namespace EventHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                //return Redirect();
             }
 
-            
+            var eventDate = new CreateEventDto
+            {
+                 Title = model.Title,
+                 Description = model.Description,
+                 MaxParticipants = model.MaxParticipants,
+                 Address = model.Address,
+                 StartDate = model.StartDate,
+                 EndDate = model.EndDate,
+                 ImagePath = model.Image.FileName,
+                 CategoryId = model.CategoryId,
+                 LocationId = model.LocationId
+            };
+
+            await _eventService.CreateAsync(eventDate);
 
             return View("Index");
         }

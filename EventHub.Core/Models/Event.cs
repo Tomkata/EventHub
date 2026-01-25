@@ -32,6 +32,8 @@ namespace EventHub.Core.Models
 
 
         [Comment("The Image of the Event")]
+        [FileExtensions(Extensions = "jpg,png,webp,jpeg");
+        [Required]
         public string? ImagePath { get; set; }
 
 

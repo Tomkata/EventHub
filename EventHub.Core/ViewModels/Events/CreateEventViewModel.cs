@@ -22,7 +22,6 @@ namespace EventHub.Core.ViewModels.Events
         public Guid CategoryId { get; set; }
         [Required]
         public Guid LocationId { get; set; }
-
         public IFormFile Image { get; set; }
 
         public List<DropdownOptionModel> Categories { get; set; } = new();
