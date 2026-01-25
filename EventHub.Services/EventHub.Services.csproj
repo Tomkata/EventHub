@@ -10,12 +10,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EventHub.Infrastructure\EventHub.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NewFolder\" />
+    <ProjectReference Include="..\EventHub.Infrastructure\EventHub.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

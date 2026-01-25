@@ -2,28 +2,30 @@
 
 namespace EventHub.Web.Controllers
 {
-    using EventHub.Services.Interfaces;
-    using Microsoft.AspNetCore.Mvc;
-    using EventHub.Core.ViewModels.Events;
-    using System.Security.Cryptography.Pkcs;
     using EventHub.Core.DTOs;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using EventHub.Core.Exceptions.Image;
     using EventHub.Core.ViewModels.Common;
+    using EventHub.Core.ViewModels.Events;
+    using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
 
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
         private readonly ICategoryService _categoryService;
         private readonly ILocationService _locationService;
+        private readonly IImageService _imageService;
 
         public EventsController(IEventService eventService,
                                 ICategoryService categoryService,
-                                ILocationService locationService)
+                                ILocationService locationService,
+                                IImageService imageService)
         {
             this._eventService = eventService;
             this._categoryService = categoryService;
             this._locationService = locationService;
+            this._imageService = imageService;
         }
 
         public async Task<IActionResult> Index()
@@ -89,31 +91,44 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                //return Redirect();
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var imageUrl = await _imageService.StoreImageAsync(model.Image);
+
+
+                var eventDate = new CreateEventDto
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    MaxParticipants = model.MaxParticipants,
+                    Address = model.Address,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    ImagePath = imageUrl,
+                    CategoryId = model.CategoryId,
+                    LocationId = model.LocationId
+                };
+
+                await _eventService.CreateAsync(eventDate);
+
+                return RedirectToAction("Index");
             }
-
-            var eventDate = new CreateEventDto
+            catch (ImageEmptyException imageException)
             {
-                 Title = model.Title,
-                 Description = model.Description,
-                 MaxParticipants = model.MaxParticipants,
-                 Address = model.Address,
-                 StartDate = model.StartDate,
-                 EndDate = model.EndDate,
-                 ImagePath = model.Image.FileName,
-                 CategoryId = model.CategoryId,
-                 LocationId = model.LocationId
-            };
-
-            await _eventService.CreateAsync(eventDate);
-
-            return View("Index");
+                ModelState.AddModelError("Image",$"{imageException.Message}");
+                return View(model);
+            }
+            catch (InvalidImageFormatException imageException)
+            {
+                ModelState.AddModelError("Image", $"{imageException.Message}");
+                return View(model);
+            }
+           
         }
-
-
-
-        
     }
 }
