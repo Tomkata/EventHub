@@ -8,8 +8,10 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.ViewModels.Events;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Validation;
+    using System.Security.Claims;
 
     public class EventsController : Controller
     {
@@ -70,9 +72,17 @@ namespace EventHub.Web.Controllers
         [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
-        {
-            try
+        {try
             {
+
+                if ((!ModelState.IsValid) && IsEmptyForm(model))
+                {
+                    ModelState.Clear();
+                    ModelState.AddModelError("", "Please fill in the form.");
+                    model = await PrepareCreateViewModel();
+                    return View(model);
+                }
+
                 if (!ModelState.IsValid)
                 {
                     model = await PrepareCreateViewModel();
@@ -87,7 +97,7 @@ namespace EventHub.Web.Controllers
 
                 if (!isCategoryExist)
                 {
-                    ModelState.AddModelError($"{nameof(model.CategoryId)}","Invalid category is selected!");
+                    ModelState.AddModelError($"{nameof(model.CategoryId)}", "Invalid category is selected!");
 
                     model = await PrepareCreateViewModel();
                     return View(model);
@@ -105,17 +115,37 @@ namespace EventHub.Web.Controllers
                 }
 
 
+                //
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (userId == null)
+                {
+                    ModelState.AddModelError(nameof(userId), "The user is not logged in.");
+                    return View(model);
+                }
+
+                if (!model.StartDate.HasValue || !model.EndDate.HasValue)
+                {
+                    ModelState.AddModelError("","The date is requierd");
+                    model =  await PrepareCreateViewModel();
+                    return View(model);
+
+                }
+
+
                 var eventDate = new CreateEventDto
                 {
                     Title = model.Title,
                     Description = model.Description,
                     MaxParticipants = model.MaxParticipants,
                     Address = model.Address,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
+                    StartDate = (DateTime)model.StartDate,
+                    EndDate = (DateTime)model.EndDate,
                     ImagePath = imageUrl,
                     CategoryId = model.CategoryId,
-                    LocationId = model.LocationId
+                    LocationId = model.LocationId,
+                    OrganizerId = userId!
                 };
 
                 await _eventService.CreateAsync(eventDate);
@@ -138,6 +168,23 @@ namespace EventHub.Web.Controllers
             }
         }
 
+        private  bool IsEmptyForm(CreateEventViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Title) &&
+                model.EndDate == null &&
+                model.StartDate == null &&
+                string.IsNullOrWhiteSpace(model.Description) &&
+                model.CategoryId == default &&
+                model.LocationId == default &&
+                model.MaxParticipants == default &&
+                string.IsNullOrWhiteSpace(model.Address) &&
+                model.Image == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private async Task<CreateEventViewModel> PrepareCreateViewModel()
         {

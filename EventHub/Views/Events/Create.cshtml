@@ -11,26 +11,38 @@
           method="post" class="d-flex flex-column justify-content-center w-60 g-4"
           enctype="multipart/form-data">
 
+
+          <div asp-validation-summary="ModelOnly"
+                class="text-danger">
+          </div>
+
+
         <label for="Title">Title</label>
         <input asp-for="Title" type="text" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1" />
-
+        <span asp-validation-for="Title" class="text-danger field-validation-error"></span>
 
         <label for="Image">Image</label>
         <input asp-for="Image" type="file" class="form-control" aria-label="Image" aria-describedby="basic-addon1" />
+        <span asp-validation-for="Image" class="text-danger field-validation-error"></span>
+
 
         <div class="m-2">
-            <span><input type="datetime-local" name="StartDate" asp-for="StartDate" /></span>
-            <span><input type="datetime-local" name="EndDate" asp-for="EndDate" /></span>
+            <span><input type="date"  asp-for="StartDate" /></span>
+            <span asp-validation-for="StartDate" class="text-danger field-validation-error"></span>
+
+            <span><input type="date" asp-for="EndDate" /></span>
+            <span asp-validation-for="EndDate" class="text-danger field-validation-error"></span>
+
         </div>
-        <select class="custom-select custom-select-sm p-2" asp-for="CategoryId" name="CategoryId">
+        <select class="custom-select custom-select-sm p-2" asp-for="CategoryId">
             <option selected>Select Category</option>
             @foreach (var category in Model.Categories)
-            {
+            {   
                 <option value="@category.Id">@category.Name</option>
             }
         </select>
 
-        <select class="custom-select custom-select-sm p-2" asp-for="LocationId" name="LocationId">
+        <select class="custom-select custom-select-sm p-2" asp-for="LocationId">
             <option selected>Select Location</option>
             @foreach (var location in Model.Locations)
             {
@@ -40,25 +52,28 @@
 
         <label for="Address">Address</label>
         <input asp-for="Address" type="text" class="form-control" placeholder="Address" aria-label="Description" aria-describedby="basic-addon1" />
-        
+        <span asp-validation-for="Address" class="text-danger field-validation-error"></span>
+
 
         <label for="MaxParticipants">MaxParticipants</label>
         <input asp-for="MaxParticipants" type="number" class="form-control" placeholder="MaxParticipants" aria-label="MaxParticipants" aria-describedby="basic-addon1" />
+        <span asp-validation-for="MaxParticipants" class="text-danger field-validation-error"></span>
 
         <div class="form-group">
             <label for="">Description</label>
             <textarea asp-for="Description" class="form-control" id="" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger field-validation-error"></span>
+
         </div>
         <div class="m-auto p-2 mt-2">
             <span>
                 <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Cancel</a>
             </span>
             <span>
-                <button asp-controller="Events" asp-action="Create" type="submit" class="btn btn-primary">Submit </button>
+                <button asp-controller="Events" type="submit" class="btn btn-primary">Submit </button>
             </span>
         </div>
     </form>
-
 
 
 

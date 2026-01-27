@@ -2,9 +2,18 @@
 
 @model IEnumerable<EventListViewModel>;
 
+    @if (User.IsInRole("Admin"))
+{
+    <div class="float-end">
+        <a asp-controller="Events" asp-action="Create" class="btn btn-primary">Create</a>
+    </div>
+}
+
+
 <div class="list-events-page container">
     <p class="h2">All events</p>
     <hr />
+
 
     @if (Model.Count() == 0)
     {
@@ -47,7 +56,7 @@
                                 </li>
                                 <a
                                     asp-controller="Events"
-                                    asp-action="Create"
+                                    asp-action="Details"
                                     asp-route-eventId="@eventData.Id"
                                     asp-route-categoryId="@eventData.CategoryId"
                                     asp-route-locationId="@eventData.CityId"

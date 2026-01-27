@@ -53,12 +53,12 @@ namespace EventHub.Services.Services
             Directory.CreateDirectory(physicalFolder);
 
             var physicalPath = Path.Combine(physicalFolder, fileName);
-
+                
             using var fileStream = new FileStream(physicalPath, FileMode.Create);
 
                 await imageFile.CopyToAsync(fileStream);
 
-            var imageUrl = $"/images/events/{fileName}";
+            var imageUrl = $"images/events/{fileName}";
             return imageUrl;
         }
 
