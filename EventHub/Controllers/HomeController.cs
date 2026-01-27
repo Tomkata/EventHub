@@ -2,7 +2,7 @@
 namespace EventHub.Controllers
 {
     using System.Diagnostics;
-    using EventHub.Models;
+    using EventHub.Core.ViewModels;
     using Microsoft.AspNetCore.Mvc;
 
     public class HomeController : Controller

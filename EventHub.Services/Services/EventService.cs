@@ -119,7 +119,7 @@ namespace EventHub.Services.Services
         }
 
         public async Task UpdateAsync(Guid id, CreateEventDto dto)
-        {
+        {   
             Event? eventEntity = await ValidateEvent(id);
 
             eventEntity.Title = dto.Title;
@@ -164,6 +164,7 @@ namespace EventHub.Services.Services
                 .AsNoTracking()
                 .Select(x => new EventDto
                 {
+                     Id = x.Id,
                     Title = x.Title,
                     Category = x.Category.Name,
                     CategoryId = x.CategoryId,

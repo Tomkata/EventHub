@@ -45,7 +45,14 @@
                                         End: @eventData.EndDate.ToString("dd MMM yyyy")
                                     </span>
                                 </li>
-                                <div class="btn btn-primary m-2">Details</div>
+                                <a
+                                    asp-controller="Events"
+                                    asp-action="Create"
+                                    asp-route-eventId="@eventData.Id"
+                                    asp-route-categoryId="@eventData.CategoryId"
+                                    asp-route-locationId="@eventData.CityId"
+                                    class="btn btn-outline-success w-100 m-2">Details
+                                </a>
                             </ul>
                           
                         </div>

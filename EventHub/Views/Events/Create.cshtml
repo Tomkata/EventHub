@@ -1,28 +1,69 @@
-﻿
-@{
+﻿@using EventHub.Core.ViewModels.Events;
 
-}
-
+@model CreateEventViewModel;
 
 
+<p class="h2">Create event</p>
 
-<div class="create-page conteiner">
-    <form action="Create" method="get">
-        <fieldset>Category
-            <select id="" name="">
-                <option value=""></option>
+<div class="create-page conteiner w-60 d-flex flex-column">
+    <form 
+          asp-action="Create"
+          method="post" class="d-flex flex-column justify-content-center w-60 g-4"
+          enctype="multipart/form-data">
 
-                <option value="0">Action</option>
-
-                <option value="1">Drama</option>
-
-                <option selected="selected" value="2">Comedy</option>
-
-                <option value="3">Science Fiction</option>
-            </select>
-            <a class="btn btn-primary"><input type="submit" value="Submit" /> </a>
+        <label for="Title">Title</label>
+        <input asp-for="Title" type="text" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1" />
 
 
-        </fieldset>
+        <label for="Image">Image</label>
+        <input asp-for="Image" type="file" class="form-control" aria-label="Image" aria-describedby="basic-addon1" />
+
+        <div class="m-2">
+            <span><input type="datetime-local" name="StartDate" asp-for="StartDate" /></span>
+            <span><input type="datetime-local" name="EndDate" asp-for="EndDate" /></span>
+        </div>
+        <select class="custom-select custom-select-sm p-2" asp-for="CategoryId" name="CategoryId">
+            <option selected>Select Category</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+
+        <select class="custom-select custom-select-sm p-2" asp-for="LocationId" name="LocationId">
+            <option selected>Select Location</option>
+            @foreach (var location in Model.Locations)
+            {
+                <option value="@location.Id">@location.Name</option>
+            }
+        </select>
+
+        <label for="Address">Address</label>
+        <input asp-for="Address" type="text" class="form-control" placeholder="Address" aria-label="Description" aria-describedby="basic-addon1" />
+        
+
+        <label for="MaxParticipants">MaxParticipants</label>
+        <input asp-for="MaxParticipants" type="number" class="form-control" placeholder="MaxParticipants" aria-label="MaxParticipants" aria-describedby="basic-addon1" />
+
+        <div class="form-group">
+            <label for="">Description</label>
+            <textarea asp-for="Description" class="form-control" id="" rows="3"></textarea>
+        </div>
+        <div class="m-auto p-2 mt-2">
+            <span>
+                <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Cancel</a>
+            </span>
+            <span>
+                <button asp-controller="Events" asp-action="Create" type="submit" class="btn btn-primary">Submit </button>
+            </span>
+        </div>
     </form>
+
+
+
+
 </div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+}

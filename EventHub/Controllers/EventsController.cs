@@ -9,6 +9,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Validation;
 
     public class EventsController : Controller
     {
@@ -37,6 +38,7 @@ namespace EventHub.Web.Controllers
             var eventList =
                  allEvents.Select(x => new EventListViewModel
                  {
+                      Id = x.Id,
                      Title = x.Title,
                      ImagePath = x.ImagePath,
                      Category = x.Category,
@@ -59,33 +61,11 @@ namespace EventHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var categories = await _categoryService.GetCategoriesForDropdownAsync();
-            var categoriesModel = categories
-                .Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                })
-                .ToList();
-
-            var locations = await _locationService.GetLocationsForDropdownAsync();
-            var locationsModel = locations
-                .Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.City
-                })
-                .ToList();
-
-            var model = new CreateEventViewModel
-            {
-                Categories = categoriesModel,
-                Locations = locationsModel
-            };
-
+            CreateEventViewModel model = await PrepareCreateViewModel();
 
             return View(model);
         }
+
 
         [Authorize(Roles ="Admin")]
         [HttpPost]
@@ -95,10 +75,34 @@ namespace EventHub.Web.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    model = await PrepareCreateViewModel();
                     return View(model);
                 }
 
                 var imageUrl = await _imageService.StoreImageAsync(model.Image);
+
+                //Check how u can optimize this (mayble in service) XDDD
+                var categories = await _categoryService.GetCategoriesForDropdownAsync();
+                var isCategoryExist = categories.Any(x => x.Id == model.CategoryId);
+
+                if (!isCategoryExist)
+                {
+                    ModelState.AddModelError($"{nameof(model.CategoryId)}","Invalid category is selected!");
+
+                    model = await PrepareCreateViewModel();
+                    return View(model);
+                }
+
+                var locations = await _locationService.GetLocationsForDropdownAsync();
+                var isLocationExist = locations.Any(x => x.Id == model.LocationId);
+
+                if (!isLocationExist)
+                {
+                    ModelState.AddModelError($"{nameof(model.LocationId)}", "Invalid location is selected!");
+
+                    model = await PrepareCreateViewModel();
+                    return View(model);
+                }
 
 
                 var eventDate = new CreateEventDto
@@ -119,16 +123,52 @@ namespace EventHub.Web.Controllers
                 return RedirectToAction("Index");
             }
             catch (ImageEmptyException imageException)
-            {
+            {   
                 ModelState.AddModelError("Image",$"{imageException.Message}");
+                 model = await PrepareCreateViewModel();
+
                 return View(model);
             }
             catch (InvalidImageFormatException imageException)
             {
                 ModelState.AddModelError("Image", $"{imageException.Message}");
+                model = await PrepareCreateViewModel();
+
                 return View(model);
             }
-           
         }
+
+
+        private async Task<CreateEventViewModel> PrepareCreateViewModel()
+        {
+            var categories = await _categoryService.GetCategoriesForDropdownAsync();
+            var categoriesModel = categories
+                .Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                })
+                .ToList();
+
+
+
+
+            var locations = await _locationService.GetLocationsForDropdownAsync();
+            var locationsModel = locations
+                .Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.City
+                })
+                .ToList();
+
+            var model = new CreateEventViewModel
+            {
+                Categories = categoriesModel,
+                Locations = locationsModel
+            };
+            return model;
+        }
+
     }
 }

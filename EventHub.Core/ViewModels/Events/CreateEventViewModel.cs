@@ -26,14 +26,5 @@ namespace EventHub.Core.ViewModels.Events
 
         public List<DropdownOptionModel> Categories { get; set; } = new();
         public List<DropdownOptionModel> Locations { get; set; } = new();
-
-
-
-
-
-
-
-
-
     }
 }
