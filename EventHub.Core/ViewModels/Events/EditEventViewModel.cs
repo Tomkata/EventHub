@@ -8,25 +8,30 @@ using System.Text;
 
 namespace EventHub.Core.ViewModels.Events
 {
-    public class EditEventViewModel
+    public class    EditEventViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string Title { get; set; }
 
         public string Description { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Start date is required")]
+        [FutureDate(ErrorMessage = "Start date must be in the future")]
         public DateTime? StartDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "End date is required")]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be after start date")]
         public DateTime? EndDate { get; set; }
 
-        public int CategoryId { get; set; }
-        public int LocationId { get; set; }
+        [Required]
+        public Guid CategoryId { get; set; }
+        [Required]
+        public Guid LocationId { get; set; }
 
+        [Required]
         public int MaxParticipants { get; set; }
+        [Required]
         public string Address { get; set; }
 
         public string ExistingImagePath { get; set; }

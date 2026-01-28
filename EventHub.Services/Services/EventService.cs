@@ -3,12 +3,17 @@
 
 namespace EventHub.Services.Services
 {
-    using EventHub.Core.Models;
     using EventHub.Core.DTOs;
+    using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Exceptions.Category;
+    using EventHub.Core.Exceptions.Event;
+    using EventHub.Core.Exceptions.Location;
+    using EventHub.Core.Exceptions.User;
+    using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Services.Interfaces;
     using Microsoft.EntityFrameworkCore;
-    using EventHub.Core.DTOs.Event;
+    using Microsoft.Identity.Client;
 
     public class EventService : IEventService
     {
@@ -23,9 +28,11 @@ namespace EventHub.Services.Services
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
 
+
+
             var eventEntity = await _dbContext.Events
                             .AsNoTracking()
-                            .Select(x=>new
+                            .Select(x => new
                             {
                                 x.Id,
                                 x.ImagePath,
@@ -41,8 +48,9 @@ namespace EventHub.Services.Services
                             })
                             .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (eventEntity == null) throw new InvalidOperationException("Invalid event id");
 
+            if (eventEntity == null)
+                throw new InvalidEventException();
 
             var participants = await _dbContext.EventParticipants
                .AsNoTracking()
@@ -69,12 +77,12 @@ namespace EventHub.Services.Services
                 })
                 .FirstOrDefaultAsync(x => x.Id == eventEntity.OrganizerId);
 
-            if(organizer == null) throw new InvalidOperationException("invalid organizer");
+            if(organizer == null) throw new InvalidOrganizerException();
 
             var dto = new DetailedEventDto
             {
                   
-                Id = eventEntity.Id,
+                 Id = eventEntity.Id,
                  Title = eventEntity.Title,
                  Category = eventEntity.Category,
                  MaxParticipants = eventEntity.MaxParticipants,
@@ -94,14 +102,15 @@ namespace EventHub.Services.Services
 
         public async Task CreateAsync(CreateEventDto dto)
         {
-            bool categoryExists = await _dbContext.Categories.AnyAsync(c => c.Id == dto.CategoryId);
-            bool locationExists = await _dbContext.Locations.AnyAsync(l => l.Id == dto.LocationId);
+            if (!await IsCategoryIdExistAsync(dto.CategoryId))
+                throw new InvalidCategoryException();
 
-            if (!categoryExists || !locationExists)
-            {
-                throw new ArgumentException("Invalid CategoryId or LocationId");
-            }
-            
+            if (!await IsLocationIdExistAsync(dto.LocationId))
+                throw new InvalidLocationException();
+
+
+            if (!await IsOrganizerExistAsync(dto.OrganizerId))
+                throw new InvalidOrganizerException();
 
             var eventEntity = new Event
             {
@@ -121,19 +130,38 @@ namespace EventHub.Services.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        private async Task<bool> IsOrganizerExistAsync(string Id)
+        {
+            return await _dbContext.Users.AnyAsync(u => u.Id == Id);
+        }
+
         public async Task UpdateAsync(Guid id, EditEventDto dto)
         {   
-            Event? eventEntity = await ValidateEvent(id);
+            var eventEntity = await GetEventEntityOrThrowAsync(id);
+
+
+            if (!await IsCategoryIdExistAsync(dto.CategoryId))
+                throw new InvalidCategoryException();
+
+            if (!await IsLocationIdExistAsync(dto.LocationId))
+                throw new InvalidLocationException();
+
+
 
             eventEntity.Title = dto.Title;
-            eventEntity.LocationId = (Guid)dto.LocationId;
-            eventEntity.CategoryId = (Guid)dto.CategoryId;
-            eventEntity.StartDate = (DateTime)dto.StartDate;
-            eventEntity.EndDate = (DateTime)dto.EndDate;
-            eventEntity.MaxParticipants = (int)dto.MaxParticipants;
+            eventEntity.LocationId = dto.LocationId;
+            eventEntity.CategoryId = dto.CategoryId;
+            eventEntity.StartDate = dto.StartDate;
+            eventEntity.EndDate = dto.EndDate;
+            eventEntity.MaxParticipants = dto.MaxParticipants;
             eventEntity.Description = dto.Description;
             eventEntity.Address = dto.Address;
-            eventEntity.ImagePath = dto.ImagePath;
+
+
+            if (dto.ImagePath != null)
+            {
+                eventEntity.ImagePath = dto.ImagePath;
+            }
 
             await _dbContext.SaveChangesAsync();
 
@@ -143,7 +171,7 @@ namespace EventHub.Services.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            Event? eventEntity = await ValidateEvent(id);
+            var eventEntity = await GetEventEntityOrThrowAsync(id);
 
              _dbContext.Events.Remove(eventEntity);
             await _dbContext.SaveChangesAsync();
@@ -151,12 +179,17 @@ namespace EventHub.Services.Services
 
 
 
-        private async Task<Event?> ValidateEvent(Guid id)
+        private async Task<Event> GetEventEntityOrThrowAsync(Guid id)
         {
             var eventEntity = await _dbContext.Events
+                .Include(x=>x.Location)
+                .Include(x=>x.Category)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (eventEntity == null) throw new InvalidOperationException("Invalid event id");
+            if (eventEntity == null)
+                throw new InvalidEventException();
+
             return eventEntity;
         }
 
@@ -183,6 +216,18 @@ namespace EventHub.Services.Services
                 .ToListAsync();
 
             return events;
+        }
+
+        private async Task<bool> IsLocationIdExistAsync(Guid Id)
+        {
+            return await _dbContext.Locations.AnyAsync(x => x.Id == Id);
+        }
+
+        private async Task<bool> IsCategoryIdExistAsync(Guid Id)
+        {
+            return await _dbContext.Categories
+                .AsNoTracking()
+                .AnyAsync(x => x.Id == Id);
         }
     }
    }

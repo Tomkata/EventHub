@@ -8,3 +8,4 @@ namespace EventHub.Services.Interfaces
         public Task<EventFormOptionsViewModel> GetFormOptionsAsync();
     }
 }
+    

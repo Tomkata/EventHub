@@ -98,29 +98,6 @@ namespace EventHub.Web.Controllers
 
                 var imageUrl = await _imageService.StoreImageAsync(model.Image);
 
-                //Check how u can optimize this (mayble in service) XDDD
-                var categories = await _categoryService.GetCategoriesForDropdownAsync();
-                var isCategoryExist = categories.Any(x => x.Id == model.CategoryId);
-
-                if (!isCategoryExist)
-                {
-                    ModelState.AddModelError($"{nameof(model.CategoryId)}", "Invalid category is selected!");
-
-                    model = await PrepareCreateViewModel();
-                    return View(model);
-                }
-
-                var locations = await _locationService.GetLocationsForDropdownAsync();
-                var isLocationExist = locations.Any(x => x.Id == model.LocationId);
-
-                if (!isLocationExist)
-                {
-                    ModelState.AddModelError($"{nameof(model.LocationId)}", "Invalid location is selected!");
-
-                    model = await PrepareCreateViewModel();
-                    return View(model);
-                }
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userId == null)
@@ -256,7 +233,7 @@ namespace EventHub.Web.Controllers
                 model.EndDate == null &&
                 model.StartDate == null &&
                 string.IsNullOrWhiteSpace(model.Description) &&
-                model.CategoryId == default &&
+                model.CategoryId == default && 
                 model.LocationId == default &&
                 model.MaxParticipants == default &&
                 string.IsNullOrWhiteSpace(model.Address) &&
@@ -286,8 +263,6 @@ namespace EventHub.Web.Controllers
             if (eventData == null)
                 return null;
 
-            var categories = await _categoryService.GetCategoriesForDropdownAsync();
-            var locations = await _locationService.GetLocationsForDropdownAsync();
 
             var model = new EditEventViewModel
             {
@@ -298,17 +273,7 @@ namespace EventHub.Web.Controllers
                 StartDate = eventData.StartDate,
                 EndDate = eventData.EndDate,
                 MaxParticipants = eventData.MaxParticipants,
-                ExistingImagePath = eventData.ImagePath,
-                Categories = categories.Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }),
-                Locations = locations.Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.City
-                })
+                ExistingImagePath = eventData.ImagePath
             };
             return model;
         }

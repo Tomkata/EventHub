@@ -1,5 +1,5 @@
 ﻿
-namespace EventHub.Core.ViewModels.Events
+namespace EventHub.Core.ViewModels.Events;
 using EventHub.Core.DTOs.Category;
 using EventHub.Core.DTOs.Location;
 using EventHub.Core.Models;
@@ -15,8 +15,8 @@ public class EventFormOptionsViewModel
         public EventFormOptionsViewModel(IEnumerable<DropdownOptionModel> categories,
             IEnumerable<DropdownOptionModel> locations)
         {
-            Categories = categories;
-            Locations = locations;
+            this.Categories = categories;
+            this.Locations = locations;
         }
     }
-}
+

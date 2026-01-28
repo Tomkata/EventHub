@@ -4,6 +4,7 @@ namespace EventHub.Core.DTOs
 {
     public class DetailedEventDto
     {
+        public Guid Id { get; set; }
         public string Title { get; set; } = null!;
         public string Category { get; set; } = null!;
         public int MaxParticipants { get; set; }
