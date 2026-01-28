@@ -8,6 +8,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.ViewModels.Common;
     using EventHub.Core.ViewModels.Events;
     using EventHub.Services.Interfaces;
+    using EventHub.Services.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
@@ -21,16 +22,19 @@ namespace EventHub.Web.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ILocationService _locationService;
         private readonly IImageService _imageService;
+        private readonly IEventFormOptionsService _eventFormOptionsService;
 
         public EventsController(IEventService eventService,
                                 ICategoryService categoryService,
                                 ILocationService locationService,
-                                IImageService imageService)
+                                IImageService imageService,
+                                IEventFormOptionsService eventFormOptionsService)
         {
             this._eventService = eventService;
             this._categoryService = categoryService;
             this._locationService = locationService;
             this._imageService = imageService;
+            this._eventFormOptionsService = eventFormOptionsService;
         }
 
         public async Task<IActionResult> Index()
@@ -117,9 +121,6 @@ namespace EventHub.Web.Controllers
                     return View(model);
                 }
 
-
-                //
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userId == null)
@@ -158,30 +159,32 @@ namespace EventHub.Web.Controllers
             }
             catch (ImageEmptyException imageException)
             {
-                ModelState.AddModelError("Image", $"{imageException.Message}");
                 model = await PrepareCreateViewModel();
-
-                return View(model);
+              return  HandleImageException(model, imageException);
             }
             catch (InvalidImageFormatException imageException)
             {
-                ModelState.AddModelError("Image", $"{imageException.Message}");
+                
                 model = await PrepareCreateViewModel();
-
-                return View(model);
+                return HandleImageException(model,imageException);
             }
         }
-
 
 
         [HttpGet]
         public async Task<IActionResult> Update(Guid Id)
         {
+
             var model = await PrepareEditViewModel(Id);
 
             if (model == null)
                 return NotFound();
 
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+
+
+            model.Categories = dropDowns.Categories;
+            model.Locations = dropDowns.Locations;
 
             return View(model);
         }
@@ -193,8 +196,14 @@ namespace EventHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+
+                 var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
+
+                model.Categories = dropDown.Categories;
+                model.Locations = dropDown.Locations;
+
                 ModelState.AddModelError("", "Please fill in the form.");
-                
+
                 return View(model);
             }
             try
@@ -213,7 +222,6 @@ namespace EventHub.Web.Controllers
 
                 if (model.NewImage != null)
                 {
-                    //Need to delete the old (new service method)
 
                     var newImagePath = await _imageService.StoreImageAsync(model.NewImage);
                     eventToUpdate.ImagePath = newImagePath;
@@ -227,15 +235,19 @@ namespace EventHub.Web.Controllers
             }
             catch (ImageEmptyException imageException)
             {
-                ModelState.AddModelError("Image", $"{imageException.Message}");
-                return View(model);
+                return HandleImageException(model, imageException);
             }
             catch (InvalidImageFormatException imageException)
             {
-                ModelState.AddModelError("Image", $"{imageException.Message}");
-                return View(model);
+                return HandleImageException(model, imageException);
             }
 
+        }
+
+        private IActionResult HandleImageException(object model, Exception ex)
+        {
+            ModelState.AddModelError("Image", $"{ex.Message}");
+            return View(model);
         }
 
         private bool IsEmptyForm(CreateEventViewModel model)
@@ -258,32 +270,11 @@ namespace EventHub.Web.Controllers
 
         private async Task<CreateEventViewModel> PrepareCreateViewModel()
         {
-            var categories = await _categoryService.GetCategoriesForDropdownAsync();
-            var categoriesModel = categories
-                .Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                })
-                .ToList();
-
-
-
-
-            var locations = await _locationService.GetLocationsForDropdownAsync();
-            var locationsModel = locations
-                .Select(x => new DropdownOptionModel
-                {
-                    Id = x.Id,
-                    Name = x.City
-                })
-                .ToList();
-
-
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
             var model = new CreateEventViewModel
             {
-                Categories = categoriesModel,
-                Locations = locationsModel
+                 Categories = dropDowns.Categories,
+                 Locations = dropDowns.Locations
             };
             return model;
         }

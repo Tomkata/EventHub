@@ -34,6 +34,7 @@ namespace EventHub
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IImageService,ImageService>();
+            builder.Services.AddScoped<IEventFormOptionsService, EventFormOptionsService>();
 
 
 

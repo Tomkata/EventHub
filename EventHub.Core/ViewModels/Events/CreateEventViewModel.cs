@@ -30,7 +30,7 @@ namespace EventHub.Core.ViewModels.Events
         public Guid LocationId { get; set; }
         public IFormFile Image { get; set; }
 
-        public List<DropdownOptionModel> Categories { get; set; } = new();
-        public List<DropdownOptionModel> Locations { get; set; } = new();
+        public IEnumerable<DropdownOptionModel> Categories { get; set; } = new List<DropdownOptionModel>();
+        public IEnumerable<DropdownOptionModel> Locations { get; set; } = new List<DropdownOptionModel>();
     }
 }

@@ -13,8 +13,8 @@ namespace EventHub.Services.Services
 
         public EventFormOptionsService(ICategoryService categoryService, ILocationService locationService)
         {
-            _categoryService = categoryService;
-            _locationService = locationService;
+            this._categoryService = categoryService;
+            this._locationService = locationService;
         }
 
         public async Task<EventFormOptionsViewModel> GetFormOptionsAsync()
