@@ -3,6 +3,7 @@
 namespace EventHub.Web.Controllers
 {
     using EventHub.Core.DTOs;
+    using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.ViewModels.Common;
     using EventHub.Core.ViewModels.Events;
@@ -11,6 +12,7 @@ namespace EventHub.Web.Controllers
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Validation;
+    using System.Net.WebSockets;
     using System.Security.Claims;
 
     public class EventsController : Controller
@@ -40,7 +42,7 @@ namespace EventHub.Web.Controllers
             var eventList =
                  allEvents.Select(x => new EventListViewModel
                  {
-                      Id = x.Id,
+                     Id = x.Id,
                      Title = x.Title,
                      ImagePath = x.ImagePath,
                      Category = x.Category,
@@ -69,10 +71,11 @@ namespace EventHub.Web.Controllers
         }
 
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
-        {try
+        {
+            try
             {
 
                 if ((!ModelState.IsValid) && IsEmptyForm(model))
@@ -127,10 +130,9 @@ namespace EventHub.Web.Controllers
 
                 if (!model.StartDate.HasValue || !model.EndDate.HasValue)
                 {
-                    ModelState.AddModelError("","The date is requierd");
-                    model =  await PrepareCreateViewModel();
+                    ModelState.AddModelError("", "The date is requierd");
+                    model = await PrepareCreateViewModel();
                     return View(model);
-
                 }
 
 
@@ -150,12 +152,14 @@ namespace EventHub.Web.Controllers
 
                 await _eventService.CreateAsync(eventDate);
 
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "Event created successfully!";
+
+                return RedirectToAction(nameof(Index));
             }
             catch (ImageEmptyException imageException)
-            {   
-                ModelState.AddModelError("Image",$"{imageException.Message}");
-                 model = await PrepareCreateViewModel();
+            {
+                ModelState.AddModelError("Image", $"{imageException.Message}");
+                model = await PrepareCreateViewModel();
 
                 return View(model);
             }
@@ -168,7 +172,73 @@ namespace EventHub.Web.Controllers
             }
         }
 
-        private  bool IsEmptyForm(CreateEventViewModel model)
+
+
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid Id)
+        {
+            var model = await PrepareEditViewModel(Id);
+
+            if (model == null)
+                return NotFound();
+
+
+            return View(model);
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Update(EditEventViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Please fill in the form.");
+                
+                return View(model);
+            }
+            try
+            {
+                var eventToUpdate = new EditEventDto
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    MaxParticipants = model.MaxParticipants,
+                    Address = model.Address,
+                    StartDate = (DateTime)model.StartDate,
+                    EndDate = (DateTime)model.EndDate,
+                    CategoryId = model.CategoryId,
+                    LocationId = model.LocationId,
+                };
+
+                if (model.NewImage != null)
+                {
+                    //Need to delete the old (new service method)
+
+                    var newImagePath = await _imageService.StoreImageAsync(model.NewImage);
+                    eventToUpdate.ImagePath = newImagePath;
+                }
+
+
+                await _eventService.UpdateAsync(model.Id, eventToUpdate);
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (ImageEmptyException imageException)
+            {
+                ModelState.AddModelError("Image", $"{imageException.Message}");
+                return View(model);
+            }
+            catch (InvalidImageFormatException imageException)
+            {
+                ModelState.AddModelError("Image", $"{imageException.Message}");
+                return View(model);
+            }
+
+        }
+
+        private bool IsEmptyForm(CreateEventViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Title) &&
                 model.EndDate == null &&
@@ -209,6 +279,7 @@ namespace EventHub.Web.Controllers
                 })
                 .ToList();
 
+
             var model = new CreateEventViewModel
             {
                 Categories = categoriesModel,
@@ -217,5 +288,39 @@ namespace EventHub.Web.Controllers
             return model;
         }
 
+        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)
+        {
+            var eventData = await _eventService.GetByIdAsync(Id);
+
+            if (eventData == null)
+                return null;
+
+            var categories = await _categoryService.GetCategoriesForDropdownAsync();
+            var locations = await _locationService.GetLocationsForDropdownAsync();
+
+            var model = new EditEventViewModel
+            {
+                 Id = eventData.Id,
+                Title = eventData.Title,
+                Address = eventData.Address,
+                Description = eventData.Description,
+                StartDate = eventData.StartDate,
+                EndDate = eventData.EndDate,
+                MaxParticipants = eventData.MaxParticipants,
+                ExistingImagePath = eventData.ImagePath,
+                Categories = categories.Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }),
+                Locations = locations.Select(x => new DropdownOptionModel
+                {
+                    Id = x.Id,
+                    Name = x.City
+                })
+            };
+            return model;
+        }
     }
+
 }

@@ -4,8 +4,6 @@ namespace EventHub.Core.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Runtime.CompilerServices;
-    using EventHub.Core.EventValidation;
     using Microsoft.EntityFrameworkCore;
 
     public class Event 

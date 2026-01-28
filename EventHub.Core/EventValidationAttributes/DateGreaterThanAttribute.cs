@@ -30,7 +30,7 @@ namespace EventHub.Core.EventValidation
 
             if (value is DateTime endDate && comprasionValue is DateTime startDate)
             {
-                if (endDate <= startDate)
+                if (endDate < startDate)
                 {
                     return new ValidationResult(ErrorMessage ?? "End date must be greater than start date");
                 }

@@ -1,6 +1,15 @@
 ﻿@using EventHub.Core.ViewModels.Events
 
 @model IEnumerable<EventListViewModel>;
+@{
+    var message = TempData["SuccessMessage"] as string ?? string.Empty;
+}
+
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <p class="h4 alert alert-success" >@message</p>
+}
 
     @if (User.IsInRole("Admin"))
 {

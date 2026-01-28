@@ -8,6 +8,7 @@ namespace EventHub.Services.Services
     using EventHub.Infrastructure.Data;
     using EventHub.Services.Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using EventHub.Core.DTOs.Event;
 
     public class EventService : IEventService
     {
@@ -72,6 +73,8 @@ namespace EventHub.Services.Services
 
             var dto = new DetailedEventDto
             {
+                  
+                Id = eventEntity.Id,
                  Title = eventEntity.Title,
                  Category = eventEntity.Category,
                  MaxParticipants = eventEntity.MaxParticipants,
@@ -118,19 +121,18 @@ namespace EventHub.Services.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Guid id, CreateEventDto dto)
+        public async Task UpdateAsync(Guid id, EditEventDto dto)
         {   
             Event? eventEntity = await ValidateEvent(id);
 
             eventEntity.Title = dto.Title;
-            eventEntity.LocationId = dto.LocationId;
-            eventEntity.CategoryId = dto.CategoryId;
-            eventEntity.StartDate = dto.StartDate;
-            eventEntity.EndDate = dto.EndDate;
-            eventEntity.MaxParticipants = dto.MaxParticipants;
+            eventEntity.LocationId = (Guid)dto.LocationId;
+            eventEntity.CategoryId = (Guid)dto.CategoryId;
+            eventEntity.StartDate = (DateTime)dto.StartDate;
+            eventEntity.EndDate = (DateTime)dto.EndDate;
+            eventEntity.MaxParticipants = (int)dto.MaxParticipants;
             eventEntity.Description = dto.Description;
             eventEntity.Address = dto.Address;
-            eventEntity.StartDate = dto.StartDate;
             eventEntity.ImagePath = dto.ImagePath;
 
             await _dbContext.SaveChangesAsync();
