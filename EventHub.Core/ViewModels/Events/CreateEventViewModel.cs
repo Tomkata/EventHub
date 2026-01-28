@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventHub.Core.ViewModels.Events
 {
-    public class CreateEventViewModel 
+    public class CreateEventViewModel : IEventFormViewModel
     {
         [Required]
         [StringLength(100,MinimumLength =3)]
@@ -22,7 +22,7 @@ namespace EventHub.Core.ViewModels.Events
         [FutureDate(ErrorMessage = "Start date must be in the future")]
         public DateTime? StartDate { get; set; }
         [Required(ErrorMessage = "End date is required")]
-        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be after start date")]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be afterstart date")]
         public DateTime? EndDate { get; set; }
         [Required(ErrorMessage = "Category is required")]
         public Guid CategoryId { get; set; }
@@ -30,7 +30,7 @@ namespace EventHub.Core.ViewModels.Events
         public Guid LocationId { get; set; }
         public IFormFile Image { get; set; }
 
-        public IEnumerable<DropdownOptionModel> Categories { get; set; } = new List<DropdownOptionModel>();
-        public IEnumerable<DropdownOptionModel> Locations { get; set; } = new List<DropdownOptionModel>();
+        public IEnumerable<DropdownOptionModel> Categories { get; set; }
+        public IEnumerable<DropdownOptionModel> Locations { get; set; }
     }
 }

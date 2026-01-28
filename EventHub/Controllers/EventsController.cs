@@ -4,7 +4,9 @@ namespace EventHub.Web.Controllers
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Exceptions.Category;
     using EventHub.Core.Exceptions.Image;
+    using EventHub.Core.Exceptions.Location;
     using EventHub.Core.ViewModels.Common;
     using EventHub.Core.ViewModels.Events;
     using EventHub.Services.Interfaces;
@@ -106,12 +108,6 @@ namespace EventHub.Web.Controllers
                     return View(model);
                 }
 
-                if (!model.StartDate.HasValue || !model.EndDate.HasValue)
-                {
-                    ModelState.AddModelError("", "The date is requierd");
-                    model = await PrepareCreateViewModel();
-                    return View(model);
-                }
 
 
                 var eventDate = new CreateEventDto
@@ -136,14 +132,12 @@ namespace EventHub.Web.Controllers
             }
             catch (ImageEmptyException imageException)
             {
-                model = await PrepareCreateViewModel();
-              return  HandleImageException(model, imageException);
+              return  await HandleException(model, imageException);
             }
             catch (InvalidImageFormatException imageException)
             {
                 
-                model = await PrepareCreateViewModel();
-                return HandleImageException(model,imageException);
+                return await HandleException(model,imageException);
             }
         }
 
@@ -151,19 +145,17 @@ namespace EventHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(Guid Id)
         {
+            
+                var model = await PrepareEditViewModel(Id);
 
-            var model = await PrepareEditViewModel(Id);
+                if (model == null)
+                    return NotFound();
 
-            if (model == null)
-                return NotFound();
+                var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+                model.Categories = dropDowns.Categories;
+                model.Locations = dropDowns.Locations;
 
-            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
-
-
-            model.Categories = dropDowns.Categories;
-            model.Locations = dropDowns.Locations;
-
-            return View(model);
+                return View(model);
         }
 
 
@@ -173,7 +165,6 @@ namespace EventHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-
                  var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
 
                 model.Categories = dropDown.Categories;
@@ -194,7 +185,7 @@ namespace EventHub.Web.Controllers
                     StartDate = (DateTime)model.StartDate,
                     EndDate = (DateTime)model.EndDate,
                     CategoryId = model.CategoryId,
-                    LocationId = model.LocationId,
+                    LocationId = model.LocationId
                 };
 
                 if (model.NewImage != null)
@@ -212,18 +203,32 @@ namespace EventHub.Web.Controllers
             }
             catch (ImageEmptyException imageException)
             {
-                return HandleImageException(model, imageException);
+                return await HandleException(model, imageException);
             }
             catch (InvalidImageFormatException imageException)
             {
-                return HandleImageException(model, imageException);
+                return await HandleException(model, imageException);
+            }
+             catch (InvalidCategoryException categoryException)
+            {
+                return await HandleException(model, categoryException);
+            }
+            catch (InvalidLocationException locationException)
+            {
+                return await HandleException(model, locationException);
             }
 
         }
 
-        private IActionResult HandleImageException(object model, Exception ex)
+        private async Task<IActionResult> HandleException(IEventFormViewModel model, Exception ex)
         {
-            ModelState.AddModelError("Image", $"{ex.Message}");
+            var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
+
+            model.Categories = dropDown.Categories;
+            model.Locations = dropDown.Locations;
+
+            ModelState.AddModelError("", $"{ex.Message}");
+
             return View(model);
         }
 
@@ -260,8 +265,6 @@ namespace EventHub.Web.Controllers
         {
             var eventData = await _eventService.GetByIdAsync(Id);
 
-            if (eventData == null)
-                return null;
 
 
             var model = new EditEventViewModel
