@@ -168,7 +168,6 @@ namespace EventHub.Services.Services
         }
 
        
-
         public async Task DeleteAsync(Guid id)
         {
             var eventEntity = await GetEventEntityOrThrowAsync(id);

@@ -8,10 +8,10 @@
 
 @if (!string.IsNullOrEmpty(message))
 {
-    <p class="h4 alert alert-success" >@message</p>
+    <p class="h4 alert alert-success">@message</p>
 }
 
-    @if (User.IsInRole("Admin"))
+@if (User.IsInRole("Admin"))
 {
     <div class="float-end">
         <a asp-controller="Events" asp-action="Create" class="btn btn-primary">Create</a>
@@ -57,22 +57,28 @@
                                 <li class="list-group-item m-2">
                                     <span>
                                         Start: @eventData.StartDate.ToString("dd MMM yyyy")
-                                    </span>        
+                                    </span>
                                     <br />
                                     <span>
                                         End: @eventData.EndDate.ToString("dd MMM yyyy")
                                     </span>
                                 </li>
-                                <a
-                                    asp-controller="Events"
-                                    asp-action="Details"
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-controller="Events" asp-action="Update" 
                                     asp-route-eventId="@eventData.Id"
-                                    asp-route-categoryId="@eventData.CategoryId"
-                                    asp-route-locationId="@eventData.CityId"
-                                    class="btn btn-outline-success w-100 m-2">Details
+                                    class="btn btn-primary">Update</a>
+                                }
+                                <a asp-controller="Events"
+                                   asp-action="Details" 
+                                   asp-route-eventId="@eventData.Id"
+                                   asp-route-categoryId="@eventData.CategoryId"
+                                   asp-route-locationId="@eventData.CityId"
+                                   class="btn btn-outline-success w-100 m-2">
+                                    Details
                                 </a>
                             </ul>
-                          
+
                         </div>
                     </div>
                 </div>

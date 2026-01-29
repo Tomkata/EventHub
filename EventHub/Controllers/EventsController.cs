@@ -143,10 +143,10 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Update(Guid Id)
+        public async Task<IActionResult> Update(Guid eventId)
         {
             
-                var model = await PrepareEditViewModel(Id);
+                var model = await PrepareEditViewModel(eventId);
 
                 if (model == null)
                     return NotFound();
@@ -185,7 +185,8 @@ namespace EventHub.Web.Controllers
                     StartDate = (DateTime)model.StartDate,
                     EndDate = (DateTime)model.EndDate,
                     CategoryId = model.CategoryId,
-                    LocationId = model.LocationId
+                    LocationId = model.LocationId,
+                    ImagePath = model.ExistingImagePath
                 };
 
                 if (model.NewImage != null)

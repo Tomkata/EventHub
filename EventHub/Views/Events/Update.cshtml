@@ -1,0 +1,90 @@
+﻿@using EventHub.Core.ViewModels.Events;
+
+@model EditEventViewModel;
+
+
+<p class="h3">Edit</p>
+
+<div class="event-page container d-flex">
+    
+    <form asp-action="Update"
+          asp-controller="Events"
+          method="post" class="d-flex flex-column justify-content-center w-60 g-4"
+          enctype="multipart/form-data">
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger">
+        </div>
+
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ExistingImagePath" />
+
+        <label for="Title">Title</label>
+        <input asp-for="Title" type="text" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1" />
+        <span asp-validation-for="Title" class="text-danger field-validation-error"></span>
+
+        <label for="Image">Image</label>
+        @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
+        {
+            <div class="mb-2">
+                <img src="/@Model.ExistingImagePath"c
+                     alt="Current image"
+                     style="max-width: 200px; display:block;" />
+            </div>
+        }
+        <input asp-for="NewImage" type="file" class="form-control" aria-label="Image" aria-describedby="basic-addon1" />
+        <span asp-validation-for="NewImage" class="text-danger field-validation-error"></span>
+
+
+        <div class="m-2">
+            <span><input type="date" asp-for="StartDate" /></span>
+            <span asp-validation-for="StartDate" class="text-danger field-validation-error"></span>
+
+            <span><input type="date" asp-for="EndDate" /></span>
+            <span asp-validation-for="EndDate" class="text-danger field-validation-error"></span>
+
+        </div>
+        <select class="custom-select custom-select-sm p-2" asp-for="CategoryId">
+            <option selected>Select Category</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+
+        <select class="custom-select custom-select-sm p-2" asp-for="LocationId">
+            <option selected>Select Location</option>
+            @foreach (var location in Model.Locations)
+            {
+                <option value="@location.Id">@location.Name</option>
+            }
+        </select>
+
+        <label for="Address">Address</label>
+        <input asp-for="Address" type="text" class="form-control" placeholder="Address" aria-label="Description" aria-describedby="basic-addon1" />
+        <span asp-validation-for="Address" class="text-danger field-validation-error"></span>
+
+
+        <label for="MaxParticipants">MaxParticipants</label>
+        <input asp-for="MaxParticipants" type="number" class="form-control" placeholder="MaxParticipants" aria-label="MaxParticipants" aria-describedby="basic-addon1" />
+        <span asp-validation-for="MaxParticipants" class="text-danger field-validation-error"></span>
+
+        <div class="form-group">
+            <label for="">Description</label>
+            <textarea asp-for="Description" class="form-control" id="" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger field-validation-error"></span>
+
+        </div>
+        <div class="m-auto p-2 mt-2">
+            <span>
+                <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Cancel</a>
+            </span>
+            <span>
+                <button asp-controller="Events" type="submit" class="btn btn-primary">Submit </button>
+            </span>
+        </div>
+    </form>
+
+</div>

@@ -1,6 +1,6 @@
 ﻿namespace EventHub.Core.DTOs
 {
-    public class CreateEventDto
+    public class    CreateEventDto
     {
         public string Title { get; set; }
         public int MaxParticipants { get;   set; }

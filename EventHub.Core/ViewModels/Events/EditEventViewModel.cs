@@ -34,10 +34,11 @@ namespace EventHub.Core.ViewModels.Events
         [Required]
         public string Address { get; set; }
 
-        public string ExistingImagePath { get; set; }
+        public string? ExistingImagePath { get; set; }
         public IFormFile? NewImage { get; set; }
 
-        
+        public IEnumerable<DropdownOptionModel>? Categories { get; set; }
+        public IEnumerable<DropdownOptionModel>? Locations { get; set; }
     }
 
 }
