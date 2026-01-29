@@ -67,8 +67,24 @@
                                 {
                                     <a asp-controller="Events" asp-action="Update" 
                                     asp-route-eventId="@eventData.Id"
-                                    class="btn btn-primary">Update</a>
+                                    class="btn btn-primary mb-3">Update</a>
                                 }
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form asp-controller="Events"
+                                          asp-action="Delete"
+                                          method="post"
+                                          class="d-inline">
+
+                                        <input type="hidden" name="eventId" value="@eventData.Id" />
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit" class="btn btn-danger w-100 mb-2">
+                                            Delete
+                                        </button>
+                                    </form>
+                                    }
                                 <a asp-controller="Events"
                                    asp-action="Details" 
                                    asp-route-eventId="@eventData.Id"

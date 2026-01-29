@@ -12,6 +12,8 @@ namespace EventHub.Services.Services
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Services.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Client;
 
@@ -164,10 +166,8 @@ namespace EventHub.Services.Services
             }
 
             await _dbContext.SaveChangesAsync();
-
         }
 
-       
         public async Task DeleteAsync(Guid id)
         {
             var eventEntity = await GetEventEntityOrThrowAsync(id);
@@ -177,7 +177,7 @@ namespace EventHub.Services.Services
         }
 
 
-
+        
         private async Task<Event> GetEventEntityOrThrowAsync(Guid id)
         {
             var eventEntity = await _dbContext.Events

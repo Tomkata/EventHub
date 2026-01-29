@@ -5,6 +5,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Category;
+    using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.ViewModels.Common;
@@ -14,7 +15,9 @@ namespace EventHub.Web.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
     using Microsoft.Extensions.Validation;
+    using System.Diagnostics.Contracts;
     using System.Net.WebSockets;
     using System.Security.Claims;
 
@@ -220,6 +223,26 @@ namespace EventHub.Web.Controllers
             }
 
         }
+
+
+
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid eventId)
+        {
+            try
+            {
+                await _eventService.DeleteAsync(eventId);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidEventException ex)
+            {
+                ModelState.AddModelError("","Invalid event to delete");
+                return View(nameof(Index));
+            }
+        }
+
 
         private async Task<IActionResult> HandleException(IEventFormViewModel model, Exception ex)
         {
