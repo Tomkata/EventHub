@@ -13,6 +13,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Services.Interfaces;
     using EventHub.Services.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -135,12 +136,12 @@ namespace EventHub.Web.Controllers
             }
             catch (ImageEmptyException imageException)
             {
-              return  await HandleException(model, imageException);
+                return await HandleException(model, imageException);
             }
             catch (InvalidImageFormatException imageException)
             {
-                
-                return await HandleException(model,imageException);
+
+                return await HandleException(model, imageException);
             }
         }
 
@@ -148,17 +149,17 @@ namespace EventHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(Guid eventId)
         {
-            
-                var model = await PrepareEditViewModel(eventId);
 
-                if (model == null)
-                    return NotFound();
+            var model = await PrepareEditViewModel(eventId);
 
-                var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
-                model.Categories = dropDowns.Categories;
-                model.Locations = dropDowns.Locations;
+            if (model == null)
+                return NotFound();
 
-                return View(model);
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+            model.Categories = dropDowns.Categories;
+            model.Locations = dropDowns.Locations;
+
+            return View(model);
         }
 
 
@@ -168,7 +169,7 @@ namespace EventHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                 var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
+                var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
 
                 model.Categories = dropDown.Categories;
                 model.Locations = dropDown.Locations;
@@ -213,7 +214,7 @@ namespace EventHub.Web.Controllers
             {
                 return await HandleException(model, imageException);
             }
-             catch (InvalidCategoryException categoryException)
+            catch (InvalidCategoryException categoryException)
             {
                 return await HandleException(model, categoryException);
             }
@@ -231,16 +232,32 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid eventId)
         {
-            try
+            await _eventService.DeleteAsync(eventId);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid eventId)
+        {
+
+            var eventDto = await _eventService.GetByIdAsync(eventId);
+
+            var model = new DetailedEventViewModel
             {
-                await _eventService.DeleteAsync(eventId);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidEventException ex)
-            {
-                ModelState.AddModelError("","Invalid event to delete");
-                return View(nameof(Index));
-            }
+                Id = eventDto.Id,
+                Title = eventDto.Title,
+                Description = eventDto.Description,
+                StartDate = eventDto.StartDate,
+                EndDate = eventDto.EndDate,
+                Category = eventDto.Category,
+                CityName = eventDto.City,
+                ImagePath = eventDto.ImagePath,
+                ParticipantsCount = eventDto.ParticipantList.Count(),
+                MaxParticipants = eventDto.MaxParticipants,
+                Participants = eventDto.ParticipantList
+            };  
+
+            return View(model);
         }
 
 
@@ -262,7 +279,7 @@ namespace EventHub.Web.Controllers
                 model.EndDate == null &&
                 model.StartDate == null &&
                 string.IsNullOrWhiteSpace(model.Description) &&
-                model.CategoryId == default && 
+                model.CategoryId == default &&
                 model.LocationId == default &&
                 model.MaxParticipants == default &&
                 string.IsNullOrWhiteSpace(model.Address) &&
@@ -279,8 +296,8 @@ namespace EventHub.Web.Controllers
             var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
             var model = new CreateEventViewModel
             {
-                 Categories = dropDowns.Categories,
-                 Locations = dropDowns.Locations
+                Categories = dropDowns.Categories,
+                Locations = dropDowns.Locations
             };
             return model;
         }
@@ -293,7 +310,7 @@ namespace EventHub.Web.Controllers
 
             var model = new EditEventViewModel
             {
-                 Id = eventData.Id,
+                Id = eventData.Id,
                 Title = eventData.Title,
                 Address = eventData.Address,
                 Description = eventData.Description,
