@@ -7,6 +7,7 @@ namespace EventHub.Core.DTOs
         public Guid Id { get; set; }
         public string Title { get; set; } = null!;
         public string Category { get; set; } = null!;
+        public Guid CategoryId { get; set; }
         public int MaxParticipants { get; set; }
         public string ImagePath { get; set; }
         public string Description { get; set; } = null!;
@@ -14,6 +15,7 @@ namespace EventHub.Core.DTOs
         public DateTime EndDate { get; set; }
         public string OrganizerName { get; set; } = null!;
         public string City { get; set; } = null!;
+        public Guid LocationId { get; set; }
         public string Address { get; set; } = null!;        
         public List<ParticipantDto>  ParticipantList { get; set; } = new List<ParticipantDto>();
     }

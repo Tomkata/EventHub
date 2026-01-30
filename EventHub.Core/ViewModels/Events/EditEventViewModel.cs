@@ -1,4 +1,6 @@
-﻿using EventHub.Core.EventValidation;
+﻿using EventHub.Core.Common.Validation;
+using EventHub.Core.Common.Validation.Messages;
+using EventHub.Core.EventValidation;
 using EventHub.Core.ViewModels.Common;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -12,16 +14,23 @@ namespace EventHub.Core.ViewModels.Events
     {
         public Guid Id { get; set; }
 
-        [Required]
-        public string Title { get; set; }
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        [StringLength(
+       DataValidations.Event.TitleMaxLength,
+       MinimumLength = DataValidations.Event.TitleMinLength,
+            ErrorMessage = EventMessages.TitleLength)]
+        public string Title { get; set; } = null!;
 
-        public string Description { get; set; }
-        [Required(ErrorMessage = "Start date is required")]
-        [FutureDate(ErrorMessage = "Start date must be in the future")]
+        [StringLength(
+       DataValidations.Event.DescriptionMaxLength,
+       MinimumLength = DataValidations.Event.DescriptionMinLength,
+            ErrorMessage = EventMessages.DescriptionLength)]
+        public string Description { get; set; } = null!;
+        [FutureDate(ErrorMessage = EventMessages.InvalidStartDate)]
         public DateTime? StartDate { get; set; }
 
         [Required(ErrorMessage = "End date is required")]
-        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be after start date")]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage =  EventMessages.InvalidEndDate)]
         public DateTime? EndDate { get; set; }
 
         [Required]
@@ -30,9 +39,15 @@ namespace EventHub.Core.ViewModels.Events
         public Guid LocationId { get; set; }
 
         [Required]
+        [Range(
+        DataValidations.Event.MaxParticipantsMin,
+        DataValidations.Event.MaxParticipantsMax,
+        ErrorMessage = EventMessages.InvalidParticipants)]
         public int MaxParticipants { get; set; }
         [Required]
-        public string Address { get; set; }
+        [StringLength(DataValidations.Event.AddressMaxLength,
+            MinimumLength = DataValidations.Event.AddressMinLength)]
+        public string Address { get; set; } = null!;
 
         public string? ExistingImagePath { get; set; }
         public IFormFile? NewImage { get; set; }

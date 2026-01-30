@@ -1,84 +1,120 @@
 ﻿@using EventHub.Core.ViewModels.Events;
+@model CreateEventViewModel
 
-@model CreateEventViewModel;
+<p class="h2">Create Event</p>
 
-
-<p class="h2">Create event</p>
-
-<div class="create-page conteiner w-60 d-flex flex-column">
-    <form 
-          asp-action="Create"
-          method="post" class="d-flex flex-column justify-content-center w-60 g-4"
+<div class="create-page container w-60 d-flex flex-column">
+    <form asp-action="Create"
+          method="post"
+          class="d-flex flex-column justify-content-center w-60 g-4"
           enctype="multipart/form-data">
 
-
-          <div asp-validation-summary="ModelOnly"
-                class="text-danger">
-          </div>
-
-
-        <label for="Title">Title</label>
-        <input asp-for="Title" type="text" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1" />
-        <span asp-validation-for="Title" class="text-danger field-validation-error"></span>
-
-        <label for="Image">Image</label>
-        <input asp-for="Image" type="file" class="form-control" aria-label="Image" aria-describedby="basic-addon1" />
-        <span asp-validation-for="Image" class="text-danger field-validation-error"></span>
-
-
-        <div class="m-2">
-            <span><input type="date"  asp-for="StartDate" /></span>
-            <span asp-validation-for="StartDate" class="text-danger field-validation-error"></span>
-
-            <span><input type="date" asp-for="EndDate" /></span>
-            <span asp-validation-for="EndDate" class="text-danger field-validation-error"></span>
-
-        </div>
-        <select class="custom-select custom-select-sm p-2" asp-for="CategoryId">
-            <option selected>Select Category</option>
-            @foreach (var category in Model.Categories)
-            {   
-                <option value="@category.Id">@category.Name</option>
-            }
-        </select>
-
-        <select class="custom-select custom-select-sm p-2" asp-for="LocationId">
-            <option selected>Select Location</option>
-            @foreach (var location in Model.Locations)
-            {
-                <option value="@location.Id">@location.Name</option>
-            }
-        </select>
-
-        <label for="Address">Address</label>
-        <input asp-for="Address" type="text" class="form-control" placeholder="Address" aria-label="Description" aria-describedby="basic-addon1" />
-        <span asp-validation-for="Address" class="text-danger field-validation-error"></span>
-
-
-        <label for="MaxParticipants">MaxParticipants</label>
-        <input asp-for="MaxParticipants" type="number" class="form-control" placeholder="MaxParticipants" aria-label="MaxParticipants" aria-describedby="basic-addon1" />
-        <span asp-validation-for="MaxParticipants" class="text-danger field-validation-error"></span>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-group">
-            <label for="">Description</label>
-            <textarea asp-for="Description" class="form-control" id="" rows="3"></textarea>
-            <span asp-validation-for="Description" class="text-danger field-validation-error"></span>
-
+            <label asp-for="Title">Title</label>
+            <input asp-for="Title" type="text" class="form-control" placeholder="Enter event title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
-        <div class="m-auto p-2 mt-2">
-            <span>
-                <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Cancel</a>
-            </span>
-            <span>
-                <button asp-controller="Events" type="submit" class="btn btn-primary">Submit </button>
-            </span>
+
+        <div class="form-group">
+            <label asp-for="Image">Event Image</label>
+            <input asp-for="Image" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="StartDate">Start Date & Time</label>
+                    <input asp-for="StartDate"
+                           type="datetime-local"
+                           class="form-control"
+                           id="startDate" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="EndDate">End Date & Time</label>
+                    <input asp-for="EndDate"
+                           type="datetime-local"
+                           class="form-control"
+                           id="endDate" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CategoryId">Category</label>
+            <select asp-for="CategoryId" class="form-control">
+                <option value="">-- Select Category --</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LocationId">Location</label>
+            <select asp-for="LocationId" class="form-control">
+                <option value="">-- Select Location --</option>
+                @foreach (var location in Model.Locations)
+                {
+                    <option value="@location.Id">@location.Name</option>
+                }
+            </select>
+            <span asp-validation-for="LocationId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Address">Address</label>
+            <input asp-for="Address" type="text" class="form-control" placeholder="Enter event address" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MaxParticipants">Maximum Participants</label>
+            <input asp-for="MaxParticipants" type="number" class="form-control" min="1" placeholder="Enter max participants" />
+            <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter event description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-center gap-2 mt-3">
+            <a asp-controller="Events" asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create Event</button>
         </div>
     </form>
-
-
-
 </div>
 
 @section Scripts {
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            var now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            var minDateTime = now.toISOString().slice(0, 16);
+
+            $('#startDate').attr('min', minDateTime);
+            $('#endDate').attr('min', minDateTime);
+
+            $('#startDate').on('change', function() {
+                var startDate = $(this).val();
+                $('#endDate').attr('min', startDate);
+
+                if ($('#endDate').val() && $('#endDate').val() < startDate) {
+                    $('#endDate').val('');
+                }
+            });
+        });
+    </script>
 }

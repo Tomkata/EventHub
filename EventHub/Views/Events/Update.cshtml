@@ -47,7 +47,6 @@
 
         </div>
         <select class="custom-select custom-select-sm p-2" asp-for="CategoryId">
-            <option selected>Select Category</option>
             @foreach (var category in Model.Categories)
             {
                 <option value="@category.Id">@category.Name</option>
@@ -55,7 +54,6 @@
         </select>
 
         <select class="custom-select custom-select-sm p-2" asp-for="LocationId">
-            <option selected>Select Location</option>
             @foreach (var location in Model.Locations)
             {
                 <option value="@location.Id">@location.Name</option>

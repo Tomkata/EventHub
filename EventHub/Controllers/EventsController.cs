@@ -45,8 +45,6 @@ namespace EventHub.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //Not necessary for authentication(Every user can see)
-
             var allEvents = await _eventService.GetEventsAsync();
 
             var eventList =
@@ -63,10 +61,8 @@ namespace EventHub.Web.Controllers
                      EndDate = x.EndDate,
                      MaxParticipants = x.MaxParticipants,
                      ParticipantsCount = x.ParticipantsCount
-                 }
-            )
+                 })
                 .ToList();
-
 
             return View(eventList);
         }
@@ -82,6 +78,7 @@ namespace EventHub.Web.Controllers
 
 
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
         {
@@ -95,13 +92,14 @@ namespace EventHub.Web.Controllers
                     model = await PrepareCreateViewModel();
                     return View(model);
                 }
+            
 
                 if (!ModelState.IsValid)
                 {
                     model = await PrepareCreateViewModel();
                     return View(model);
                 }
-
+                    
                 var imageUrl = await _imageService.StoreImageAsync(model.Image);
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -113,15 +111,14 @@ namespace EventHub.Web.Controllers
                 }
 
 
-
                 var eventDate = new CreateEventDto
                 {
                     Title = model.Title,
                     Description = model.Description,
                     MaxParticipants = model.MaxParticipants,
                     Address = model.Address,
-                    StartDate = (DateTime)model.StartDate,
-                    EndDate = (DateTime)model.EndDate,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
                     ImagePath = imageUrl,
                     CategoryId = model.CategoryId,
                     LocationId = model.LocationId,
@@ -175,7 +172,6 @@ namespace EventHub.Web.Controllers
                 model.Locations = dropDown.Locations;
 
                 ModelState.AddModelError("", "Please fill in the form.");
-
                 return View(model);
             }
             try
@@ -276,8 +272,6 @@ namespace EventHub.Web.Controllers
         private bool IsEmptyForm(CreateEventViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Title) &&
-                model.EndDate == null &&
-                model.StartDate == null &&
                 string.IsNullOrWhiteSpace(model.Description) &&
                 model.CategoryId == default &&
                 model.LocationId == default &&
@@ -287,7 +281,6 @@ namespace EventHub.Web.Controllers
             {
                 return true;
             }
-
             return false;
         }
 
@@ -307,7 +300,6 @@ namespace EventHub.Web.Controllers
             var eventData = await _eventService.GetByIdAsync(Id);
 
 
-
             var model = new EditEventViewModel
             {
                 Id = eventData.Id,
@@ -317,7 +309,9 @@ namespace EventHub.Web.Controllers
                 StartDate = eventData.StartDate,
                 EndDate = eventData.EndDate,
                 MaxParticipants = eventData.MaxParticipants,
-                ExistingImagePath = eventData.ImagePath
+                ExistingImagePath = eventData.ImagePath,
+                CategoryId = eventData.CategoryId,
+                LocationId = eventData.LocationId
             };
             return model;
         }

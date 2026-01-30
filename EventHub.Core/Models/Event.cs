@@ -2,9 +2,10 @@
 
 namespace EventHub.Core.Models
 {
+    using EventHub.Core.Common;
+    using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using Microsoft.EntityFrameworkCore;
 
     public class Event 
     {
@@ -24,7 +25,7 @@ namespace EventHub.Core.Models
 
 
         [Comment("The Title of the Event")]
-        [StringLength(300)]
+        [StringLength(DataValidations.Event.TitleMaxLength)]
         [Required]
         public string Title { get; set; } = null!;
             
@@ -72,7 +73,7 @@ namespace EventHub.Core.Models
 
         [Comment("The Address of the Event")]
         [Required]
-        [StringLength(200)]
+        [StringLength(DataValidations.Event.AddressMaxLength)]
         public string Address { get; set; }
 
 

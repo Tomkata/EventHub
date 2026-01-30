@@ -79,14 +79,30 @@
                 }
             </div>
 
-            <!-- Action Buttons -->
             <div class="d-flex gap-2 justify-content-center">
-                <a href="@Url.Action("Index", "Events")" class="btn btn-secondary">Back to Events</a>
+                <a href="@Url.Action("Index", "Events")" class="btn btn-secondary mb-3">Back to Events</a>
 
                 @if (User.IsInRole("Admin"))
                 {
-                    <a href="@Url.Action("Edit", "Events", new { id = Model.Id })" class="btn btn-primary">Edit</a>
-                    <a href="@Url.Action("Delete", "Events", new { id = Model.Id })" class="btn btn-danger">Delete</a>
+                    <a asp-controller="Events" asp-action="Update"
+                       asp-route-eventId="@Model.Id"
+                       class="btn btn-primary mb-3">Edit</a>
+                }
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <form asp-controller="Events"
+                          asp-action="Delete"
+                          method="post"
+                          class="d-inline">
+
+                        <input type="hidden" name="eventId" value="@Model.Id" />
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit" class="btn btn-danger w-100 mb-2">
+                            Delete
+                        </button>
+                    </form>
                 }
             </div>
         </div>

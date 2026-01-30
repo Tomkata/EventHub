@@ -12,10 +12,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Services.Interfaces;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Identity.Client;
 
     public class EventService : IEventService
     {
@@ -23,14 +20,12 @@ namespace EventHub.Services.Services
 
         public EventService(ApplicationDbContext dbContext)
         {
-            this._dbContext = dbContext;    
+            this._dbContext = dbContext;
         }
 
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
-
-
 
             var eventEntity = await _dbContext.Events
                             .AsNoTracking()
@@ -46,6 +41,8 @@ namespace EventHub.Services.Services
                                 x.EndDate,
                                 x.Address,
                                 City = x.Location.City,
+                                CityId = x.LocationId,
+                                CategoryId = x.CategoryId,
                                 x.OrganizerId
                             })
                             .FirstOrDefaultAsync(x => x.Id == id);
@@ -79,23 +76,25 @@ namespace EventHub.Services.Services
                 })
                 .FirstOrDefaultAsync(x => x.Id == eventEntity.OrganizerId);
 
-            if(organizer == null) throw new InvalidOrganizerException();
+            if (organizer == null) throw new InvalidOrganizerException();
 
             var dto = new DetailedEventDto
             {
-                  
-                 Id = eventEntity.Id,
-                 Title = eventEntity.Title,
-                 Category = eventEntity.Category,
-                 MaxParticipants = eventEntity.MaxParticipants,
-                 Description = eventEntity.Description,
-                 StartDate = eventEntity.StartDate,
-                 EndDate = eventEntity.EndDate,     
-                 OrganizerName = organizer.UserName,
-                 City = eventEntity.City,
-                 Address = eventEntity.Address,
-                 ImagePath = eventEntity.ImagePath,
-                 ParticipantList = participants
+
+                Id = eventEntity.Id,
+                Title = eventEntity.Title,
+                Category = eventEntity.Category,
+                MaxParticipants = eventEntity.MaxParticipants,
+                Description = eventEntity.Description,
+                StartDate = eventEntity.StartDate,
+                EndDate = eventEntity.EndDate,
+                OrganizerName = organizer.UserName,
+                City = eventEntity.City,
+                Address = eventEntity.Address,
+                ImagePath = eventEntity.ImagePath,
+                ParticipantList = participants,
+                CategoryId = eventEntity.CategoryId,
+                LocationId = eventEntity.CityId
             };
 
             return dto;
@@ -106,10 +105,8 @@ namespace EventHub.Services.Services
         {
             if (!await IsCategoryIdExistAsync(dto.CategoryId))
                 throw new InvalidCategoryException();
-
             if (!await IsLocationIdExistAsync(dto.LocationId))
                 throw new InvalidLocationException();
-
 
             if (!await IsOrganizerExistAsync(dto.OrganizerId))
                 throw new InvalidOrganizerException();
@@ -125,7 +122,7 @@ namespace EventHub.Services.Services
                 Description = dto.Description,
                 CategoryId = dto.CategoryId,
                 LocationId = dto.LocationId,
-                OrganizerId = dto.OrganizerId
+                OrganizerId = dto.OrganizerId,
             };
 
             await _dbContext.Events.AddAsync(eventEntity);
@@ -138,7 +135,7 @@ namespace EventHub.Services.Services
         }
 
         public async Task UpdateAsync(Guid id, EditEventDto dto)
-        {   
+        {
             var eventEntity = await GetEventEntityOrThrowAsync(id);
 
 
@@ -161,9 +158,7 @@ namespace EventHub.Services.Services
 
 
             if (dto.ImagePath != null)
-            {
                 eventEntity.ImagePath = dto.ImagePath;
-            }
 
             await _dbContext.SaveChangesAsync();
         }
@@ -172,17 +167,17 @@ namespace EventHub.Services.Services
         {
             var eventEntity = await GetEventEntityOrThrowAsync(id);
 
-             _dbContext.Events.Remove(eventEntity);
+            _dbContext.Events.Remove(eventEntity);
             await _dbContext.SaveChangesAsync();
         }
 
 
-        
+
         private async Task<Event> GetEventEntityOrThrowAsync(Guid id)
         {
             var eventEntity = await _dbContext.Events
-                .Include(x=>x.Location)
-                .Include(x=>x.Category)
+                .Include(x => x.Location)
+                .Include(x => x.Category)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -198,7 +193,7 @@ namespace EventHub.Services.Services
                 .AsNoTracking()
                 .Select(x => new EventDto
                 {
-                     Id = x.Id,
+                    Id = x.Id,
                     Title = x.Title,
                     Category = x.Category.Name,
                     CategoryId = x.CategoryId,
@@ -210,8 +205,9 @@ namespace EventHub.Services.Services
                     City = x.Location.City,
                     ParticipantsCount = x.EventParticipants.Count()
                 })
-                .OrderBy(x=>x.Title)
-                .ThenByDescending(x=>x.ParticipantsCount)
+                .OrderBy(x => x.Title)
+                .ThenByDescending(x=>x.StartDate)
+                .ThenByDescending(x => x.ParticipantsCount)
                 .ToListAsync();
 
             return events;
@@ -229,4 +225,4 @@ namespace EventHub.Services.Services
                 .AnyAsync(x => x.Id == Id);
         }
     }
-   }
+}

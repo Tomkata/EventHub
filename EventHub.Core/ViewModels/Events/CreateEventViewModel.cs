@@ -1,4 +1,6 @@
-﻿using EventHub.Core.EventValidation;
+﻿using EventHub.Core.Common.Validation;
+using EventHub.Core.Common.Validation.Messages;
+using EventHub.Core.EventValidation;
 using EventHub.Core.ViewModels.Common;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
@@ -7,30 +9,49 @@ namespace EventHub.Core.ViewModels.Events
 {
     public class CreateEventViewModel : IEventFormViewModel
     {
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        [StringLength(
+       DataValidations.Event.TitleMaxLength,
+       MinimumLength = DataValidations.Event.TitleMinLength)]
+        public string Title { get; set; } = null!;
+
         [Required]
-        [StringLength(100,MinimumLength =3)]
-        public string Title { get; set; }
-        [Required]
-        [Range(1,1000)]
-        public int MaxParticipants { get; set; }    
-        [Required]
-        [StringLength(600, MinimumLength = 5)]
-        public string Description { get; set; }
-        [Required]
-        public string Address { get; set; }
-        [Required(ErrorMessage = "Start date is required")]
-        [FutureDate(ErrorMessage = "Start date must be in the future")]
-        public DateTime? StartDate { get; set; }
-        [Required(ErrorMessage = "End date is required")]
-        [DateGreaterThan(nameof(StartDate), ErrorMessage = "End date must be afterstart date")]
-        public DateTime? EndDate { get; set; }
-        [Required(ErrorMessage = "Category is required")]
+        [Range(
+        DataValidations.Event.MaxParticipantsMin,
+        DataValidations.Event.MaxParticipantsMax)]
+        public int MaxParticipants { get; set; }
+
+        [StringLength(
+       DataValidations.Event.DescriptionMaxLength,
+       MinimumLength = DataValidations.Event.DescriptionMinLength)]
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        public string Description { get; set; } = null!;
+
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        [StringLength(DataValidations.Event.AddressMaxLength,
+               MinimumLength = DataValidations.Event.AddressMinLength)]
+        public string Address { get; set; } = null!;
+
+
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        [FutureDate(ErrorMessage = EventMessages.InvalidStartDate)]
+        public DateTime StartDate { get; set; }
+
+
+        [Required(ErrorMessage = ValidationMessages.Required)]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = EventMessages.InvalidEndDate)]
+        public DateTime EndDate { get; set; }
+
+
+        [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid CategoryId { get; set; }
-        [Required(ErrorMessage = "Location is required")]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid LocationId { get; set; }
         public IFormFile Image { get; set; }
 
         public IEnumerable<DropdownOptionModel> Categories { get; set; }
-        public IEnumerable<DropdownOptionModel> Locations { get; set; }
+        = Enumerable.Empty<DropdownOptionModel>();
+        public IEnumerable<DropdownOptionModel> Locations { get; set; } 
+        = Enumerable.Empty<DropdownOptionModel>();
     }
 }
