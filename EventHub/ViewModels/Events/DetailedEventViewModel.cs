@@ -1,6 +1,6 @@
 ﻿using EventHub.Core.DTOs;
 
-namespace EventHub.Core.ViewModels.Events
+namespace EventHub.Web.ViewModels.Events
 {
     public class DetailedEventViewModel
     {

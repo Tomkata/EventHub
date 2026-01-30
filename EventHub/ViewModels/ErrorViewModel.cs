@@ -1,4 +1,4 @@
-namespace EventHub.Core.ViewModels
+namespace EventHub.Web.ViewModels
 {
     public class ErrorViewModel
     {

@@ -1,11 +1,10 @@
-﻿using EventHub.Core.Common.Validation;
+﻿using EventHub.Core.Common;
+using EventHub.Core.Common.Validation;
 using EventHub.Core.Common.Validation.Messages;
 using EventHub.Core.EventValidation;
-using EventHub.Core.ViewModels.Common;
-using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace EventHub.Core.ViewModels.Events
+namespace EventHub.Web.ViewModels.Events
 {
     public class CreateEventViewModel : IEventFormViewModel
     {

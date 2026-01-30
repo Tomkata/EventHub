@@ -2,7 +2,7 @@
 
 namespace EventHub.Core.Models
 {
-    using EventHub.Core.Common;
+    using EventHub.Core.Common.Validation;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;

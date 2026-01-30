@@ -1,14 +1,10 @@
-﻿using EventHub.Core.Common.Validation;
+﻿using EventHub.Core.Common;
+using EventHub.Core.Common.Validation;
 using EventHub.Core.Common.Validation.Messages;
 using EventHub.Core.EventValidation;
-using EventHub.Core.ViewModels.Common;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace EventHub.Core.ViewModels.Events
+namespace EventHub.Web.ViewModels.Events
 {
     public class EditEventViewModel : IEventFormViewModel
     {
@@ -26,25 +22,28 @@ namespace EventHub.Core.ViewModels.Events
        MinimumLength = DataValidations.Event.DescriptionMinLength,
             ErrorMessage = EventMessages.DescriptionLength)]
         public string Description { get; set; } = null!;
+
         [FutureDate(ErrorMessage = EventMessages.InvalidStartDate)]
+        [Required(ErrorMessage = ValidationMessages.Required)]
+
         public DateTime? StartDate { get; set; }
 
-        [Required(ErrorMessage = "End date is required")]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         [DateGreaterThan(nameof(StartDate), ErrorMessage =  EventMessages.InvalidEndDate)]
         public DateTime? EndDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid CategoryId { get; set; }
-        [Required]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid LocationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         [Range(
         DataValidations.Event.MaxParticipantsMin,
         DataValidations.Event.MaxParticipantsMax,
         ErrorMessage = EventMessages.InvalidParticipants)]
         public int MaxParticipants { get; set; }
-        [Required]
+        [Required(ErrorMessage = ValidationMessages.Required)]
         [StringLength(DataValidations.Event.AddressMaxLength,
             MinimumLength = DataValidations.Event.AddressMinLength)]
         public string Address { get; set; } = null!;

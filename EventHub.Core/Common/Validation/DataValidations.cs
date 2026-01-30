@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventHub.Core.Common
+namespace EventHub.Core.Common.Validation
 {
     public class DataValidations
     {

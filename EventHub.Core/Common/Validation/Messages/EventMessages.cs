@@ -13,8 +13,11 @@ namespace EventHub.Core.Common.Validation.Messages
         public const string DescriptionLength =
             "Description must be between {2} and {1} characters.";
 
-        public const string InvalidDates =
+        public const string InvalidEndDate =
             "End date must be after start date.";
+
+        public const string InvalidStartDate =
+     "Start date must be after start date.";
 
         public const string InvalidParticipants =
             "Participants must be between {1} and {2}.";

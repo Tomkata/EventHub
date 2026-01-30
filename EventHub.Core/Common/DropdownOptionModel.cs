@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventHub.Core.ViewModels.Common
+﻿namespace EventHub.Core.Common
 {
     public class DropdownOptionModel
     {

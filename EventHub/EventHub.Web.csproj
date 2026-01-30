@@ -28,6 +28,7 @@
     <ProjectReference Include="..\EventHub.Services\EventHub.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ViewModels\Users\" />
     <Folder Include="wwwroot\images\events\" />
   </ItemGroup>
 

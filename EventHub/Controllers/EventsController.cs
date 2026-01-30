@@ -1,27 +1,18 @@
-﻿
+﻿using EventHub.Core.Common;
+using EventHub.Core.DTOs;
+using EventHub.Core.DTOs.Event;
+using EventHub.Core.Exceptions.Category;
+using EventHub.Core.Exceptions.Image;
+using EventHub.Core.Exceptions.Location;
+using EventHub.Services.Interfaces;
+using EventHub.Web.ViewModels.Events;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace EventHub.Web.Controllers
 {
-    using EventHub.Core.DTOs;
-    using EventHub.Core.DTOs.Event;
-    using EventHub.Core.Exceptions.Category;
-    using EventHub.Core.Exceptions.Event;
-    using EventHub.Core.Exceptions.Image;
-    using EventHub.Core.Exceptions.Location;
-    using EventHub.Core.ViewModels.Common;
-    using EventHub.Core.ViewModels.Events;
-    using EventHub.Services.Interfaces;
-    using EventHub.Services.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Components.Web;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.ModelBinding;
-    using Microsoft.Extensions.Validation;
-    using System.Diagnostics.Contracts;
-    using System.Net.WebSockets;
-    using System.Security.Claims;
-
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;

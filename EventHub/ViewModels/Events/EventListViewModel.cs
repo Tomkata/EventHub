@@ -1,7 +1,7 @@
 ﻿using System.Reflection.PortableExecutable;
 using System.Threading.Channels;
 
-namespace EventHub.Core.ViewModels.Events
+namespace EventHub.Web.ViewModels.Events
 {
     public class EventListViewModel
     {
