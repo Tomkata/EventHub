@@ -16,7 +16,7 @@ namespace EventHub.Repositories.Repositories
            this._dbContext = dbContext;
         }
 
-        public async Task<UserBasicInfo?> GetOrganizerUserNameAsync(string organizerId)
+        public async Task<UserBasicInfo?> GetOrganizerAsync(string organizerId)
         {
             var organizer = await _dbContext.Users
                 .AsNoTracking()

@@ -236,7 +236,7 @@ namespace EventHub.Web.Controllers
                 Description = eventDto.Description,
                 StartDate = eventDto.StartDate,
                 EndDate = eventDto.EndDate,
-                Category = eventDto.Category,
+                Category = eventDto.CategoryName,
                 CityName = eventDto.City,
                 ImagePath = eventDto.ImagePath,
                 ParticipantsCount = eventDto.ParticipantList.Count(),

@@ -18,14 +18,16 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public Task AddAsync(Event entity)
+        public  async Task AddAsync(Event entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.Events.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
         }
-
-        public Task RemoveAsync(Event entity)
+            
+        public async Task RemoveAsync(Event entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Events.Remove(entity);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<Event?> GetByIdAsync(Guid id)
@@ -41,9 +43,9 @@ namespace EventHub.Repositories.Repositories
             return eventEntity;
         }
 
-        public Task UpdateAsync(Guid id, EditEventDto dto)
+        public async Task UpdateAsync(Event entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

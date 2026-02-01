@@ -11,90 +11,64 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
+    using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
+    using Microsoft.AspNetCore.DataProtection.XmlEncryption;
     using Microsoft.EntityFrameworkCore;
 
     public class EventService : IEventService
     {
-        private readonly ApplicationDbContext _dbContext;
-
-        public EventService(ApplicationDbContext dbContext)
+        private readonly IEventRepository _eventRepository;
+        private readonly IEventParticipantsRepository _participantsRepository;
+        public EventService(IEventRepository eventRepository,
+                            IEventParticipantsRepository participantsRepository)
         {
-            this._dbContext = dbContext;
+            this._eventRepository = eventRepository;
+            this._participantsRepository = participantsRepository;
         }
 
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
 
-            var eventEntity = await _dbContext.Events
-                            .AsNoTracking()
-                            .Select(x => new
-                            {   
-                                x.Id,
-                                x.ImagePath,
-                                x.Title,
-                                Category = x.Category.Name,
-                                x.MaxParticipants,
-                                x.Description,
-                                x.StartDate,
-                                x.EndDate,
-                                x.Address,
-                                City = x.Location.City,
-                                CityId = x.LocationId,
-                                CategoryId = x.CategoryId,
-                                x.OrganizerId
-                            })
-                            .FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _eventRepository.GetByIdAsync(id);
 
 
-            if (eventEntity == null)
+            if (entity == null)
                 throw new InvalidEventException();
 
-            var participants = await _dbContext.EventParticipants
-               .AsNoTracking()
-               .Where(ep => ep.EventId == id)
-               .Join(
-                   _dbContext.Users,
-                   ep => ep.UserId,
-                   u => u.Id,
-                   (ep, u) => new ParticipantDto
-                   {
-                       UserId = u.Id,
-                       UserName = u.UserName
-                   }
-               )
-               .ToListAsync();
+            var participants = await _participantsRepository.GetParticipantsAsync(entity.Id);
 
-
-            var organizer = await _dbContext.Users
-                .AsNoTracking()
-                .Select(x => new
+            var participantsDto = participants
+                .Select(x => new ParticipantDto
                 {
-                    x.Id,
-                    x.UserName
+                    UserId = x.Id,
+                    UserName = x.UserName
                 })
-                .FirstOrDefaultAsync(x => x.Id == eventEntity.OrganizerId);
+                .ToList();
+
+
+            var organizer = await _participantsRepository.GetOrganizerAsync(entity.OrganizerId);
 
             if (organizer == null) throw new InvalidOrganizerException();
 
             var dto = new DetailedEventDto
             {
 
-                Id = eventEntity.Id,
-                Title = eventEntity.Title,
-                Category = eventEntity.Category,
-                MaxParticipants = eventEntity.MaxParticipants,
-                Description = eventEntity.Description,
-                StartDate = eventEntity.StartDate,
-                EndDate = eventEntity.EndDate,
+                Id = entity.Id,
+                Title = entity.Title,
+                CategoryName = entity.Category.Name,
+                MaxParticipants = entity.MaxParticipants,
+                Description = entity.Description,
+                StartDate = entity.StartDate,
+                EndDate = entity.EndDate,
                 OrganizerName = organizer.UserName,
-                City = eventEntity.City,
-                Address = eventEntity.Address,
-                ImagePath = eventEntity.ImagePath,
-                ParticipantList = participants,
-                CategoryId = eventEntity.CategoryId,
-                LocationId = eventEntity.CityId
+                City = entity.Location.City,
+                Address = entity.Address,
+                ImagePath = entity.ImagePath,
+                ParticipantList = participantsDto,
+                CategoryId = entity.CategoryId,
+                LocationId = entity.Location.Id
             };
 
             return dto;
