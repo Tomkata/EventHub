@@ -7,10 +7,11 @@ namespace EventHub.Repositories.Interfaces
     public interface IEventRepository
     {
         public Task<Event?> GetByIdAsync(Guid id);
-
+        public Task<Event?> GetByIdReadOnlyAsync(Guid id);
+        public Таск<IEnumerable<Event>> GetAllAsync();
         public Task AddAsync(Event entity);
 
-        public Task UpdateAsync(Guid id, EditEventDto dto);
+        public Task UpdateAsync(Event entity);
 
         public Task RemoveAsync(Event entity);
     }
