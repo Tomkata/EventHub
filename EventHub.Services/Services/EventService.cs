@@ -30,7 +30,7 @@ namespace EventHub.Services.Services
             var eventEntity = await _dbContext.Events
                             .AsNoTracking()
                             .Select(x => new
-                            {
+                            {   
                                 x.Id,
                                 x.ImagePath,
                                 x.Title,
@@ -111,19 +111,19 @@ namespace EventHub.Services.Services
             if (!await IsOrganizerExistAsync(dto.OrganizerId))
                 throw new InvalidOrganizerException();
 
-            var eventEntity = new Event
-            {
-                Title = dto.Title,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                ImagePath = dto.ImagePath,
-                Address = dto.Address,
-                MaxParticipants = dto.MaxParticipants,
-                Description = dto.Description,
-                CategoryId = dto.CategoryId,
-                LocationId = dto.LocationId,
-                OrganizerId = dto.OrganizerId,
-            };
+                var eventEntity = new Event
+                {
+                    Title = dto.Title,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    ImagePath = dto.ImagePath,
+                    Address = dto.Address,
+                    MaxParticipants = dto.MaxParticipants,
+                    Description = dto.Description,
+                    CategoryId = dto.CategoryId,
+                    LocationId = dto.LocationId,
+                    OrganizerId = dto.OrganizerId,
+                };
 
             await _dbContext.Events.AddAsync(eventEntity);
             await _dbContext.SaveChangesAsync();

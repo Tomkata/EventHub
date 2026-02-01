@@ -27,6 +27,7 @@ namespace EventHub.Infrastructure.Configurations
                 .HasForeignKey(x => x.EventId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+      
            
 
         }

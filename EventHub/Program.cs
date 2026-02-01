@@ -8,7 +8,6 @@ namespace EventHub
     using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
-    using System.Runtime.ConstrainedExecution;
 
     public class Program
     {

@@ -1,7 +1,8 @@
 ﻿
 namespace EventHub.Infrastructure.Data.Identity
 {
-using Microsoft.AspNetCore.Identity;
+    using EventHub.Core.Models;
+    using Microsoft.AspNetCore.Identity;
     public class ApplicationUser : IdentityUser
     {
     }

@@ -7,9 +7,9 @@ namespace EventHub.Services.Interfaces
     public interface IEventService
     {
         Task<DetailedEventDto> GetByIdAsync(Guid id);
+            
 
-
-        Task CreateAsync(CreateEventDto dto);
+        Task CreateAsync(CreateEventDto dto);   
 
         Task UpdateAsync(Guid id,EditEventDto dto);
 
