@@ -1,4 +1,4 @@
-﻿namespace EventHub.Core.Exceptions.User
+﻿namespace EventHub.Core.Exceptions.Oranizer
 {
     public class InvalidOrganizerException : Exception
     {

@@ -16,11 +16,6 @@ namespace EventHub.Repositories.Repositories
            this._dbContext = dbContext;
         }
 
-        public Task CreateRequest(OrganizerRequest organizer)
-        {
-            return null;
-        }
-
         public async Task<UserBasicInfo?> GetOrganizerAsync(string organizerId)
         {
             var organizer = await _dbContext.Users
