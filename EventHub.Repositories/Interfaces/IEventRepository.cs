@@ -8,7 +8,7 @@ namespace EventHub.Repositories.Interfaces
     {
         public Task<Event?> GetByIdAsync(Guid id);
         public Task<Event?> GetByIdReadOnlyAsync(Guid id);
-        public Таск<IEnumerable<Event>> GetAllAsync();
+        public Task<IEnumerable<Event>> GetAllAsync();
         public Task AddAsync(Event entity);
 
         public Task UpdateAsync(Event entity);

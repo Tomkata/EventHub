@@ -22,6 +22,7 @@ namespace EventHub.Infrastructure.Data
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Location>  Locations { get; set; }
         public virtual DbSet<EventParticipant> EventParticipants { get; set; }
+        public virtual DbSet<OrganizerRequest> OrganizerRequests { get; set; }
 
 
 
@@ -35,6 +36,7 @@ namespace EventHub.Infrastructure.Data
             builder.ApplyConfiguration(new CategoryConfiguration());
             builder.ApplyConfiguration(new EventConfiguration());
             builder.ApplyConfiguration(new EventParticipantConfiguration());
+            builder.ApplyConfiguration(new OrganizerRequestConfiguration());
 
 
             base.OnModelCreating(builder);

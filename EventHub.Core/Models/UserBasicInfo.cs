@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models
 {
     public class UserBasicInfo
     {

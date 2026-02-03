@@ -17,7 +17,7 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public async Task<Location> GetByIdAsync(Guid Id) =>
+        public async Task<Location?> GetByIdAsync(Guid Id) =>
             await _dbContext.Locations
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);

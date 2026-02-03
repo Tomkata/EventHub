@@ -4,7 +4,7 @@ namespace EventHub.Services.Interfaces
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
 
-    public interface IEventService
+    public interface    IEventService
     {
         Task<DetailedEventDto> GetByIdAsync(Guid id);
             

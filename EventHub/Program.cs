@@ -4,6 +4,8 @@ namespace EventHub
 {
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
+    using EventHub.Repositories.Interfaces;
+    using EventHub.Repositories.Repositories;
     using EventHub.Services.Interfaces;
     using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
@@ -34,6 +36,10 @@ namespace EventHub
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IImageService,ImageService>();
             builder.Services.AddScoped<IEventFormOptionsService, EventFormOptionsService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+            builder.Services.AddScoped<IEventParticipantsRepository, EventParticipantsRepository>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 
 

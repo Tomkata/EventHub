@@ -3,7 +3,7 @@
 namespace EventHub.Infrastructure.Configurations
 {
     using EventHub.Core.Models;
-    using EventHub.Infrastructure.Data.Identity;
+    using EventHub.Infrastructure.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     public class EventParticipantConfiguration : IEntityTypeConfiguration<EventParticipant>

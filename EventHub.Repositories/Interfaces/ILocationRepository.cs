@@ -4,6 +4,6 @@ namespace EventHub.Repositories.Interfaces
 {
     public interface ILocationRepository
     {
-        public Task<Location?> GetByIdAsync(Guid Id);
+        public Task<Location?> GetByIdAsync(Guid id);
     }
 }
