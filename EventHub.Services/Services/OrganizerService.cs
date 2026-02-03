@@ -8,6 +8,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Core.Exceptions.Oranizer.ForApprove;
     using EventHub.Core.Exceptions.Oranizer.ForDemote;
+    using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
     using EventHub.Repositories.Interfaces;
@@ -33,18 +34,14 @@ namespace EventHub.Services.Services
             {
 
                 if (existingRequest.Status == Status.Approved)
-                {
                     throw new UserAlreadyOrganizerException();
-                }
+
                 else if (existingRequest.Status == Status.Pending)
-                {
                     throw new OrganizerRequestPendingException();
-                }
+
                 else if (existingRequest.LastRejectedAt.HasValue &&
     (DateTime.UtcNow - existingRequest.LastRejectedAt.Value).TotalDays < OrganizerValidation.OrganizerCooldownDays)
-                {
                     throw new OrganizerCooldownNotExpiredException();
-                }
             }
 
             var requester = new OrganizerRequest
@@ -101,6 +98,27 @@ namespace EventHub.Services.Services
 
             existingRequest.Status = Status.Rejected;
             existingRequest.LastRejectedAt = DateTime.UtcNow;
+            await _requestRepository.SaveChangesAsync();
+        }
+
+        public async Task RejectUserToOrganizer(string userId)
+        {
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+
+            if (existingRequest == null)
+                throw new InvalidApproveUser();
+
+            if (existingRequest.Status == Status.Approved)
+                throw new RejectApprovedRequest();
+
+            if(existingRequest.Status == Status.Rejected)
+                throw new InvalidRejectException();
+
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
+
+
+            existingRequest.Status = Status.Rejected;
+
             await _requestRepository.SaveChangesAsync();
         }
     }
