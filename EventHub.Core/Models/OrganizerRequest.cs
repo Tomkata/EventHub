@@ -6,6 +6,7 @@ using EventHub.Core.Enums.Organizer;
 using System.ComponentModel.DataAnnotations;
     using Common.Validation.Messages;
     using Microsoft.EntityFrameworkCore;
+    using System.Runtime.CompilerServices;
 
     public class OrganizerRequest
     {
@@ -24,5 +25,7 @@ using System.ComponentModel.DataAnnotations;
         [Required]
         public string Email { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public DateTime? LastRejectedAt { get; set; }
+
     }
 }

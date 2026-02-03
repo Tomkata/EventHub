@@ -6,7 +6,6 @@ namespace EventHub.Repositories.Repositories
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
 
     public class OrganizerRequestRepository : IOrganizerRequestRepository
