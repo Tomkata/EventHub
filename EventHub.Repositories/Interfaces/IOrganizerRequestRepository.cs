@@ -7,7 +7,7 @@ namespace EventHub.Repositories.Interfaces
     {
         Task AddAsync(OrganizerRequest organizer);
 
-        Task<OrganizerRequest?> GetByUserIdAsync(string id);
+        Task<OrganizerRequest?> GetByUserIdAsync(string userId);
         Task SaveChangesAsync();
 
         Task<IEnumerable<OrganizerRequest>> GetPendingRequestsAsync();

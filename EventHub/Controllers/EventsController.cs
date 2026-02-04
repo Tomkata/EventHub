@@ -16,20 +16,14 @@ namespace EventHub.Web.Controllers
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
-        private readonly ICategoryService _categoryService;
-        private readonly ILocationService _locationService;
         private readonly IImageService _imageService;
         private readonly IEventFormOptionsService _eventFormOptionsService;
 
         public EventsController(IEventService eventService,
-                                ICategoryService categoryService,
-                                ILocationService locationService,
                                 IImageService imageService,
                                 IEventFormOptionsService eventFormOptionsService)
         {
             this._eventService = eventService;
-            this._categoryService = categoryService;
-            this._locationService = locationService;
             this._imageService = imageService;
             this._eventFormOptionsService = eventFormOptionsService;
         }
@@ -75,7 +69,6 @@ namespace EventHub.Web.Controllers
         {
             try
             {
-
                 if ((!ModelState.IsValid) && IsEmptyForm(model))
                 {
                     ModelState.Clear();

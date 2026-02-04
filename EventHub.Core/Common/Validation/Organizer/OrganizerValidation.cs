@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+
+using System.Runtime;
 
 namespace EventHub.Core.Common.Validation.Organizer
 {
-    internal class OrganizerValidation
+    public static class OrganizerValidation
     {
+        public const int OrganizerCooldownDays = 7;
     }
 }

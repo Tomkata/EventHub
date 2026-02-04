@@ -40,6 +40,8 @@ namespace EventHub
             builder.Services.AddScoped<ILocationRepository, LocationRepository>();
             builder.Services.AddScoped<IEventParticipantsRepository, EventParticipantsRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<IOrganizerRequestRepository, OrganizerRequestRepository>();
+            builder.Services.AddScoped<IOrganizerService, OrganizerService>();
 
 
 
@@ -74,6 +76,8 @@ namespace EventHub
                     await userManager.AddToRoleAsync(adminUser,"Admin");
                 }
             }
+
+        
 
 
             using (var scope = app.Services.CreateScope())

@@ -3,7 +3,7 @@
     public class OrganizerCooldownNotExpiredException : Exception
     {
         public OrganizerCooldownNotExpiredException()
-            :base("Organizer cooldown is not expired")
+            :base("Organizer cooldown is not expired!")
         {
         }
     }

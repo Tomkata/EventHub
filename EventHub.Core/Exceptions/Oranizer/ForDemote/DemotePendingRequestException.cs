@@ -5,7 +5,6 @@
         public DemotePendingRequestException()
             :base("Cannot demote user with pending request")
         {
-            
         }
     }
 }

@@ -26,7 +26,7 @@ namespace EventHub.Services.Services
             this._userManager = userManager;
         }
 
-        public async Task ApplyForOrganizer(OrganizerRequestFormDto formDto, string userId)
+        public async Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
@@ -48,14 +48,15 @@ namespace EventHub.Services.Services
             {
                 UserId = userId,
                 Email = formDto.Email,
-                Note = formDto.Note
+                Note = formDto.Note,
+                Status = Status.Pending
             };
 
             await _requestRepository.AddAsync(requester);
             await _requestRepository.SaveChangesAsync();
         }
 
-        public async Task ApproveUserToOrganizer(string userId)
+        public async Task ApproveUserToOrganizerAsync(string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
@@ -79,12 +80,12 @@ namespace EventHub.Services.Services
             await _requestRepository.SaveChangesAsync();
 
         }
-        public async Task DemoteOrganizerToUser(string userId)
+        public async Task DemoteOrganizerToUserAsync(string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
             if (existingRequest == null)
-                throw new InvalidApproveUser();
+                throw new InvalidDemoteUser();
 
             if (existingRequest.Status == Status.Pending)
                 throw new DemotePendingRequestException();
@@ -101,7 +102,7 @@ namespace EventHub.Services.Services
             await _requestRepository.SaveChangesAsync();
         }
 
-        public async Task RejectUserToOrganizer(string userId)
+        public async Task RejectUserToOrganizerAsync(string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
@@ -114,10 +115,11 @@ namespace EventHub.Services.Services
             if(existingRequest.Status == Status.Rejected)
                 throw new InvalidRejectException();
 
-            var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
+            else
+                existingRequest.Status = Status.Rejected;
 
+            existingRequest.LastRejectedAt = DateTime.UtcNow;
 
-            existingRequest.Status = Status.Rejected;
 
             await _requestRepository.SaveChangesAsync();
         }

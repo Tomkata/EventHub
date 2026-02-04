@@ -20,9 +20,9 @@ namespace EventHub.Repositories.Repositories
         public async Task AddAsync(OrganizerRequest organizer)
             => await _dbContext.OrganizerRequests.AddAsync(organizer);
 
-        public async Task<OrganizerRequest?> GetByUserIdAsync(string id)=>
+        public async Task<OrganizerRequest?> GetByUserIdAsync(string userId)=>
             await _dbContext.OrganizerRequests
-                .FirstOrDefaultAsync(x => x.UserId == id);
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
 
         public async Task<IEnumerable<OrganizerRequest>> GetPendingRequestsAsync()

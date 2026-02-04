@@ -5,12 +5,12 @@ namespace EventHub.Services.Interfaces
 
     public interface IOrganizerService
     {
-        Task ApplyForOrganizer(OrganizerRequestFormDto formDto, string userId);
+        Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId);
 
-        Task ApproveUserToOrganizer(string userId);
+        Task ApproveUserToOrganizerAsync(string userId);
 
-        Task DemoteOrganizerToUser(string userId);
+        Task DemoteOrganizerToUserAsync(string userId);
 
-        Task RejectUserToOrganizer(string userId);
+        Task RejectUserToOrganizerAsync(string userId);
     }
 }

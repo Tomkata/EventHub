@@ -5,14 +5,10 @@
     using EventHub.Core.Exceptions.Category;
     using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Exceptions.Location;
-    using EventHub.Core.Exceptions.User;
+    using EventHub.Core.Exceptions.Oranizer;
     using EventHub.Core.Models;
-    using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
-    using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using Microsoft.EntityFrameworkCore;
 
     public class EventService : IEventService
     {

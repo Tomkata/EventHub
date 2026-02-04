@@ -5,7 +5,6 @@
         public DemoteRejectedException()
             :base("Cannot demote user with rejected status!")
         {
-            
         }
     }
 }
