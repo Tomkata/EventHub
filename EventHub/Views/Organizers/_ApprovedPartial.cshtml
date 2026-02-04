@@ -1,0 +1,30 @@
+﻿@model ApplyOrganizerForm
+
+
+
+<div class="alert alert-success border-0 rounded-3" role="alert">
+    <div class="text-center">
+        <div class="mb-3">
+            <span class="badge bg-success fs-6 py-2 px-3">
+                <i class="bi bi-check-circle me-2"></i>Congratulations!
+            </span>
+        </div>
+        <h5 class="alert-heading mb-3">Your Application is Approved</h5>
+        <p class="text-muted mb-0">
+            Welcome to the organizer community! You now have access to create and manage events.
+            Start organizing amazing experiences for your community.
+        </p>
+        <hr class="my-3">
+        <p class="small text-muted mb-3">
+            Check your email for additional information and next steps.
+        </p>
+    </div>
+</div>
+<div class="mt-4 d-flex gap-2">
+    <a href="@Url.Action("Create", "Events")" class="btn btn-success btn-lg flex-grow-1">
+        <i class="bi bi-plus-circle me-2"></i>Create Event
+    </a>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-house me-2"></i>Home
+    </a>
+</div>

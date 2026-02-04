@@ -2,6 +2,7 @@
 namespace EventHub.Services.Interfaces
 {
     using EventHub.Core.DTOs.Organizer;
+    using EventHub.Core.Enums.Organizer;
 
     public interface IOrganizerService
     {
@@ -12,5 +13,7 @@ namespace EventHub.Services.Interfaces
         Task DemoteOrganizerToUserAsync(string userId);
 
         Task RejectUserToOrganizerAsync(string userId);
+
+        Task<Status> GetOrganizerStateAsync(string userId);
     }
 }

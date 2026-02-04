@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using EventHub.Web.ViewModels;
+using EventHub.Web.ViewModels   ;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.Controllers

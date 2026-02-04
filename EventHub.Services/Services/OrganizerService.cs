@@ -46,7 +46,7 @@ namespace EventHub.Services.Services
 
             var requester = new OrganizerRequest
             {
-                UserId = userId,
+                UserId = userId,    
                 Email = formDto.Email,
                 Note = formDto.Note,
                 Status = Status.Pending
@@ -100,6 +100,16 @@ namespace EventHub.Services.Services
             existingRequest.Status = Status.Rejected;
             existingRequest.LastRejectedAt = DateTime.UtcNow;
             await _requestRepository.SaveChangesAsync();
+        }
+
+        public async Task<Status> GetOrganizerStateAsync(string userId)
+        {
+            var user = await _requestRepository.GetByUserIdAsync(userId);
+
+            if (user == null)
+                return Status.None;
+
+            return user.Status;
         }
 
         public async Task RejectUserToOrganizerAsync(string userId)

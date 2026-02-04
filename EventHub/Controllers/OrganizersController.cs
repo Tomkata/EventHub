@@ -1,13 +1,17 @@
-﻿using EventHub.Core.DTOs.Organizer;
-using EventHub.Core.Exceptions.Oranizer.ForApply;
-using EventHub.Services.Interfaces;
-using EventHub.Web.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+﻿
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Core.DTOs.Organizer;
+    using EventHub.Core.Enums.Organizer;
+    using EventHub.Core.Exceptions.Oranizer.ForApply;
+    using EventHub.Services.Interfaces;
+    using EventHub.Web.ViewModels;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Net;
+    using System.Security.Claims;
+
     public class OrganizersController : Controller
     {
 
@@ -19,9 +23,14 @@ namespace EventHub.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ApplyOrganizerFrom()
+        [Authorize]
+        public async Task<IActionResult> Apply()
         {
-            var model = new OrganizerApplyFormViewModel();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var organizerState = await _organizerService.GetOrganizerStateAsync(userId);
+            var model = new ApplyOrganizerForm();
+            model.OrganizerState = organizerState;
 
             return View(model);
         }
@@ -29,8 +38,8 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> ApplyOrganizerFrom(OrganizerApplyFormViewModel model)
-        {
+        public async Task<IActionResult> Apply(ApplyOrganizerForm model)
+        {   
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("","The form is invalid!");

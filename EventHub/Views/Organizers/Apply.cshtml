@@ -1,0 +1,43 @@
+@using EventHub.Web.ViewModels;
+@using EventHub.Core.Enums.Organizer;
+@model ApplyOrganizerForm
+
+@{
+    ViewData["Title"] = "Apply as Organizer";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-4">Apply as Organizer</h2>
+                    @switch (Model.OrganizerState)
+                    {
+                        case Status.None:
+                            <partial name="_ApplyFormPartial" />
+                            break;
+
+                        case Status.Pending:
+                            <partial name="_PendingPartial" />
+                            break;
+
+                        case Status.Rejected:
+                            <partial name="_RejectedPartial" />
+                            break;
+
+                        case Status.Approved:
+                            <partial name="_ApprovedPartial" />
+                            break;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
