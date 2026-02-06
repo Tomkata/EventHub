@@ -3,13 +3,11 @@
 namespace EventHub.Web.Controllers
 {
     using EventHub.Core.DTOs.Organizer;
-    using EventHub.Core.Enums.Organizer;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Services.Interfaces;
-    using EventHub.Web.ViewModels;
+    using EventHub.Web.ViewModels.Organizers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Net;
     using System.Security.Claims;
 
     public class OrganizersController : Controller

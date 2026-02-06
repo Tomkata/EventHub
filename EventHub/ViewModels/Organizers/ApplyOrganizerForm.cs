@@ -1,6 +1,4 @@
-﻿
-
-namespace EventHub.Web.ViewModels
+﻿namespace EventHub.Web.ViewModels.Organizers
 {
     using System.ComponentModel.DataAnnotations;
     using EventHub.Core.Common.Validation.Messages;

@@ -15,5 +15,7 @@ namespace EventHub.Services.Interfaces
         Task RejectUserToOrganizerAsync(string userId);
 
         Task<Status> GetOrganizerStateAsync(string userId);
+
+        Task<IEnumerable<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync();
     }
 }

@@ -8,5 +8,6 @@ namespace EventHub.Core.Common.Validation.Messages
     {
         public const int MaximumNoteLength = 300;
         public const int MinimumNoteLength = 10;
+
     }
 }

@@ -102,6 +102,24 @@ namespace EventHub.Services.Services
             await _requestRepository.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync()
+        {
+            var pendingRequests = await _requestRepository.GetPendingRequestsAsync();
+
+            var pendingRequestsDtos =  pendingRequests
+                 .Select(x => new PendingRequestForOrganizerDto
+                 {
+                     Id = x.Id,
+                     Email = x.Email,
+                     Note = x.Note,
+                     UserId = x.UserId,
+                     CreatedAt = x.CreatedAt
+                 })
+                 .ToList();
+
+            return pendingRequestsDtos;
+        }
+
         public async Task<Status> GetOrganizerStateAsync(string userId)
         {
             var user = await _requestRepository.GetByUserIdAsync(userId);
@@ -117,7 +135,7 @@ namespace EventHub.Services.Services
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
             if (existingRequest == null)
-                throw new InvalidApproveUser();
+                throw new InvalidUserToReject();
 
             if (existingRequest.Status == Status.Approved)
                 throw new RejectApprovedRequest();

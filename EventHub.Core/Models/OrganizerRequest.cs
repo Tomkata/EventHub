@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
     using Microsoft.EntityFrameworkCore;
     using System.Runtime.CompilerServices;
 
-    public class OrganizerRequest
+    public class    OrganizerRequest
     {
         public OrganizerRequest()
         {
@@ -19,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
         public Guid Id { get; set; }
         public string UserId { get; set; }
         public Status Status { get; set; }
+
         [StringLength(OrganizerMessages.MaximumNoteLength)]
         public string? Note { get; set; }
         [EmailAddress]
