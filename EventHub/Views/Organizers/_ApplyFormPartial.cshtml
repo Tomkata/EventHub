@@ -1,24 +1,47 @@
 ﻿@using EventHub.Web.ViewModels.Organizers
 @model ApplyOrganizerForm
 
+<div class="mb-3">
+    <p class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Fill out the form below to apply to become an event organizer.
+    </p>
+</div>
+
 <form asp-action="Apply" asp-controller="Organizers" method="post">
+
+
+
     <div class="mb-3">
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <label asp-for="Email" class="form-label">Email Address <span class="text-danger">*</span></label>
-        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+        <label asp-for="Email" class="form-label">
+            Email Address <span class="text-danger">*</span>
+        </label>
+        <input asp-for="Email"
+               type="email"
+               class="form-control form-control-lg"
+               placeholder="your.email@example.com"
+               required>
         <span asp-validation-for="Email" class="text-danger small"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Note" class="form-label">Additional Notes</label>
-        <textarea asp-for="Note" class="form-control form-control-lg" rows="5" placeholder="Tell us why you want to become an organizer (optional)"></textarea>
+        <label asp-for="Note" class="form-label">
+            Why do you want to become an organizer?
+        </label>
+        <textarea asp-for="Note"
+                  class="form-control form-control-lg"
+                  rows="5"
+                  placeholder="Tell us about your experience and why you'd make a great organizer (optional)"></textarea>
         <span asp-validation-for="Note" class="text-danger small"></span>
+        <div class="form-text">This information helps us review your application.</div>
     </div>
 
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-lg flex-grow-1">Submit Application</button>
-        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary btn-lg">Cancel</a>
+        <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+            <i class="bi bi-send me-1"></i> Submit Application
+        </button>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary btn-lg">
+            Cancel
+        </a>
     </div>
 </form>

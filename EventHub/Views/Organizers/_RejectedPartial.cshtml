@@ -1,33 +1,24 @@
-﻿@model ApplyOrganizerForm
-@using EventHub.Web.ViewModels.Organizers
+﻿@using EventHub.Web.ViewModels.Organizers
+@using EventHub.Core.Common.Validation.Organizer
+@model ApplyOrganizerForm
 
-
-<div class="alert alert-danger border-0 rounded-3" role="alert">
-    <div class="text-center">
-        <div class="mb-3">
-            <span class="badge bg-danger fs-6 py-2 px-3">
-                <i class="bi bi-x-circle me-2"></i>Application Rejected
-            </span>
+<div class="alert alert-danger" role="alert">
+    <div class="d-flex align-items-center mb-3">
+        <i class="bi bi-x-circle fs-3 me-3"></i>
+        <div>
+            <h5 class="alert-heading mb-1">Application Rejected</h5>
+            <p class="mb-0">Your organizer application was not approved at this time.</p>
         </div>
-        <h5 class="alert-heading mb-3">Application Not Approved</h5>
-        <p class="text-muted mb-0">
-            Unfortunately, your application to become an organizer was not approved at this time.
-            This doesn't mean you can't apply again in the future.
-        </p>
-        <hr class="my-3">
-        <p class="small text-muted mb-3">
-            For more information or to appeal, please contact our support team.
-        </p>
     </div>
+    <hr>
+    <p class="mb-0">
+        <i class="bi bi-info-circle me-1"></i>
+        You may reapply after @OrganizerValidation.OrganizerCooldownDays days from the rejection date.
+    </p>
 </div>
 
-
-<div class="mt-4 d-flex gap-2">
-    <a asp-action="Apply" asp-controller="Organizers" class="btn btn-primary">
-        Apply Again
-    </a>
-
-    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
-        <i class="bi bi-house me-2"></i>Home
+<div class="text-center mt-4">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+        <i class="bi bi-house me-1"></i> Return to Home
     </a>
 </div>

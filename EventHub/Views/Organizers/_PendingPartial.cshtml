@@ -1,22 +1,23 @@
 ﻿@using EventHub.Web.ViewModels.Organizers
 @model ApplyOrganizerForm
 
-<div class="alert alert-info border-0 rounded-3" role="alert">
-    <div class="text-center">
-        <div class="mb-3">
-            <span class="badge bg-warning fs-6 py-2 px-3">
-                <i class="bi bi-hourglass-split me-2"></i>Application Pending
-            </span>
+<div class="alert alert-warning" role="alert">
+    <div class="d-flex align-items-center mb-3">
+        <i class="bi bi-clock-history fs-3 me-3"></i>
+        <div>
+            <h5 class="alert-heading mb-1">Application Pending</h5>
+            <p class="mb-0">Your organizer application is currently under review.</p>
         </div>
-        <h5 class="alert-heading mb-3">We're Reviewing Your Application</h5>
-        <p class="text-muted mb-0">
-            Thank you for applying! Our team is currently reviewing your application.
-            You'll receive an email notification once we've made a decision.
-        </p>
-        <hr class="my-3">
-        <p class="small text-muted mb-0">Typical review time: 3-5 business days</p>
     </div>
+    <hr>
+    <p class="mb-0">
+        <i class="bi bi-info-circle me-1"></i>
+        We'll notify you via email once a decision has been made. Thank you for your patience!
+    </p>
 </div>
-<div class="mt-4">
-    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg w-100">Back to Home</a>
+
+<div class="text-center mt-4">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+        <i class="bi bi-house me-1"></i> Return to Home
+    </a>
 </div>

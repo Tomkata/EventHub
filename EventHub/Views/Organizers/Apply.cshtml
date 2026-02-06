@@ -14,22 +14,47 @@
                 <div class="card-body p-4">
                     <h2 class="card-title mb-4">Apply as Organizer</h2>
 
+                    @* Success message *@
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @* Error messages *@
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
                     @switch (Model.OrganizerState)
                     {
                         case Status.None:
-                            <partial name="_ApplyFormPartial" />
+                            <partial name="_ApplyFormPartial" model="Model" />
                             break;
 
                         case Status.Pending:
-                            <partial name="_PendingPartial" />
+                            <partial name="_PendingPartial" model="Model" />
                             break;
 
                         case Status.Rejected:
-                            <partial name="_RejectedPartial" />
+                            <partial name="_RejectedPartial" model="Model" />
                             break;
 
                         case Status.Approved:
-                            <partial name="_ApprovedPartial" />
+                            <partial name="_ApprovedPartial" model="Model" />
                             break;
                     }
                 </div>

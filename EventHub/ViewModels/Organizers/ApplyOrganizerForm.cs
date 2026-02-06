@@ -13,9 +13,10 @@
        
         public Status OrganizerState { get; set; }
 
+        
+        public string? UserId { get; set; } = null!;
         [StringLength(OrganizerMessages.MaximumNoteLength,
            MinimumLength = OrganizerMessages.MinimumNoteLength)]
-        public string UserId { get; set; } = null!;
         public string? Note { get; set; }
     }
 }

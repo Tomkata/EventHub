@@ -2,8 +2,8 @@
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Core.Common.Validation.Organizer;
     using EventHub.Core.DTOs.Organizer;
-    using EventHub.Core.Enums.Organizer;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Organizers;
@@ -25,39 +25,34 @@ namespace EventHub.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Apply()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var organizerState = await _organizerService.GetOrganizerStateAsync(userId);
+            var organizerState = await _organizerService.GetOrganizerStateAsync(userId!);
+            var model = new ApplyOrganizerForm();
+            model.OrganizerState = organizerState;
 
-            if (organizerState == Status.Rejected &&
-                !await _organizerService.CanApplyAgainAsync(userId))
-            {
-                ModelState.AddModelError("", "You cannot apply again yet.");
-                return View("Rejected");
-            }
-
-            return View(new ApplyOrganizerForm
-            {
-                OrganizerState = organizerState,
-                UserId = userId
-            });
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Apply(ApplyOrganizerForm model)
-        {   
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("","The form is invalid!");
-                return View(model);
-            }
+        {
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId == null)
             {
-                ModelState.AddModelError(nameof(userId), "The user is not logged in.");
+                ModelState.AddModelError(string.Empty, "You must be logged in to apply.");
+                return View(model);
+            }
+
+            model.UserId = userId;
+
+            if (!ModelState.IsValid)
+            {
+                model.OrganizerState = await _organizerService.GetOrganizerStateAsync(userId);
                 return View(model);
             }
 
@@ -65,30 +60,36 @@ namespace EventHub.Web.Controllers
             {
                 var dto = new OrganizerRequestFormDto
                 {
-                     Email = model.Email,
-                     UserId = userId,
-                     Note = model.Note
+                    Email = model.Email,
+                    UserId = userId,
+                    Note = model.Note
                 };
 
-                await _organizerService.ApplyForOrganizerAsync(dto,userId);
-                return View(model); // if everything okey, its gonna be refresh and chenge with status case(i will figure it out)
-            }
-            catch (UserAlreadyOrganizerException)
-            {
-                ModelState.AddModelError("", "User is already an organizer!");
-                return View(model);
+                await _organizerService.ApplyForOrganizerAsync(dto, userId);
 
+                TempData["SuccessMessage"] = "Your organizer application has been submitted successfully!";
+                return RedirectToAction(nameof(Apply));
             }
-            catch (OrganizerRequestPendingException)
+            catch (UserAlreadyOrganizerException ex)
             {
-                ModelState.AddModelError("", "Organizer request is in pending!");
-                return View(model);
+                ModelState.AddModelError(string.Empty, "User is already an organizer!");
             }
-            catch (OrganizerCooldownNotExpiredException)
+            catch (OrganizerRequestPendingException ex)
             {
-                ModelState.AddModelError("", "You cannot apply again yet.");
-                return View("Rejected", model);
+                ModelState.AddModelError(string.Empty, "Organizer request is pending!");
             }
+            catch (OrganizerCooldownNotExpiredException ex)
+            {
+                var cooldownDays = OrganizerValidation.OrganizerCooldownDays;
+                ModelState.AddModelError(string.Empty, $"You must wait {cooldownDays} days after rejection before applying again.");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again later.");
+            }
+
+            model.OrganizerState = await _organizerService.GetOrganizerStateAsync(userId);
+            return View(model);
         }
 
     }
