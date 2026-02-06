@@ -3,6 +3,7 @@
 namespace EventHub.Web.Controllers
 {
     using EventHub.Core.DTOs.Organizer;
+    using EventHub.Core.Enums.Organizer;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Organizers;
@@ -24,13 +25,22 @@ namespace EventHub.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Apply()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             var organizerState = await _organizerService.GetOrganizerStateAsync(userId);
-            var model = new ApplyOrganizerForm();
-            model.OrganizerState = organizerState;
 
-            return View(model);
+            if (organizerState == Status.Rejected &&
+                !await _organizerService.CanApplyAgainAsync(userId))
+            {
+                ModelState.AddModelError("", "You cannot apply again yet.");
+                return View("Rejected");
+            }
+
+            return View(new ApplyOrganizerForm
+            {
+                OrganizerState = organizerState,
+                UserId = userId
+            });
         }
 
         [HttpPost]
@@ -63,21 +73,21 @@ namespace EventHub.Web.Controllers
                 await _organizerService.ApplyForOrganizerAsync(dto,userId);
                 return View(model); // if everything okey, its gonna be refresh and chenge with status case(i will figure it out)
             }
-            catch (UserAlreadyOrganizerException ex)
+            catch (UserAlreadyOrganizerException)
             {
                 ModelState.AddModelError("", "User is already an organizer!");
                 return View(model);
 
             }
-            catch (OrganizerRequestPendingException ex)
+            catch (OrganizerRequestPendingException)
             {
                 ModelState.AddModelError("", "Organizer request is in pending!");
                 return View(model);
             }
-            catch (OrganizerCooldownNotExpiredException ex)
+            catch (OrganizerCooldownNotExpiredException)
             {
-                ModelState.AddModelError("", "Organizer cooldown is not expired!");
-                return View(model);
+                ModelState.AddModelError("", "You cannot apply again yet.");
+                return View("Rejected", model);
             }
         }
 

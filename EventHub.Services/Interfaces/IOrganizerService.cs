@@ -3,6 +3,7 @@ namespace EventHub.Services.Interfaces
 {
     using EventHub.Core.DTOs.Organizer;
     using EventHub.Core.Enums.Organizer;
+    using Microsoft.Extensions.Configuration.UserSecrets;
 
     public interface IOrganizerService
     {
@@ -17,5 +18,7 @@ namespace EventHub.Services.Interfaces
         Task<Status> GetOrganizerStateAsync(string userId);
 
         Task<IEnumerable<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync();
+
+        Task<bool> CanApplyAgainAsync(string userId);
     }
 }

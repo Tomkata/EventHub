@@ -20,10 +20,13 @@
         </p>
     </div>
 </div>
+
+
 <div class="mt-4 d-flex gap-2">
-    <a href="@Url.Action("ApplyOrganizerFrom", "Organizers")" class="btn btn-primary btn-lg flex-grow-1">
-        <i class="bi bi-arrow-repeat me-2"></i>Apply Again
+    <a asp-action="Apply" asp-controller="Organizers" class="btn btn-primary">
+        Apply Again
     </a>
+
     <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
         <i class="bi bi-house me-2"></i>Home
     </a>

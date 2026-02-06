@@ -39,21 +39,18 @@ namespace EventHub.Services.Services
                 else if (existingRequest.Status == Status.Pending)
                     throw new OrganizerRequestPendingException();
 
-                else if (existingRequest.LastRejectedAt.HasValue &&
-    (DateTime.UtcNow - existingRequest.LastRejectedAt.Value).TotalDays < OrganizerValidation.OrganizerCooldownDays)
-                    throw new OrganizerCooldownNotExpiredException();
+
+                var requester = new OrganizerRequest
+                {
+                    UserId = userId,
+                    Email = formDto.Email,
+                    Note = formDto.Note,
+                    Status = Status.Pending
+                };
+
+                await _requestRepository.AddAsync(requester);
+                await _requestRepository.SaveChangesAsync();
             }
-
-            var requester = new OrganizerRequest
-            {
-                UserId = userId,    
-                Email = formDto.Email,
-                Note = formDto.Note,
-                Status = Status.Pending
-            };
-
-            await _requestRepository.AddAsync(requester);
-            await _requestRepository.SaveChangesAsync();
         }
 
         public async Task ApproveUserToOrganizerAsync(string userId)
@@ -80,6 +77,19 @@ namespace EventHub.Services.Services
             await _requestRepository.SaveChangesAsync();
 
         }
+
+        public async  Task<bool> CanApplyAgainAsync(string userId)
+        {
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+
+
+            if (existingRequest.LastRejectedAt.HasValue &&
+(DateTime.UtcNow - existingRequest.LastRejectedAt.Value).TotalDays < OrganizerValidation.OrganizerCooldownDays)
+                return false;
+
+            return true;
+        }
+
         public async Task DemoteOrganizerToUserAsync(string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);

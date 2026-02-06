@@ -15,6 +15,7 @@
 
         [StringLength(OrganizerMessages.MaximumNoteLength,
            MinimumLength = OrganizerMessages.MinimumNoteLength)]
+        public string UserId { get; set; } = null!;
         public string? Note { get; set; }
     }
 }

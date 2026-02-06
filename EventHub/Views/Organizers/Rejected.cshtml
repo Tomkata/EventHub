@@ -1,0 +1,23 @@
+﻿@using EventHub.Web.ViewModels.Organizers
+@model ApplyOrganizerForm;
+
+<div class="alert alert-danger">
+    <h5>Application Rejected</h5>
+    <p>
+        You can apply again after the cooldown period ends.
+    </p>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary"
+            disabled
+            title="You can apply again after the cooldown period">
+        Apply Again
+    </button>
+
+    <a asp-controller="Home"
+       asp-action="Index"
+       class="btn btn-outline-secondary">
+        Home
+    </a>
+</div>
