@@ -14,5 +14,8 @@ namespace EventHub.Repositories.Interfaces
         public Task UpdateAsync(Event entity);
 
         public Task RemoveAsync(Event entity);
+
+        Task<IEnumerable<EventDto>> GetAllEventsByOrganizerIdAsync(string id);
+
     }
 }

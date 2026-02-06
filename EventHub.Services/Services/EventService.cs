@@ -24,7 +24,7 @@
             this._eventRepository = eventRepository;
             this._participantsRepository = participantsRepository;
             this._categoryRepository = categoryRepository;
-            this._locationRepository = locationRepository;
+            this._locationRepository = locationRepository; 
         }
 
 
@@ -172,7 +172,31 @@
         private async Task<bool> CategoryExistsAsync(Guid Id)=>
              await _categoryRepository.GetByIdAsync(Id) != null ? true : false;
 
+        public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId)
+        {
+            //I will use IsOrganizerExist in controller and check if this is the organizer.
+            if (!await IsOrganizerExistAsync(organizerId))
+                throw new InvalidOrganizerException();
 
+            var events = await _eventRepository.GetAllEventsByOrganizerIdAsync(organizerId);
 
+            var dtos = events
+                .Select(e => new EventDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    MaxParticipants = e.MaxParticipants,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    CityId = e.LocationId,
+                    City = e.Location.City,
+                    CategoryId = e.CategoryId,
+                    Category = e.Category.Name,
+                    ImagePath = e.ImagePath
+                })
+                .ToList();
+
+            return dtos;
+        }
     }
 }

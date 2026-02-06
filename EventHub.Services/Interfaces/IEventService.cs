@@ -4,7 +4,7 @@ namespace EventHub.Services.Interfaces
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
 
-    public interface    IEventService
+    public interface  IEventService
     {
         Task<DetailedEventDto> GetByIdAsync(Guid id);
             
@@ -16,6 +16,7 @@ namespace EventHub.Services.Interfaces
         Task DeleteAsync(Guid id);
 
         Task<IEnumerable<EventDto>> GetEventsAsync();
+
 
         //SearchByFilter (later)
 

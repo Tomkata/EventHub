@@ -1,6 +1,7 @@
 ﻿
 namespace EventHub.Repositories.Repositories
 {
+    using EventHub.Core.DTOs;
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
@@ -59,13 +60,24 @@ namespace EventHub.Repositories.Repositories
 
         public async Task<IEnumerable<Event>> GetAllAsync()
         {
-            return await  _dbContext.Events
+            return await _dbContext.Events
                   .AsNoTracking()
                   .Include(x => x.Category)
                   .Include(x => x.Location)
                   .Include(x => x.EventParticipants)
                   .AsSplitQuery()
                   .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Event>> GetAllEventsByOrganizerIdAsync(string id)
+        {
+         return  await _dbContext.Events
+                .AsNoTracking()
+                .Where(x => x.OrganizerId == id)
+                .Include(x => x.Address)
+                .Include(x => x.Location)
+                .AsSplitQuery()
+                .ToListAsync();
         }
     }
 }
