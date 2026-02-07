@@ -7,6 +7,7 @@ namespace EventHub
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Repositories.Repositories;
+    using EventHub.Services;
     using EventHub.Services.Interfaces;
     using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
@@ -32,18 +33,7 @@ namespace EventHub
 
 
 
-            builder.Services.AddScoped<IEventService, EventService>();
-            builder.Services.AddScoped<ILocationService, LocationService>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<IImageService,ImageService>();
-            builder.Services.AddScoped<IEventFormOptionsService, EventFormOptionsService>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-            builder.Services.AddScoped<IEventParticipantsRepository, EventParticipantsRepository>();
-            builder.Services.AddScoped<IEventRepository, EventRepository>();
-            builder.Services.AddScoped<IOrganizerRequestRepository, OrganizerRequestRepository>();
-            builder.Services.AddScoped<IOrganizerService, OrganizerService>();
-
+            builder.Services.AddServicesAndRepositories();
 
 
             builder.Services.ConfigureApplicationCookie(options =>
@@ -77,8 +67,6 @@ namespace EventHub
                     await userManager.AddToRoleAsync(adminUser,"Admin");
                 }
             }
-
-        
 
 
             using (var scope = app.Services.CreateScope())

@@ -11,6 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Scrutor" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\EventHub.Repositories\EventHub.Repositories.csproj" />
 	</ItemGroup>
 
