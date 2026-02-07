@@ -3,7 +3,7 @@
     public class InvalidOrganizerException : Exception
     {
         public InvalidOrganizerException()
-            :base("Invalid organizer!")
+            :base("Organizer doesnt exist!")
         {
             
         }

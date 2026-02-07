@@ -62,7 +62,7 @@ namespace EventHub.Web.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Organizer")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)

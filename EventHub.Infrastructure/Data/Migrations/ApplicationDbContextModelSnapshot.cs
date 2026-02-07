@@ -37,7 +37,7 @@ namespace EventHub.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -140,7 +140,7 @@ namespace EventHub.Data.Migrations
 
                     b.HasIndex("OrganizerId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
 
                     b.HasData(
                         new
@@ -262,7 +262,7 @@ namespace EventHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EventParticipants");
+                    b.ToTable("EventParticipants", (string)null);
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.Location", b =>
@@ -287,7 +287,7 @@ namespace EventHub.Data.Migrations
                     b.HasIndex("City", "Zip")
                         .IsUnique();
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.OrganizerRequest", b =>
@@ -322,7 +322,7 @@ namespace EventHub.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("OrganizerRequests");
+                    b.ToTable("OrganizerRequests", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

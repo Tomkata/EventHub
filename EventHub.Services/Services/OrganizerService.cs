@@ -11,6 +11,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
+    using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Identity;
@@ -18,9 +19,9 @@ namespace EventHub.Services.Services
     public class OrganizerService : IOrganizerService
     {
         private readonly IOrganizerRequestRepository _requestRepository;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         public OrganizerService(IOrganizerRequestRepository requestRepository,
-                                    UserManager<IdentityUser> userManager)
+                                    UserManager<ApplicationUser> userManager)
         {
             this._requestRepository = requestRepository;
             this._userManager = userManager;

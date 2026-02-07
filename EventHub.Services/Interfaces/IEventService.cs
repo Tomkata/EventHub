@@ -17,6 +17,7 @@ namespace EventHub.Services.Interfaces
 
         Task<IEnumerable<EventDto>> GetEventsAsync();
 
+        Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId);
 
         //SearchByFilter (later)
 

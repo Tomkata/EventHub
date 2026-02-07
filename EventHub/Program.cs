@@ -4,6 +4,7 @@ namespace EventHub
 {
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
+    using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Repositories.Repositories;
     using EventHub.Services.Interfaces;
@@ -25,9 +26,9 @@ namespace EventHub
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
-            builder.Services.AddDefaultIdentity<IdentityUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddDefaultIdentity<ApplicationUser>()
+       .AddRoles<IdentityRole>()
+       .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 
@@ -69,8 +70,8 @@ namespace EventHub
 
             using (var scope = app.Services.CreateScope())
             {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                var adminUser = await userManager.FindByEmailAsync("tomaandreev12@gmail.com");
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var adminUser = await userManager.FindByEmailAsync("toma12222@gmail.com");
                 if (adminUser!=null && !await userManager.IsInRoleAsync(adminUser,"Admin"))
                 {
                     await userManager.AddToRoleAsync(adminUser,"Admin");
