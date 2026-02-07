@@ -9,7 +9,7 @@ namespace EventHub.Web.ViewModels.Events
         public string Title { get; set; } = null!;
         public string ImagePath { get; set; } = "images/default-event.png";
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; }   
         public string CityName { get; set; } = null!;
         public Guid CityId { get; set; }
         public string Category { get; set; } = null!;
@@ -17,5 +17,9 @@ namespace EventHub.Web.ViewModels.Events
         public bool IsFull => ParticipantsCount >= MaxParticipants;
         public int MaxParticipants { get; set; }
         public int ParticipantsCount { get; set; }
+
+        public bool CanEdit { get; set; }
+        public bool CanDelete { get; set; }
+
     }
 }

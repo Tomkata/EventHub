@@ -40,7 +40,9 @@ namespace EventHub.Web.Controllers
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     MaxParticipants = x.MaxParticipants,
-                    ParticipantsCount = x.ParticipantsCount
+                    ParticipantsCount = x.ParticipantsCount,
+                    CanDelete = true,
+                    CanEdit = true
                 })
                 .ToList();
 

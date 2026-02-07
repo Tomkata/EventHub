@@ -63,14 +63,14 @@
                                         End: @eventData.EndDate.ToString("dd MMM yyyy")
                                     </span>
                                 </li>
-                                @if (User.IsInRole("Admin"))
+                                @if (eventData.CanEdit)
                                 {
                                     <a asp-controller="Events" asp-action="Update"
                                        asp-route-eventId="@eventData.Id"
                                        class="btn btn-primary mb-3">Edit</a>
-                                }
+                                }   
 
-                                @if (User.IsInRole("Admin"))
+                                @if (eventData.CanEdit)
                                 {
                                     <form asp-controller="Events"
                                           asp-action="Delete"

@@ -4,9 +4,11 @@ using EventHub.Core.DTOs.Event;
 using EventHub.Core.Exceptions.Category;
 using EventHub.Core.Exceptions.Image;
 using EventHub.Core.Exceptions.Location;
+using EventHub.Infrastructure.Identity;
 using EventHub.Services.Interfaces;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -32,6 +34,7 @@ namespace EventHub.Web.Controllers
         {
             var allEvents = await _eventService.GetEventsAsync();
 
+
             var eventList =
                  allEvents.Select(x => new EventListViewModel
                  {
@@ -45,7 +48,9 @@ namespace EventHub.Web.Controllers
                      StartDate = x.StartDate,
                      EndDate = x.EndDate,
                      MaxParticipants = x.MaxParticipants,
-                     ParticipantsCount = x.ParticipantsCount
+                     ParticipantsCount = x.ParticipantsCount,
+                     CanDelete = false,
+                     CanEdit = false
                  })
                 .ToList();
 
@@ -143,8 +148,7 @@ namespace EventHub.Web.Controllers
             return View(model);
         }
 
-
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPost]
         public async Task<IActionResult> Update(EditEventViewModel model)
         {
@@ -207,7 +211,7 @@ namespace EventHub.Web.Controllers
 
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Organizer")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Delete(Guid eventId)
@@ -236,6 +240,7 @@ namespace EventHub.Web.Controllers
                 MaxParticipants = eventDto.MaxParticipants,
                 Participants = eventDto.ParticipantList
             };  
+
 
             return View(model);
         }
@@ -299,6 +304,7 @@ namespace EventHub.Web.Controllers
             };
             return model;
         }
+
     }
 
 }
