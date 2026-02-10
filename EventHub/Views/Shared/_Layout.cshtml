@@ -47,6 +47,14 @@
                                 </a>
                             </li>
                         }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-semibold" asp-area="" asp-controller="AdminEvents" asp-action="AllEvents">
+                                    <i class="bi bi-clipboard-check"></i> Manage Events
+                                </a>
+                            </li>
+                        }
                         @if (User.IsInRole("Organizer"))
                         {
                             <li class="nav-item">

@@ -3,6 +3,7 @@ namespace EventHub.Services.Interfaces
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Models;
 
     public interface  IEventService
     {
@@ -11,13 +12,15 @@ namespace EventHub.Services.Interfaces
 
         Task CreateAsync(CreateEventDto dto);   
 
-        Task UpdateAsync(Guid id,EditEventDto dto);
+        Task UpdateAsync(Guid eventId,EditEventDto dto,string requestingUserId,bool isAdmin);
 
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(Guid eventId, string requestingUserId, bool isAdmin);
 
         Task<IEnumerable<EventDto>> GetEventsAsync();
 
         Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId);
+
+        Task<UserBasicInfo> GetOrganizerAsync(string organizerId);
 
         //SearchByFilter (later)
 

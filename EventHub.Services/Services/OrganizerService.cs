@@ -23,7 +23,7 @@ namespace EventHub.Services.Services
         public OrganizerService(IOrganizerRequestRepository requestRepository,
                                     UserManager<ApplicationUser> userManager)
         {
-            this._requestRepository = requestRepository;
+            this._requestRepository = requestRepository;    
             this._userManager = userManager;
         }
 

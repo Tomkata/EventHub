@@ -1,15 +1,20 @@
 ﻿using EventHub.Core.Common;
+using EventHub.Core.Common;
 using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Event;
 using EventHub.Core.Exceptions.Category;
 using EventHub.Core.Exceptions.Image;
 using EventHub.Core.Exceptions.Location;
+using EventHub.Core.Exceptions.User;
 using EventHub.Infrastructure.Identity;
 using EventHub.Services.Interfaces;
+using EventHub.Services.Services;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
+using System.Security.AccessControl;
 using System.Security.Claims;
 
 
@@ -20,6 +25,7 @@ namespace EventHub.Web.Controllers
         private readonly IEventService _eventService;
         private readonly IImageService _imageService;
         private readonly IEventFormOptionsService _eventFormOptionsService;
+        private readonly IOrganizerService _organizerService;
 
         public EventsController(IEventService eventService,
                                 IImageService imageService,
@@ -141,14 +147,16 @@ namespace EventHub.Web.Controllers
             if (model == null)
                 return NotFound();
 
+
             var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
             model.Categories = dropDowns.Categories;
             model.Locations = dropDowns.Locations;
+          
 
             return View(model);
         }
 
-        [Authorize(Roles = "Admin,Organizer")]
+        [Authorize(Roles = "Admin,Organizer")]  
         [HttpPost]
         public async Task<IActionResult> Update(EditEventViewModel model)
         {
@@ -158,6 +166,7 @@ namespace EventHub.Web.Controllers
 
                 model.Categories = dropDown.Categories;
                 model.Locations = dropDown.Locations;
+
 
                 ModelState.AddModelError("", "Please fill in the form.");
                 return View(model);
@@ -177,6 +186,7 @@ namespace EventHub.Web.Controllers
                     ImagePath = model.ExistingImagePath
                 };
 
+               
                 if (model.NewImage != null)
                 {
 
@@ -185,7 +195,10 @@ namespace EventHub.Web.Controllers
                 }
 
 
-                await _eventService.UpdateAsync(model.Id, eventToUpdate);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isAdmin = User.IsInRole("Admin");
+
+                await _eventService.UpdateAsync(model.Id, eventToUpdate,userId, isAdmin);
 
                 return RedirectToAction(nameof(Index));
 
@@ -206,7 +219,10 @@ namespace EventHub.Web.Controllers
             {
                 return await HandleException(model, locationException);
             }
-
+            catch (InvalidUserPermissionsException)
+            {
+                return Unauthorized();
+            }
         }
 
 
@@ -216,8 +232,20 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid eventId)
         {
-            await _eventService.DeleteAsync(eventId);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isAdmin = User.IsInRole("Admin");
+
+
+                await _eventService.DeleteAsync(eventId, userId, isAdmin);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidUserPermissionsException)
+            {
+                return Unauthorized();
+            }
+          
         }
 
         [HttpGet]

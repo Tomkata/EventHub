@@ -1,14 +1,16 @@
-﻿using EventHub.Core.Exceptions.Oranizer.ForApply;
-using EventHub.Core.Exceptions.Oranizer.ForApprove;
-using EventHub.Core.Exceptions.Oranizer.ForReject;
-using EventHub.Core.Exceptions.User;
-using EventHub.Services.Interfaces;
-using EventHub.Web.ViewModels.Organizers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Core.Exceptions.Oranizer.ForApply;
+    using EventHub.Core.Exceptions.Oranizer.ForApprove;
+    using EventHub.Core.Exceptions.Oranizer.ForReject;
+    using EventHub.Core.Exceptions.User;
+    using EventHub.Services.Interfaces;
+    using EventHub.Web.ViewModels.Organizers;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
     public class OrganizerRequestsController : Controller
     {
         private readonly IOrganizerService _organizerService;

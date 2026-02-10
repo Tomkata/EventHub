@@ -32,9 +32,7 @@ namespace EventHub
        .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-
             builder.Services.AddServicesAndRepositories();
-
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -44,6 +42,7 @@ namespace EventHub
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
+
             });
 
             builder.Services.AddControllersWithViews();

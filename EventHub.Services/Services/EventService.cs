@@ -6,6 +6,7 @@
     using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.Oranizer;
+    using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
@@ -26,7 +27,6 @@
             this._categoryRepository = categoryRepository;
             this._locationRepository = locationRepository; 
         }
-
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
@@ -67,11 +67,15 @@
                 ImagePath = entity.ImagePath,
                 ParticipantList = participantsDto,
                 CategoryId = entity.CategoryId,
-                LocationId = entity.Location.Id
+                LocationId = entity.Location.Id,
+                OrganizerId = entity.OrganizerId
             };
 
             return dto;
         }
+
+        public async Task<UserBasicInfo> GetOrganizerAsync(string organizerId)
+            => await _participantsRepository.GetOrganizerAsync(organizerId)!;
 
         public async Task<IEnumerable<EventDto>> GetEventsAsync()
         {
@@ -127,7 +131,7 @@
         private async Task<bool> IsOrganizerExistAsync(string Id)=>
             await _participantsRepository.GetOrganizerAsync(Id) == null ? false : true;
 
-        public async Task UpdateAsync(Guid id, EditEventDto dto)
+        public async Task UpdateAsync(Guid id, EditEventDto dto,string requestingUserId, bool isAdmin)
         {
             var eventEntity = await _eventRepository.GetByIdAsync(id);
 
@@ -139,6 +143,11 @@
 
             if (!await LocationExistsAsync(dto.LocationId))
                 throw new InvalidLocationException();
+
+         ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
+            
+           
+
 
             eventEntity.Title = dto.Title;
             eventEntity.LocationId = dto.LocationId;
@@ -156,9 +165,12 @@
             await _eventRepository.UpdateAsync(eventEntity);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid eventId,string requestingUserId, bool isAdmin)
         {
-            var eventEntity = await _eventRepository.GetByIdAsync(id);
+            var eventEntity = await _eventRepository.GetByIdAsync(eventId);
+
+            ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
+
 
             if (eventEntity == null)
                 throw new InvalidEventException();
@@ -197,6 +209,16 @@
                 .ToList();
 
             return dtos;
+        }
+
+        private void ValidateUserCanModifyEvent(bool isAdmin,string organizerId, string requestingUserId)
+        {
+            if (!isAdmin)
+            {
+                if (organizerId != requestingUserId)
+                    throw new InvalidUserPermissionsException();
+            }
+            
         }
     }
 }

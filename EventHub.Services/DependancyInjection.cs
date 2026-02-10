@@ -1,10 +1,10 @@
-﻿using EventHub.Repositories.Repositories;
-using EventHub.Services.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿
 
 namespace EventHub.Services
 {
+    using EventHub.Repositories.Repositories;
+    using EventHub.Services.Services;
+    using Microsoft.Extensions.DependencyInjection;
     public static class DependencyInjection
     {
 

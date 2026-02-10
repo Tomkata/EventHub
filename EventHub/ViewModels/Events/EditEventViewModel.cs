@@ -51,6 +51,7 @@ namespace EventHub.Web.ViewModels.Events
         public string? ExistingImagePath { get; set; }
         public IFormFile? NewImage { get; set; }
 
+
         public IEnumerable<DropdownOptionModel>? Categories { get; set; }
         public IEnumerable<DropdownOptionModel>? Locations { get; set; }
     }
