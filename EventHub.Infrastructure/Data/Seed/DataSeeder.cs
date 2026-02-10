@@ -1,14 +1,9 @@
-﻿using EventHub.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-
+﻿
 namespace EventHub.Infrastructure.Data.Seed
 {
+    using EventHub.Core.Models;
+    using System.Text.Json;
+
     public static class DataSeeder
     {
         public static async Task SeedAsync(ApplicationDbContext context)

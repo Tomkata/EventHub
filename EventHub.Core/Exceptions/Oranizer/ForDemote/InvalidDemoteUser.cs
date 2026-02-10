@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventHub.Core.Exceptions.Oranizer.ForDemote
+﻿namespace EventHub.Core.Exceptions.Oranizer.ForDemote
 {
     public class InvalidDemoteUser : Exception
     {

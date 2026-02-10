@@ -8,7 +8,7 @@ namespace EventHub.Web.ViewModels.Events
     using EventHub.Core.EventValidation;
     using EventHub.Web.ViewModels.Common;
     using System.ComponentModel.DataAnnotations;
-    public class EditEventViewModel : IEventFormViewModel
+    public class EditEventViewModel : EventFormBaseViewModel
     {
         public Guid Id { get; set; }
 
@@ -54,8 +54,6 @@ namespace EventHub.Web.ViewModels.Events
         public IFormFile? NewImage { get; set; }
 
 
-        public IEnumerable<DropdownOptionModel>? Categories { get; set; }
-        public IEnumerable<DropdownOptionModel>? Locations { get; set; }
     }
 
 }

@@ -6,8 +6,6 @@ namespace EventHub.Infrastructure.Data
     using EventHub.Infrastructure.Configurations;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    using System.Reflection.Emit;
-    using System.Runtime.CompilerServices;
 
     public class ApplicationDbContext
         : IdentityDbContext

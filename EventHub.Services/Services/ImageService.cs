@@ -8,7 +8,6 @@ namespace EventHub.Services.Services
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using static System.Net.Mime.MediaTypeNames;
 
     //Image validation service
     /*

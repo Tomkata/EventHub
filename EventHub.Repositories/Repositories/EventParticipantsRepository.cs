@@ -1,12 +1,11 @@
-﻿using EventHub.Core.DTOs;
-using EventHub.Core.Models;
-using EventHub.Infrastructure.Data;
-using EventHub.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Xml.Schema;
+﻿
 
 namespace EventHub.Repositories.Repositories
 {
+    using EventHub.Core.Models;
+    using EventHub.Infrastructure.Data;
+    using EventHub.Repositories.Interfaces;
+    using Microsoft.EntityFrameworkCore;
     public class EventParticipantsRepository : IEventParticipantsRepository
     {
         private readonly ApplicationDbContext _dbContext;
@@ -23,7 +22,7 @@ namespace EventHub.Repositories.Repositories
                 .Select(x => new UserBasicInfo
                 {
                     Id = x.Id,
-                    UserName = x.UserName
+                    UserName = x.UserName!
                 })
                 .FirstOrDefaultAsync(x => x.Id == organizerId);
 

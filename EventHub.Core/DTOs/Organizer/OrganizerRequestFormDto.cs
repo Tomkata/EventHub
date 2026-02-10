@@ -1,7 +1,4 @@
-﻿using EventHub.Core.Enums.Organizer;
-using EventHub.Core.Models;
-
-namespace EventHub.Core.DTOs.Organizer
+﻿namespace EventHub.Core.DTOs.Organizer
 {
     public class OrganizerRequestFormDto
     {

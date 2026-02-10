@@ -2,19 +2,17 @@
 
 namespace EventHub.Core.Models
 {
-using EventHub.Core.Enums.Organizer;
-using System.ComponentModel.DataAnnotations;
+    using EventHub.Core.Enums.Organizer;
+    using System.ComponentModel.DataAnnotations;
     using Common.Validation.Messages;
-    using Microsoft.EntityFrameworkCore;
-    using System.Runtime.CompilerServices;
 
-    public class    OrganizerRequest
+    public class OrganizerRequest
     {
         public OrganizerRequest()
         {
             this.CreatedAt = DateTime.UtcNow;
         }
-        
+
         [Key]
         public Guid Id { get; set; }
         public string UserId { get; set; }

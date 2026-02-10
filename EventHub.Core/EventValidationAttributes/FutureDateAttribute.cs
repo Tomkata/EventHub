@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿
 namespace EventHub.Core.EventValidation
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class FutureDateAttribute : ValidationAttribute
     {
         public FutureDateAttribute()

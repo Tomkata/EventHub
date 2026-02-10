@@ -4,7 +4,6 @@ namespace EventHub.Services.Services
 {
     using EventHub.Core.Common;
     using EventHub.Core.DTOs;
-    using EventHub.Core.Models;
     using EventHub.Services.Interfaces;
 
     public class EventFormOptionsService : IEventFormOptionsService

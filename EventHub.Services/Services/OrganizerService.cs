@@ -35,7 +35,7 @@ namespace EventHub.Services.Services
             {
 
                 if (existingRequest.Status == Status.Approved)
-                    throw new UserAlreadyOrganizerException();
+                    throw new UserAlreadyOrganizerException();  
 
                 else if (existingRequest.Status == Status.Pending)
                     throw new OrganizerRequestPendingException();

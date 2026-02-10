@@ -3,7 +3,7 @@
     public class DemotePendingRequestException : Exception
     {
         public DemotePendingRequestException()
-            :base("Cannot demote user with pending request")
+            :base("Cannot demote user with pending request!")
         {
         }
     }

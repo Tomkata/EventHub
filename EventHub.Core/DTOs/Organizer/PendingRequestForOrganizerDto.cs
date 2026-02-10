@@ -1,7 +1,6 @@
 ﻿
 namespace EventHub.Core.DTOs.Organizer
 {
-    using EventHub.Core.Enums.Organizer;
 
     public class PendingRequestForOrganizerDto
     {

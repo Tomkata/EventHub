@@ -11,20 +11,19 @@ namespace EventHub.Infrastructure.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            
 
-                    builder
-            .Property(x => x.City)
-            .IsRequired()
-            .HasMaxLength(100);
+                builder
+                .Property(x => x.City)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder
-.HasIndex(l => new { l.City, l.Zip })
-.IsUnique();
+                builder
+                .HasIndex(l => new { l.City, l.Zip })
+                .IsUnique();
 
-            builder
-            .Property(x => x.Zip)
-            .IsRequired();
+                builder
+                .Property(x => x.Zip)
+                .IsRequired();
 
         }
     }

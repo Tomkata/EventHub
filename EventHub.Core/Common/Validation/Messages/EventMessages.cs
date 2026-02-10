@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventHub.Core.Common.Validation.Messages
+﻿namespace EventHub.Core.Common.Validation.Messages
 {
     public static class EventMessages
     {

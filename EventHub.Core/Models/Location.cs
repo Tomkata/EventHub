@@ -4,7 +4,6 @@ namespace EventHub.Core.Models
 {
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
-    using System.IO.Compression;
 
     public class Location
     {

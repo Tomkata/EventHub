@@ -4,6 +4,7 @@ using EventHub.Core.Exceptions.Category;
 using EventHub.Core.Exceptions.Image;
 using EventHub.Core.Exceptions.Location;
 using EventHub.Core.Exceptions.User;
+using EventHub.Infrastructure;
 using EventHub.Services.Interfaces;
 using EventHub.Web.ViewModels.Common;
 using EventHub.Web.ViewModels.Events;
@@ -67,7 +68,7 @@ namespace EventHub.Web.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,Organizer")]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
@@ -148,7 +149,7 @@ namespace EventHub.Web.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin,Organizer")]  
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [HttpPost]
         public async Task<IActionResult> Update(EditEventViewModel model)
         {
@@ -221,7 +222,7 @@ namespace EventHub.Web.Controllers
             model.Locations = dropDown.Locations;
         }
 
-        [Authorize(Roles = "Admin,Organizer")]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Delete(Guid eventId)
