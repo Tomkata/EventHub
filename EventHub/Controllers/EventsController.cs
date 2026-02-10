@@ -1,20 +1,14 @@
-﻿using EventHub.Core.Common;
-using EventHub.Core.Common;
-using EventHub.Core.DTOs;
+﻿using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Event;
 using EventHub.Core.Exceptions.Category;
 using EventHub.Core.Exceptions.Image;
 using EventHub.Core.Exceptions.Location;
 using EventHub.Core.Exceptions.User;
-using EventHub.Infrastructure.Identity;
 using EventHub.Services.Interfaces;
-using EventHub.Services.Services;
+using EventHub.Web.ViewModels.Common;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mail;
-using System.Security.AccessControl;
 using System.Security.Claims;
 
 
@@ -148,9 +142,7 @@ namespace EventHub.Web.Controllers
                 return NotFound();
 
 
-            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
-            model.Categories = dropDowns.Categories;
-            model.Locations = dropDowns.Locations;
+           await FillDropDowns(model);
           
 
             return View(model);
@@ -162,11 +154,7 @@ namespace EventHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
-
-                model.Categories = dropDown.Categories;
-                model.Locations = dropDown.Locations;
-
+                await FillDropDowns(model);
 
                 ModelState.AddModelError("", "Please fill in the form.");
                 return View(model);
@@ -225,7 +213,13 @@ namespace EventHub.Web.Controllers
             }
         }
 
+        private async Task FillDropDowns(EventFormBaseViewModel model)
+        {
+            var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
 
+            model.Categories = dropDown.Categories;
+            model.Locations = dropDown.Locations;
+        }
 
         [Authorize(Roles = "Admin,Organizer")]
         [ValidateAntiForgeryToken]
@@ -274,12 +268,9 @@ namespace EventHub.Web.Controllers
         }
 
 
-        private async Task<IActionResult> HandleException(IEventFormViewModel model, Exception ex)
+        private async Task<IActionResult> HandleException(EventFormBaseViewModel model, Exception ex)
         {
-            var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
-
-            model.Categories = dropDown.Categories;
-            model.Locations = dropDown.Locations;
+           await FillDropDowns(model);
 
             ModelState.AddModelError("", $"{ex.Message}");
 

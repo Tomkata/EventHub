@@ -1,11 +1,13 @@
-﻿using EventHub.Core.Common;
-using EventHub.Core.Common.Validation;
-using EventHub.Core.Common.Validation.Messages;
-using EventHub.Core.EventValidation;
-using System.ComponentModel.DataAnnotations;
+﻿
 
 namespace EventHub.Web.ViewModels.Events
 {
+    using EventHub.Core.Common;
+    using EventHub.Core.Common.Validation;
+    using EventHub.Core.Common.Validation.Messages;
+    using EventHub.Core.EventValidation;
+    using EventHub.Web.ViewModels.Common;
+    using System.ComponentModel.DataAnnotations;
     public class EditEventViewModel : IEventFormViewModel
     {
         public Guid Id { get; set; }

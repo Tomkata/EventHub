@@ -1,12 +1,14 @@
-﻿using EventHub.Core.Common;
-using EventHub.Core.Common.Validation;
-using EventHub.Core.Common.Validation.Messages;
-using EventHub.Core.EventValidation;
-using System.ComponentModel.DataAnnotations;
+﻿
 
 namespace EventHub.Web.ViewModels.Events
 {
-    public class CreateEventViewModel : IEventFormViewModel
+    using EventHub.Core.Common;
+    using EventHub.Core.Common.Validation;
+    using EventHub.Core.Common.Validation.Messages;
+    using EventHub.Core.EventValidation;
+    using EventHub.Web.ViewModels.Common;
+    using System.ComponentModel.DataAnnotations;
+    public class CreateEventViewModel : EventFormBaseViewModel
     {
         [Required(ErrorMessage = ValidationMessages.Required)]
         [StringLength(
@@ -48,9 +50,6 @@ namespace EventHub.Web.ViewModels.Events
         public Guid LocationId { get; set; }
         public IFormFile Image { get; set; }
 
-        public IEnumerable<DropdownOptionModel> Categories { get; set; }
-        = Enumerable.Empty<DropdownOptionModel>();
-        public IEnumerable<DropdownOptionModel> Locations { get; set; } 
-        = Enumerable.Empty<DropdownOptionModel>();
+    
     }
 }
