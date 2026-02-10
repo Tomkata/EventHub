@@ -9,7 +9,7 @@ namespace EventHub.Repositories.Interfaces
     public interface IEventParticipantsRepository
     {
         Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid eventId);
-        Task<UserBasicInfo?> GetOrganizerAsync(string organizerId);
+        Task<UserBasicInfo ?> GetOrganizerAsync(string organizerId);
     }
 }
 

@@ -13,9 +13,15 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public async Task<Category?> GetByIdAsync(Guid id)=>
+        public async Task<Category?> GetByIdAsync(Guid id) =>
              await _dbContext.Categories
                  .AsNoTracking()
                  .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<IEnumerable<Category>> GetCategoriesAsync()
+       => await _dbContext.Categories
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+                .ToListAsync();
     }
 }

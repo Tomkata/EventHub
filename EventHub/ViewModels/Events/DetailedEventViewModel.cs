@@ -1,7 +1,8 @@
-﻿using EventHub.Core.DTOs;
-
+﻿
 namespace EventHub.Web.ViewModels.Events
 {
+    using EventHub.Core.DTOs;
+
     public class DetailedEventViewModel
     {
         public Guid Id { get; set; }

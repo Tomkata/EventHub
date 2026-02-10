@@ -5,11 +5,7 @@ namespace EventHub
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
     using EventHub.Infrastructure.Identity;
-    using EventHub.Repositories.Interfaces;
-    using EventHub.Repositories.Repositories;
     using EventHub.Services;
-    using EventHub.Services.Interfaces;
-    using EventHub.Services.Services;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,5 @@
-﻿using EventHub.Services.Interfaces;
+﻿using EventHub.Infrastructure;
+using EventHub.Services.Interfaces;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace EventHub.Web.Controllers
             this._eventService = eventService;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> AllEvents()
         {
             var events = await _eventService.GetEventsAsync();

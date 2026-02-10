@@ -1,20 +1,21 @@
-﻿using EventHub.Core.DTOs;
-using EventHub.Core.DTOs.Event;
-using EventHub.Core.Exceptions.Category;
-using EventHub.Core.Exceptions.Image;
-using EventHub.Core.Exceptions.Location;
-using EventHub.Core.Exceptions.User;
-using EventHub.Infrastructure;
-using EventHub.Services.Interfaces;
-using EventHub.Web.ViewModels.Common;
-using EventHub.Web.ViewModels.Events;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-
+﻿
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Core.DTOs;
+    using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Exceptions.Category;
+    using EventHub.Core.Exceptions.Image;
+    using EventHub.Core.Exceptions.Location;
+    using EventHub.Core.Exceptions.User;
+    using EventHub.Infrastructure;
+    using EventHub.Services.Interfaces;
+    using EventHub.Web.ViewModels.Common;
+    using EventHub.Web.ViewModels.Events;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
+
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
@@ -185,7 +186,7 @@ namespace EventHub.Web.Controllers
 
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var isAdmin = User.IsInRole("Admin");
+                var isAdmin = User.IsInRole(Roles.Admin);
 
                 await _eventService.UpdateAsync(model.Id, eventToUpdate,userId, isAdmin);
 
@@ -230,7 +231,7 @@ namespace EventHub.Web.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var isAdmin = User.IsInRole("Admin");
+                var isAdmin = User.IsInRole(Roles.Admin);
 
 
                 await _eventService.DeleteAsync(eventId, userId, isAdmin);

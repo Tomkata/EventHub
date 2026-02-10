@@ -1,12 +1,14 @@
-﻿using EventHub.Infrastructure.Identity;
-using EventHub.Services.Interfaces;
-using EventHub.Web.ViewModels.Events;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Infrastructure;
+    using EventHub.Infrastructure.Identity;
+    using EventHub.Services.Interfaces;
+    using EventHub.Web.ViewModels.Events;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+
     public class OrganizerEventsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -21,7 +23,7 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles = Roles.Organizer)]
         public async Task<IActionResult> MyEvents()
         {
             var currUser =  await GetCurrentUserAsync();

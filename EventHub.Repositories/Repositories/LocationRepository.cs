@@ -1,13 +1,11 @@
-﻿using EventHub.Core.Models;
-using EventHub.Infrastructure.Data;
-using EventHub.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace EventHub.Repositories.Repositories
 {
+    using EventHub.Core.Models;
+    using EventHub.Infrastructure.Data;
+    using EventHub.Repositories.Interfaces;
+    using Microsoft.EntityFrameworkCore;
     public class LocationRepository : ILocationRepository
     {
         private readonly ApplicationDbContext _dbContext;
@@ -21,5 +19,11 @@ namespace EventHub.Repositories.Repositories
             await _dbContext.Locations
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);
+
+        public async Task<IEnumerable<Location>> GetLocationsAsync()
+       => await _dbContext.Locations
+            .AsNoTracking()
+            .OrderBy(x => x.City)
+            .ToListAsync();
     }
 }

@@ -2,32 +2,32 @@
 namespace EventHub.Services.Services
 {
     using EventHub.Core.DTOs.Category;
-    using EventHub.Infrastructure.Data;
+    using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
-    using Microsoft.EntityFrameworkCore;
 
     public class CategoryService : ICategoryService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ICategoryRepository  _categoryRepository;
 
-        public CategoryService(ApplicationDbContext dbContext)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            this._dbContext = dbContext;
+            this._categoryRepository = categoryRepository;
         }
 
         public async Task<List<CategoryDto>> GetCategoriesForDropdownAsync()
         {
-            var categories = await _dbContext.Categories
-                .AsNoTracking()
+            var categories = await _categoryRepository.GetCategoriesAsync();
+
+            var categoriesDto = categories
                 .Select(x => new CategoryDto
                 {
                     Id = x.Id,
                     Name = x.Name
                 })
                 .OrderBy(x => x.Name)
-                .ToListAsync();
+                .ToList();
 
-            return categories;
+            return categoriesDto;
         }
     }
 }

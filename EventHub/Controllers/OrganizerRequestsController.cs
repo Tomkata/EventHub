@@ -6,6 +6,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.Exceptions.Oranizer.ForApprove;
     using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
+    using EventHub.Infrastructure;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Organizers;
     using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace EventHub.Web.Controllers
             this._organizerService = organizerService;
         }
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles =Roles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Requests()
         {
@@ -41,7 +42,7 @@ namespace EventHub.Web.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost]
         public async Task<IActionResult> ApproveRequest(OrganizerRequestViewModel model)
         {
@@ -72,7 +73,7 @@ namespace EventHub.Web.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost]
         public async Task<IActionResult> RejectRequest(OrganizerRequestViewModel model)
         {

@@ -1,9 +1,8 @@
-﻿using EventHub.Core.DTOs;
-using EventHub.Core.DTOs.Event;
-using EventHub.Core.Models;
-
+﻿
 namespace EventHub.Repositories.Interfaces
 {
+    using EventHub.Core.Models;
+    
     public interface IEventRepository
     {
         public Task<Event?> GetByIdAsync(Guid id);
