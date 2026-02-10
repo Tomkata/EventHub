@@ -2,7 +2,570 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-10 col-xl-8 mx-auto text-center text-white">
+                <div class="hero-content">
+                    <span class="badge bg-white text-primary px-4 py-2 mb-4 fs-6 fw-semibold">Welcome to EventHub</span>
+                    <h1 class="display-2 fw-bold mb-4 hero-title">
+                        Discover Events.<br />
+                        Meet People.<br />
+                        <span class="text-gradient">Share Experiences.</span>
+                    </h1>
+                    <p class="lead mb-5 fs-4 hero-subtitle">Join EventHub to explore exciting events in your area, connect with like-minded individuals, and create unforgettable memories together.</p>
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-4">
+                        <a asp-area="" asp-controller="Events" asp-action="Index" class="btn btn-custom btn-light-custom btn-lg px-5 py-3">
+                            <i class="bi bi-calendar3 me-2"></i> Browse Events
+                        </a>
+                        <a asp-area="" asp-controller="Organizers" asp-action="Apply" class="btn btn-custom btn-outline-light-custom btn-lg px-5 py-3">
+                            <i class="bi bi-star me-2"></i> Become an Organizer
+                        </a>
+                    </div>
+                    <div class="hero-stats mt-5 pt-4">
+                        <div class="row g-4 text-center">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="display-6 fw-bold mb-0">1000+</h3>
+                                    <p class="mb-0 text-white-50">Events</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="display-6 fw-bold mb-0">5000+</h3>
+                                    <p class="mb-0 text-white-50">Members</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="display-6 fw-bold mb-0">50+</h3>
+                                    <p class="mb-0 text-white-50">Organizers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-shape"></div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-3 fs-6">Features</span>
+                <h2 class="display-4 fw-bold mb-3">Why Choose EventHub?</h2>
+                <p class="lead text-muted">Everything you need to discover, organize, and enjoy amazing events</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-card-inner">
+                        <div class="feature-icon-wrapper bg-gradient-primary">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3 mt-4">Find Events by Interest</h5>
+                        <p class="text-muted mb-0">Discover events that match your passions and interests. From tech meetups to cultural festivals.</p>
+                        <div class="feature-card-bg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-card-inner">
+                        <div class="feature-icon-wrapper bg-gradient-success">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3 mt-4">Meet Like-Minded People</h5>
+                        <p class="text-muted mb-0">Connect with people who share your interests and build lasting relationships.</p>
+                        <div class="feature-card-bg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-card-inner">
+                        <div class="feature-icon-wrapper bg-gradient-info">
+                            <i class="bi bi-calendar-plus"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3 mt-4">Easy Event Organization</h5>
+                        <p class="text-muted mb-0">Create and manage your own events with our intuitive organizer tools.</p>
+                        <div class="feature-card-bg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-card-inner">
+                        <div class="feature-icon-wrapper bg-gradient-warning">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3 mt-4">Secure & Role-Based</h5>
+                        <p class="text-muted mb-0">Your data is protected with secure authentication and role-based access control.</p>
+                        <div class="feature-card-bg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <span class="badge bg-success-subtle text-success px-3 py-2 mb-3 fs-6">Simple Process</span>
+                <h2 class="display-4 fw-bold mb-3">How It Works</h2>
+                <p class="lead text-muted">Get started in three simple steps</p>
+            </div>
+        </div>
+        <div class="row g-4 position-relative">
+            <div class="steps-line"></div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number-wrapper">
+                        <div class="step-number">
+                            <span>1</span>
+                        </div>
+                    </div>
+                    <div class="step-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Sign Up</h4>
+                    <p class="text-muted">Create your free account in seconds and join our growing community of event enthusiasts.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number-wrapper">
+                        <div class="step-number">
+                            <span>2</span>
+                        </div>
+                    </div>
+                    <div class="step-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Join or Create Events</h4>
+                    <p class="text-muted">Browse exciting events or become an organizer and host your own amazing experiences.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number-wrapper">
+                        <div class="step-number">
+                            <span>3</span>
+                        </div>
+                    </div>
+                    <div class="step-icon">
+                        <i class="bi bi-chat-heart"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Connect with People</h4>
+                    <p class="text-muted">Network, collaborate, and create unforgettable experiences together with your community.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center text-white">
+                <div class="cta-content">
+                    <i class="bi bi-rocket-takeoff display-1 mb-4 d-block"></i>
+                    <h2 class="display-4 fw-bold mb-4">Ready to Get Started?</h2>
+                    <p class="lead mb-5 fs-4">Join thousands of event enthusiasts and start your journey today. Explore amazing events happening near you!</p>
+                    <a asp-area="" asp-controller="Events" asp-action="Index" class="btn btn-custom btn-light-custom btn-lg px-5 py-3">
+                        <i class="bi bi-calendar3 me-2"></i> Explore Events Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+    keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-shape {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+    }
+
+        .hero-shape::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 80px;
+            background: #f8f9fa;
+            clip-path: polygon(0 50%, 100% 0, 100% 100%, 0% 100%);
+        }
+
+    .min-vh-75 {
+        min-height: 75vh;
+    }
+
+    .hero-content {
+        animation: fadeInUp 1s ease-out;
+    }
+
+    keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-title {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        line-height: 1.2;
+    }
+
+    .text-gradient {
+        background: linear-gradient(to right, #ffd89b, #19547b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-stats .stat-item {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+        .hero-stats .stat-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+    /* Custom Buttons */
+    .btn-custom {
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-light-custom {
+        background: white;
+        color: #667eea;
+        border: 2px solid white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+        .btn-light-custom:hover {
+            background: #667eea;
+            color: white;
+            border-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+    .btn-outline-light-custom {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+        .btn-outline-light-custom:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+    /* Features Section */
+    .features-section {
+        background: #f8f9fa;
+        position: relative;
+    }
+
+    .feature-card {
+        height: 100%;
+        perspective: 1000px;
+    }
+
+    .feature-card-inner {
+        position: relative;
+        padding: 40px 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s ease;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .feature-card:hover .feature-card-inner {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-card-bg {
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+        transition: all 0.6s ease;
+        opacity: 0;
+    }
+
+    .feature-card:hover .feature-card-bg {
+        opacity: 1;
+        transform: rotate(180deg);
+    }
+
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    }
+
+    /* How It Works Section */
+    .how-it-works-section {
+        background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        padding: 100px 0;
+        position: relative;
+    }
+
+    .steps-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 3px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        z-index: 0;
+        display: none;
+    }
+
+
+
+    .step-card {
+        text-align: center;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-number-wrapper {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .step-number {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        position: relative;
+        z-index: 2;
+        transition: all 0.4s ease;
+    }
+
+        .step-number::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.2;
+            z-index: -1;
+            animation: pulse-ring 2s infinite;
+        }
+
+    keyframes pulse-ring {
+        0% {
+            transform: scale(1);
+            opacity: 0.3;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.1;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 0.3;
+        }
+    }
+
+    .step-card:hover .step-number {
+        transform: scale(1.1);
+        box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
+    }
+
+    .step-icon {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .step-card:hover .step-icon {
+        transform: scale(1.1);
+        color: #764ba2;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 120px 0;
+        overflow: hidden;
+    }
+
+    .cta-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        animation: moveBackground 30s linear infinite;
+    }
+
+    keyframes moveBackground {
+        0% {
+            background-position: 0 0;
+        }
+
+        100% {
+            background-position: 100px 100px;
+        }
+    }
+
+    .cta-content {
+        animation: fadeInUp 1s ease-out;
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .hero-section {
+            min-height: auto;
+            padding: 80px 0;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .display-4 {
+            font-size: 2rem;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+    }
+</style>
