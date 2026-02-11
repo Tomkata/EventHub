@@ -1,6 +1,7 @@
 ﻿
 namespace EventHub.Repositories.Interfaces
 {
+    using EventHub.Core.DTOs.Event;
     using EventHub.Core.Models;
     
     public interface IEventRepository
@@ -15,6 +16,7 @@ namespace EventHub.Repositories.Interfaces
         public Task RemoveAsync(Event entity);
 
         Task<IEnumerable<Event>> GetAllEventsByOrganizerIdAsync(string id);
+        Task<EventJoinInfo> GetEventJoinInfoAsync(Guid id);
 
     }
 }

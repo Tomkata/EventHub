@@ -32,7 +32,8 @@ namespace EventHub.Repositories.Repositories
         public async Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid id)
         {
 
-            var participants =  _dbContext.EventParticipants
+            var participants = await _dbContext.EventParticipants
+                .AsNoTracking()
                .Where(ep => ep.EventId == id)
              .Join(
                  _dbContext.Users,
@@ -44,9 +45,21 @@ namespace EventHub.Repositories.Repositories
                      UserName = u.UserName
                  }
              )
-             .ToList();
+             .ToListAsync();
 
             return participants;
         }
+
+        public async Task<int> GetParticipantsCountAsync(Guid eventId)
+            => await _dbContext.EventParticipants
+                .AsNoTracking()
+               .Where(ep => ep.EventId == eventId)
+               .CountAsync();
+
+
+        public async Task<bool> ExistsAsync(string userId, Guid eventId)
+        => await _dbContext.EventParticipants
+            .AsNoTracking()
+            .AnyAsync(x => x.UserId == userId && x.EventId == eventId);
     }
 }

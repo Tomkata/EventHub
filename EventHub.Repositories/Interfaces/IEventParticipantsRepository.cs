@@ -10,6 +10,10 @@ namespace EventHub.Repositories.Interfaces
     {
         Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid eventId);
         Task<UserBasicInfo ?> GetOrganizerAsync(string organizerId);
+
+        Task<int> GetParticipantsCountAsync(Guid eventId);
+
+        Task<bool> ExistsAsync(string userId, Guid eventId);
     }
 }
 

@@ -2,6 +2,7 @@
 namespace EventHub.Repositories.Repositories
 {
     using EventHub.Core.DTOs;
+    using EventHub.Core.DTOs.Event;
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
@@ -28,6 +29,7 @@ namespace EventHub.Repositories.Repositories
 
             return eventEntity;
         }
+
         public async Task<Event?> GetByIdReadOnlyAsync(Guid id)
         {
             var eventEntity = await _dbContext.Events
@@ -72,14 +74,33 @@ namespace EventHub.Repositories.Repositories
 
         public async Task<IEnumerable<Event>> GetAllEventsByOrganizerIdAsync(string id)
         {
-         return  await _dbContext.Events
+            return await _dbContext.Events
+                   .AsNoTracking()
+                   .Where(x => x.OrganizerId == id)
+                   .Include(x => x.Category)
+                     .Include(x => x.Location)
+                     .Include(x => x.EventParticipants)
+                     .AsSplitQuery()
+                   .ToListAsync();
+        }
+
+        public async Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id)
+        {
+            var eventDto = await _dbContext.Events
                 .AsNoTracking()
-                .Where(x => x.OrganizerId == id)
-                .Include(x => x.Category)
-                  .Include(x => x.Location)
-                  .Include(x => x.EventParticipants)
-                  .AsSplitQuery()
-                .ToListAsync();
+                .Where(x=>x.Id == id)
+             .Select(x => new EventJoinInfo
+             {
+                 Id = x.Id,
+                 EndDate = x.EndDate,
+                 MaxParticipantsCount = x.MaxParticipants,
+                 ParticipantsCount = x.EventParticipants.Count(),
+                 OrganizerId = x.OrganizerId
+             })
+             .FirstOrDefaultAsync();
+
+            return eventDto;
+
         }
     }
 }
