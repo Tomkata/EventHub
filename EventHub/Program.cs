@@ -1,3 +1,6 @@
+using EventHub.Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace EventHub
@@ -8,6 +11,9 @@ namespace EventHub
     using EventHub.Services;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
+    using System.Reflection;
+    using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program
     {
@@ -22,24 +28,43 @@ namespace EventHub
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-
             builder.Services.AddDefaultIdentity<ApplicationUser>()
-       .AddRoles<IdentityRole>()
-       .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            builder.Services.AddServicesAndRepositories();
+            var identitySection = builder.Configuration.GetSection("IdentitySettings");
+            builder.Services.Configure<IdentitySettings>(identitySection);
+
+            var identitySettings = identitySection.Get<IdentitySettings>();
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = identitySettings.Password.RequiredLength;
+                options.Password.RequireDigit = identitySettings.Password.RequireDigit;
+                options.Password.RequireUppercase = identitySettings.Password.RequireUppercase;
+                options.Password.RequireLowercase = identitySettings.Password.RequireLowercase;
+
+                options.Lockout.MaxFailedAccessAttempts = identitySettings.Lockout.MaxFailedAttempts;
+                options.Lockout.DefaultLockoutTimeSpan =
+                    TimeSpan.FromMinutes(identitySettings.Lockout.LockoutMinutes);
+            });
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.SlidingExpiration = identitySettings.Cookie.IsExpiration;
 
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-                options.SlidingExpiration = true;
-
+                options.ExpireTimeSpan =
+                TimeSpan.FromMinutes(identitySettings.Cookie.ExpireMinutes);
             });
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(opt =>
+            {
+                opt.ValidationInterval = TimeSpan.FromSeconds(10);
+            });
+
+            builder.Services.AddServicesAndRepositories();
+
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
