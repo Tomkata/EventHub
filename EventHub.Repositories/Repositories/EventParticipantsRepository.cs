@@ -6,6 +6,8 @@ namespace EventHub.Repositories.Repositories
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using System.Net.WebSockets;
+
     public class EventParticipantsRepository : IEventParticipantsRepository
     {
         private readonly ApplicationDbContext _dbContext;
@@ -61,5 +63,21 @@ namespace EventHub.Repositories.Repositories
         => await _dbContext.EventParticipants
             .AsNoTracking()
             .AnyAsync(x => x.UserId == userId && x.EventId == eventId);
+
+        public async Task AddParticipantToEventAsync(string userId, Guid eventId)
+        {
+            var eventParticipant = new EventParticipant
+            {
+                EventId = eventId,
+                UserId = userId
+            };
+
+            await _dbContext.EventParticipants.AddAsync(eventParticipant);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

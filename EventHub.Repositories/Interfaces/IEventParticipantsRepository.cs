@@ -14,6 +14,8 @@ namespace EventHub.Repositories.Interfaces
         Task<int> GetParticipantsCountAsync(Guid eventId);
 
         Task<bool> ExistsAsync(string userId, Guid eventId);
+
+        Task AddParticipantToEventAsync(string userId, Guid eventId);
     }
 }
 

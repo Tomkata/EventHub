@@ -11,16 +11,20 @@ namespace EventHub.Services.Services
 
     //Image validation service
     /*
-     If someone rename the .exe to .jpg
+     If someone rename .jpg  to .exe file,
     we will validate this, couse the bytes are gonna be different 
     */
+
+    // REMINDER !!!!!!
+    // TODO: Remove ASP.NET dependency from ImageService (replace IFormFile with Stream abstraction LATER).*/
+
     public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment env;
 
         public ImageService(IWebHostEnvironment webHostEnvironment)
         {
-            this.env = webHostEnvironment;
+            this.env = webHostEnvironment;  
         }
 
         public async Task<string> StoreImageAsync(IFormFile imageFile)
