@@ -6,6 +6,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Category;
     using EventHub.Core.Exceptions.Event.ForJoin;
+    using EventHub.Core.Exceptions.Event.ForLeft;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.User;
@@ -15,6 +16,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Client;
     using System.Security.Claims;
 
     public class EventsController : Controller
@@ -263,8 +265,29 @@ namespace EventHub.Web.Controllers
                     _ => "An unexpected error occurred. Please try again."
                 };
             }
-
             return RedirectToAction(nameof(Details), new { eventId = eventId });
+        }
+
+        public async Task<IActionResult> Left(Guid eventId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                await _participantService.LeftEventAsync(userId,eventId);
+                TempData["SuccessMessage"] = "You have successfully left the event.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex switch
+                {
+                    UserNotParticipantException => "You are not a participant in this event.",
+                    EventNotFoundException => "The event could not be found.",
+                    _ => "An unexpected error occurred."
+                };
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
 

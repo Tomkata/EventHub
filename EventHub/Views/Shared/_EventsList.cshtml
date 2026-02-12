@@ -95,21 +95,27 @@
                                     Details
                                 </a>
                                 
-                                @{if (!eventData.IsParticipant)
+                                    @if (!eventData.IsMyEvents)
                                     {
-                                        <form asp-action="Join" method="post">
-                                            <input type="hidden" name="eventId" value="@eventData.Id" />
-                                            <button class="btn-success btn w-100 m-2" type="submit">Join</button>
-                                        </form>
-                                    }
-                                    else
+                                        if (eventData.IsParticipant)
                                         {
                                             <form asp-action="Left" method="post">
                                                 <input type="hidden" name="eventId" value="@eventData.Id" />
-                                                <button class="btn-danger btn w-100 m-2" type="submit">Left</button>
+                                                <button class="btn btn-danger w-100 m-2" type="submit">
+                                                    Leave
+                                                </button>
                                             </form>
                                         }
-                                }
+                                        else
+                                        {
+                                            <form asp-action="Join" method="post">
+                                                <input type="hidden" name="eventId" value="@eventData.Id" />
+                                                <button class="btn btn-success w-100 m-2" type="submit">
+                                                    Join
+                                                </button>
+                                            </form>
+                                        }
+                                    }
                                     
                             </ul>
 
