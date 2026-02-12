@@ -6,7 +6,6 @@ namespace EventHub.Repositories.Repositories
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.EntityFrameworkCore;
-    using System.Net.WebSockets;
 
     public class EventParticipantsRepository : IEventParticipantsRepository
     {
@@ -79,5 +78,22 @@ namespace EventHub.Repositories.Repositories
         {
             await _dbContext.SaveChangesAsync();
         }
-    }
+
+        public async Task RemoveParticipantFromEventAsync(string userId, Guid eventId)
+        {
+            var entity =await _dbContext.EventParticipants
+                .FirstOrDefaultAsync(x=>x.UserId == userId && eventId == x.EventId);
+
+            if(entity != null)
+             _dbContext.EventParticipants.Remove(entity);
+        }
+
+        public async Task<HashSet<Guid>> GetJoinedEventIdsByUserAsync(string userId)
+       =>
+            await _dbContext.EventParticipants
+             .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(x => x.EventId)
+                .ToHashSetAsync();
+        }
 }

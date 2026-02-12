@@ -5,6 +5,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Category;
+    using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.User;
@@ -22,19 +23,32 @@ namespace EventHub.Web.Controllers
         private readonly IImageService _imageService;
         private readonly IEventFormOptionsService _eventFormOptionsService;
         private readonly IOrganizerService _organizerService;
+        private readonly IParticipantService _participantService;
+
 
         public EventsController(IEventService eventService,
                                 IImageService imageService,
-                                IEventFormOptionsService eventFormOptionsService)
+                                IEventFormOptionsService eventFormOptionsService, 
+                                IParticipantService participantService)
         {
             this._eventService = eventService;
             this._imageService = imageService;
             this._eventFormOptionsService = eventFormOptionsService;
+            this._participantService = participantService;
         }
 
         public async Task<IActionResult> Index()
         {
             var allEvents = await _eventService.GetEventsAsync();
+
+            HashSet<Guid> joinedIds = new();
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                joinedIds = await _participantService.GetJoinedEventIdsAsync(userId);
+            }
+
 
 
             var eventList =
@@ -52,7 +66,8 @@ namespace EventHub.Web.Controllers
                      MaxParticipants = x.MaxParticipants,
                      ParticipantsCount = x.ParticipantsCount,
                      CanDelete = false,
-                     CanEdit = false
+                     CanEdit = false,
+                     IsParticipant = joinedIds.Contains(x.Id)
                  })
                 .ToList();
 
@@ -83,14 +98,14 @@ namespace EventHub.Web.Controllers
                     model = await PrepareCreateViewModel();
                     return View(model);
                 }
-            
+
 
                 if (!ModelState.IsValid)
                 {
                     model = await PrepareCreateViewModel();
                     return View(model);
                 }
-                    
+
                 var imageUrl = await _imageService.StoreImageAsync(model.Image);
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -143,9 +158,9 @@ namespace EventHub.Web.Controllers
             if (model == null)
                 return NotFound();
 
-
-           await FillDropDowns(model);
+  await FillDropDowns(model);
           
+
 
             return View(model);
         }
@@ -176,7 +191,7 @@ namespace EventHub.Web.Controllers
                     ImagePath = model.ExistingImagePath
                 };
 
-               
+
                 if (model.NewImage != null)
                 {
 
@@ -188,7 +203,7 @@ namespace EventHub.Web.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var isAdmin = User.IsInRole(Roles.Admin);
 
-                await _eventService.UpdateAsync(model.Id, eventToUpdate,userId, isAdmin);
+                await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin);
 
                 return RedirectToAction(nameof(Index));
 
@@ -223,6 +238,36 @@ namespace EventHub.Web.Controllers
             model.Locations = dropDown.Locations;
         }
 
+        public async Task<IActionResult> Join(Guid eventId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            try
+            {
+                await _participantService.JoinEventAsync(userId, eventId);
+                TempData["Success"] = "You have successfully joined the event.";
+                return RedirectToAction(nameof(Details), new { eventId = eventId });
+
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex switch
+                {
+                    EventNotFoundException => "The event could not be found.",
+                    EventExpiredException => "This event has already ended.",
+                    UserNotFoundException => "User account not found.",
+                    UserAlreadyJoinedException => "You have already joined this event.",
+                    OrganizerJoinOwnEventException => "Organizers cannot join their own events.",
+                    EventFilledException => "This event has reached its maximum capacity.",
+                    AdminCannnotJoinEventException => "Admin cannot join events.",
+                    _ => "An unexpected error occurred. Please try again."
+                };
+            }
+
+            return RedirectToAction(nameof(Details), new { eventId = eventId });
+        }
+
+
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -241,7 +286,7 @@ namespace EventHub.Web.Controllers
             {
                 return Unauthorized();
             }
-          
+
         }
 
         [HttpGet]
@@ -263,7 +308,7 @@ namespace EventHub.Web.Controllers
                 ParticipantsCount = eventDto.ParticipantList.Count(),
                 MaxParticipants = eventDto.MaxParticipants,
                 Participants = eventDto.ParticipantList
-            };  
+            };
 
 
             return View(model);
@@ -272,7 +317,7 @@ namespace EventHub.Web.Controllers
 
         private async Task<IActionResult> HandleException(EventFormBaseViewModel model, Exception ex)
         {
-           await FillDropDowns(model);
+            await FillDropDowns(model);
 
             ModelState.AddModelError("", $"{ex.Message}");
 

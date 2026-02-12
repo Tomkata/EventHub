@@ -1,18 +1,14 @@
-using EventHub.Infrastructure.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+
 
 
 namespace EventHub
 {
+    using Microsoft.EntityFrameworkCore;
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
     using EventHub.Infrastructure.Identity;
     using EventHub.Services;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
-    using System.Reflection;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program

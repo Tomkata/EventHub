@@ -1,4 +1,5 @@
-﻿namespace EventHub.Services.Interfaces
+﻿
+namespace EventHub.Services.Interfaces
 {
     public interface IParticipantService
     {
@@ -6,5 +7,6 @@
 
         Task LeftEventAsync(string userId, Guid eventId);
 
+        Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId);
     }
 }

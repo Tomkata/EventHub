@@ -19,7 +19,7 @@ namespace EventHub.Web.ViewModels.Events
         [Required]
         [Range(
         DataValidations.Event.MaxParticipantsMin,
-        DataValidations.Event.MaxParticipantsMax)]
+        DataValidations.Event.MaxParticipantsMax)]  
         public int MaxParticipants { get; set; }
 
         [StringLength(
@@ -50,6 +50,6 @@ namespace EventHub.Web.ViewModels.Events
         public Guid LocationId { get; set; }
         public IFormFile Image { get; set; }
 
-    
+
     }
 }

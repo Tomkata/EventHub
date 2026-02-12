@@ -3,7 +3,7 @@
     public class EventExpiredException : Exception
     {
         public EventExpiredException()
-            : base("Cannot join the event because it has already ended.")
+            : base("Cannot join the event because it has already ended!")
         {
         }
     }

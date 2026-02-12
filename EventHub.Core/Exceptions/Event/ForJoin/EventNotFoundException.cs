@@ -3,7 +3,7 @@
     public class EventNotFoundException : Exception
     {
         public EventNotFoundException()
-            :base("Event does not exist")
+            :base("Event does not exist!")
         {
         }
     }

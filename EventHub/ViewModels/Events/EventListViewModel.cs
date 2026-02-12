@@ -16,9 +16,10 @@ namespace EventHub.Web.ViewModels.Events
         public bool IsFull => ParticipantsCount >= MaxParticipants;
         public int MaxParticipants { get; set; }
         public int ParticipantsCount { get; set; }
-
         public bool CanEdit { get; set; }
         public bool CanDelete { get; set; }
+        public bool IsMyEvents { get; set; } = false;
+        public bool IsParticipant { get; set; }
 
     }
 }

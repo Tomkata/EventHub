@@ -11,6 +11,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
+    using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
@@ -86,7 +87,7 @@ namespace EventHub.Services.Services
             var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
 
 
-            await _userManager.AddToRoleAsync(user, "Organizer");
+            await _userManager.AddToRoleAsync(user, Roles.Organizer);
 
             existingRequest.Status = Status.Approved;
 
@@ -111,7 +112,7 @@ namespace EventHub.Services.Services
 
             var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
 
-            await _userManager.RemoveFromRoleAsync(user,"Organizer");
+            await _userManager.RemoveFromRoleAsync(user,Roles.Organizer);
 
             existingRequest.Status = Status.Rejected;
             existingRequest.LastRejectedAt = DateTime.UtcNow;

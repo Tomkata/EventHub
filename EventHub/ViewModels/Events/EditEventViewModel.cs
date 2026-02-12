@@ -31,7 +31,7 @@ namespace EventHub.Web.ViewModels.Events
         public DateTime? StartDate { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.Required)]
-        [DateGreaterThan(nameof(StartDate), ErrorMessage =  EventMessages.InvalidEndDate)]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = EventMessages.InvalidEndDate)]
         public DateTime? EndDate { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.Required)]

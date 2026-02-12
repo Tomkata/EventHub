@@ -37,7 +37,8 @@ namespace EventHub.Web.Controllers
                      MaxParticipants = x.MaxParticipants,
                      ParticipantsCount = x.ParticipantsCount,
                      CanDelete = isAdmin,
-                     CanEdit = isAdmin
+                     CanEdit = isAdmin,
+                     IsMyEvents = true
                  })
                 .ToList();
 

@@ -16,6 +16,11 @@ namespace EventHub.Repositories.Interfaces
         Task<bool> ExistsAsync(string userId, Guid eventId);
 
         Task AddParticipantToEventAsync(string userId, Guid eventId);
+
+        Task RemoveParticipantFromEventAsync(string userId, Guid eventId);
+
+        Task<HashSet<Guid>> GetJoinedEventIdsByUserAsync(string userId);
+        Task SaveChangesAsync();
     }
 }
 

@@ -9,9 +9,8 @@ namespace EventHub.Core.DTOs.Event
         public Guid Id { get; set; }
         public int MaxParticipantsCount { get; set; }
         public int ParticipantsCount { get; set; }
-        public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public string OrganizerId { get; set; }
+        public string OrganizerId { get; set; } = null!;
     }
 }

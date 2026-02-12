@@ -1,4 +1,4 @@
-﻿@using EventHub.Web.ViewModels.Events
+﻿﻿@using EventHub.Web.ViewModels.Events
 
 @model EditEventViewModel;
 
@@ -29,7 +29,7 @@
         @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
         {
             <div class="mb-2">
-                <img src="/@Model.ExistingImagePath"c
+                <img src="/@Model.ExistingImagePath" c
                      alt="Current image"
                      style="max-width: 200px; display:block;" />
             </div>

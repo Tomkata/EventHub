@@ -3,16 +3,23 @@
 namespace EventHub.Services.Services
 {
     using EventHub.Core.Exceptions.Event.ForJoin;
+    using EventHub.Core.Exceptions.Event.ForLeft;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Identity;
-    using System.ComponentModel;
+    using Microsoft.Extensions.Logging;
 
     public class ParticipantService : IParticipantService
     {
+
+        // TODO (Advanced):
+        // This capacity check is NOT concurrency-safe.
+        // In high-load scenarios multiple users can pass this validation simultaneously
+        // and cause overbooking!!! 
+
         private readonly IEventParticipantsRepository _eventParticipantsRepository;
         private readonly IEventRepository _eventRepository;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -26,11 +33,11 @@ namespace EventHub.Services.Services
             this._userManager = userManager;
         }
 
-
+         
         public async Task JoinEventAsync(string userId, Guid eventId)
         {
             var @event = await _eventRepository.GetEventJoinInfoAsync(eventId);
-
+                
             if (@event == null)
                 throw new EventNotFoundException();
 
@@ -67,9 +74,33 @@ namespace EventHub.Services.Services
         private bool IsOrganizerJoinOwnEvent(string userId, string organizerId)
         => userId == organizerId;
 
-        public Task LeftEventAsync(string userId, Guid eventId)
+        public async Task LeftEventAsync(string userId, Guid eventId)
         {
-            throw new NotImplementedException();
+            await GetEventOrThrowAsync(eventId);
+
+            var isParticipant = await _eventParticipantsRepository.ExistsAsync(userId, eventId);
+
+            if (!isParticipant)
+                throw new UserNotParticipantException();
+
+            await _eventParticipantsRepository.RemoveParticipantFromEventAsync(userId,eventId);
+            await _eventParticipantsRepository.SaveChangesAsync();
+            
         }
+
+        private async Task GetEventOrThrowAsync(Guid eventId)
+        {
+            var @event = await _eventRepository.GetEventJoinInfoAsync(eventId);
+
+            if (@event == null)
+                throw new EventNotFoundException();
+
+           
+        }
+
+        public async Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId)
+       => await _eventParticipantsRepository.GetJoinedEventIdsByUserAsync(userId);
+
+        
     }
 }
