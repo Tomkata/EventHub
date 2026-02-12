@@ -257,7 +257,7 @@ namespace EventHub.Web.Controllers
                 {
                     EventNotFoundException => "The event could not be found.",
                     EventExpiredException => "This event has already ended.",
-                    UserNotFoundException => "User account not found.",
+                    UserNotFoundException => "You need to log in.",
                     UserAlreadyJoinedException => "You have already joined this event.",
                     OrganizerJoinOwnEventException => "Organizers cannot join their own events.",
                     EventFilledException => "This event has reached its maximum capacity.",

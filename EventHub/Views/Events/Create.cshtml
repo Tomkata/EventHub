@@ -1,99 +1,155 @@
-﻿﻿@using EventHub.Web.ViewModels.Events;
+﻿@using EventHub.Web.ViewModels.Events;
 @model CreateEventViewModel
 
-<p class="h2">Create Event</p>
+@{
+    ViewData["Title"] = "Create Event";
+}
 
-<div class="create-page container w-60 d-flex flex-column">
-    <form asp-action="Create"
-          method="post"
-          class="d-flex flex-column justify-content-center w-60 g-4"
-          enctype="multipart/form-data">
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="form-group">
-            <label asp-for="Title">Title</label>
-            <input asp-for="Title" type="text" class="form-control" placeholder="Enter event title" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Image">Event Image</label>
-            <input asp-for="Image" type="file" class="form-control" accept="image/*" />
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
-
+<!-- Page Header -->
+<section class="form-header-section">
+    <div class="container">
         <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="StartDate">Start Date & Time</label>
-                    <input asp-for="StartDate"
-                           type="datetime-local"
-                           class="form-control"
-                           id="startDate" />
-                    <span asp-validation-for="StartDate" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="EndDate">End Date & Time</label>
-                    <input asp-for="EndDate"
-                           type="datetime-local"
-                           class="form-control"
-                           id="endDate" />
-                    <span asp-validation-for="EndDate" class="text-danger"></span>
-                </div>
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-calendar-plus"></i> Create New Event
+                </h1>
+                <p class="lead mb-0">Fill in the details to create an amazing event</p>
             </div>
         </div>
+    </div>
+</section>
 
-        <div class="form-group">
-            <label asp-for="CategoryId">Category</label>
-            <select asp-for="CategoryId" class="form-control">
-                <option value="">-- Select Category --</option>
-                @foreach (var category in Model.Categories)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
+<!-- Form Section -->
+<section class="form-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="modern-form-card">
+                    <form asp-action="Create"
+                          method="post"
+                          class="modern-form"
+                          enctype="multipart/form-data">
 
-        <div class="form-group">
-            <label asp-for="LocationId">Location</label>
-            <select asp-for="LocationId" class="form-control">
-                <option value="">-- Select Location --</option>
-                @foreach (var location in Model.Locations)
-                {
-                    <option value="@location.Id">@location.Name</option>
-                }
-            </select>
-            <span asp-validation-for="LocationId" class="text-danger"></span>
-        </div>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert"></div>
 
-        <div class="form-group">
-            <label asp-for="Address">Address</label>
-            <input asp-for="Address" type="text" class="form-control" placeholder="Enter event address" />
-            <span asp-validation-for="Address" class="text-danger"></span>
-        </div>
+                        <!-- Title -->
+                        <div class="modern-form-group">
+                            <label asp-for="Title" class="modern-label">
+                                <i class="bi bi-type text-primary"></i> Event Title
+                            </label>
+                            <input asp-for="Title" type="text" class="modern-input" placeholder="Enter an exciting event title..." />
+                            <span asp-validation-for="Title" class="validation-message"></span>
+                        </div>
 
-        <div class="form-group">
-            <label asp-for="MaxParticipants">Maximum Participants</label>
-            <input asp-for="MaxParticipants" type="number" class="form-control" min="1" placeholder="Enter max participants" />
-            <span asp-validation-for="MaxParticipants" class="text-danger"></span>
-        </div>
+                        <!-- Event Image -->
+                        <div class="modern-form-group">
+                            <label asp-for="Image" class="modern-label">
+                                <i class="bi bi-image text-primary"></i> Event Image
+                            </label>
+                            <input asp-for="Image" type="file" class="modern-input-file" accept="image/*" />
+                            <span asp-validation-for="Image" class="validation-message"></span>
+                            <small class="form-text text-muted">Upload an eye-catching image for your event</small>
+                        </div>
 
-        <div class="form-group">
-            <label asp-for="Description">Description</label>
-            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter event description"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+                        <!-- Date Range -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="StartDate" class="modern-label">
+                                        <i class="bi bi-calendar-event text-success"></i> Start Date & Time
+                                    </label>
+                                    <input asp-for="StartDate" type="datetime-local" class="modern-input" id="startDate" />
+                                    <span asp-validation-for="StartDate" class="validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="EndDate" class="modern-label">
+                                        <i class="bi bi-calendar-check text-danger"></i> End Date & Time
+                                    </label>
+                                    <input asp-for="EndDate" type="datetime-local" class="modern-input" id="endDate" />
+                                    <span asp-validation-for="EndDate" class="validation-message"></span>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="d-flex justify-content-center gap-2 mt-3">
-            <a asp-controller="Events" asp-action="Index" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">Create Event</button>
+                        <!-- Category and Location -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="CategoryId" class="modern-label">
+                                        <i class="bi bi-tag text-info"></i> Category
+                                    </label>
+                                    <select asp-for="CategoryId" class="modern-select">
+                                        <option value="">-- Select Category --</option>
+                                        @foreach (var category in Model.Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="LocationId" class="modern-label">
+                                        <i class="bi bi-geo-alt text-warning"></i> Location
+                                    </label>
+                                    <select asp-for="LocationId" class="modern-select">
+                                        <option value="">-- Select Location --</option>
+                                        @foreach (var location in Model.Locations)
+                                        {
+                                            <option value="@location.Id">@location.Name</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="LocationId" class="validation-message"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="modern-form-group">
+                            <label asp-for="Address" class="modern-label">
+                                <i class="bi bi-pin-map text-danger"></i> Address
+                            </label>
+                            <input asp-for="Address" type="text" class="modern-input" placeholder="123 Main Street, City..." />
+                            <span asp-validation-for="Address" class="validation-message"></span>
+                        </div>
+
+                        <!-- Max Participants -->
+                        <div class="modern-form-group">
+                            <label asp-for="MaxParticipants" class="modern-label">
+                                <i class="bi bi-people text-success"></i> Maximum Participants
+                            </label>
+                            <input asp-for="MaxParticipants" type="number" class="modern-input" min="1" placeholder="How many people can attend?" />
+                            <span asp-validation-for="MaxParticipants" class="validation-message"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="modern-form-group">
+                            <label asp-for="Description" class="modern-label">
+                                <i class="bi bi-card-text text-info"></i> Description
+                            </label>
+                            <textarea asp-for="Description" class="modern-textarea" rows="5" placeholder="Describe your event in detail..."></textarea>
+                            <span asp-validation-for="Description" class="validation-message"></span>
+                            <small class="form-text text-muted">Tell attendees what to expect from your event</small>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a asp-controller="Events" asp-action="Index" class="btn btn-cancel">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-submit">
+                                <i class="bi bi-check-circle me-2"></i> Create Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -118,3 +174,214 @@
         });
     </script>
 }
+
+<style>
+    /* Form Header */
+    .form-header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 0 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .form-header-section h1,
+    .form-header-section p {
+        position: relative;
+        z-index: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-header-section p {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Form Section */
+    .form-section {
+        background: #f8f9fa;
+        min-height: 70vh;
+    }
+    
+    .modern-form-card {
+        background: white;
+        border-radius: 25px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Modern Form Styling */
+    .modern-form-group {
+        margin-bottom: 1.75rem;
+    }
+    
+    .modern-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    .modern-input,
+    .modern-select,
+    .modern-textarea {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: #2d3748;
+    }
+    
+    .modern-input:focus,
+    .modern-select:focus,
+    .modern-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        background: #f8f9ff;
+    }
+    
+    .modern-input::placeholder,
+    .modern-textarea::placeholder {
+        color: #a0aec0;
+    }
+    
+    .modern-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+    
+    .modern-input-file {
+        width: 100%;
+        padding: 1rem;
+        border: 2px dashed #cbd5e0;
+        border-radius: 12px;
+        background: #f7fafc;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .modern-input-file:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+    }
+    
+    .modern-input-file:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .validation-message {
+        display: block;
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .modern-alert {
+        border-radius: 12px;
+        border: none;
+        border-left: 4px solid #e53e3e;
+        margin-bottom: 2rem;
+    }
+    
+    .form-text {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f1f5f9;
+    }
+    
+    .btn-cancel,
+    .btn-submit {
+        padding: 0.875rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .btn-cancel {
+        background: #e2e8f0;
+        color: #64748b;
+    }
+    
+    .btn-cancel:hover {
+        background: #cbd5e0;
+        color: #475569;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Responsive */
+    media (max-width: 768px) {
+        .modern-form-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn-cancel,
+        .btn-submit {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
