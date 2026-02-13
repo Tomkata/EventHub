@@ -288,7 +288,6 @@ Based on the current implementation, realistic improvements for a production sys
 ## 👨‍💻 Author
 
 **Toma Andreev**  
-Naval Academy Student
 
 [![GitHub](https://img.shields.io/badge/GitHub-Tomkata-black?logo=github)](https://github.com/Tomkata)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Toma_Andreev-0A66C2?logo=linkedin)](https://bg.linkedin.com/in/toma-andreev-05a7b6399?trk=people-guest_people_search-card)
