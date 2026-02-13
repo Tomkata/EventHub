@@ -1,6 +1,6 @@
 # EventHub
 
-A web-based event management system built with ASP.NET Core MVC as a university course project. The application allows users to browse events, organizers to create and manage events, and administrators to oversee the platform.
+A web-based event management system built with ASP.NET Core MVC as a SoftUni course project. The application allows users to browse events, organizers to create and manage events, and administrators to oversee the platform.
 
 ## Architecture
 
