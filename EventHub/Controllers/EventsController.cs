@@ -4,11 +4,9 @@ namespace EventHub.Web.Controllers
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
-    using EventHub.Core.Exceptions.Category;
     using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Event.ForLeft;
     using EventHub.Core.Exceptions.Image;
-    using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
     using EventHub.Services.Interfaces;
@@ -150,6 +148,7 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Update(Guid eventId)
         {
 
@@ -226,9 +225,15 @@ namespace EventHub.Web.Controllers
             model.Locations = dropDown.Locations;
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Join(Guid eventId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new UnauthorizedAccessException();
 
             try
             {
@@ -244,6 +249,9 @@ namespace EventHub.Web.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Left(Guid eventId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

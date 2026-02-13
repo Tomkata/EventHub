@@ -1,11 +1,12 @@
-﻿using EventHub.Infrastructure;
-using EventHub.Services.Interfaces;
-using EventHub.Web.ViewModels.Events;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿
 
 namespace EventHub.Web.Controllers
 {
+    using EventHub.Infrastructure;
+    using EventHub.Services.Interfaces;
+    using EventHub.Web.ViewModels.Events;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     public class AdminEventsController : Controller
     {
         private readonly IEventService _eventService;
