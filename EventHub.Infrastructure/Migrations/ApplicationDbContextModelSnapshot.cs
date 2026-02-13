@@ -4,19 +4,16 @@ using EventHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EventHub.Data.Migrations
+namespace EventHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260203052706_AddOrganizerRequests")]
-    partial class AddOrganizerRequests
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,113 +141,6 @@ namespace EventHub.Data.Migrations
                     b.HasIndex("OrganizerId");
 
                     b.ToTable("Events");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a0000001-0000-0000-0000-000000000001"),
-                            Address = "Rowing Canal, Plovdiv",
-                            CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Open-air rock concert featuring Bulgarian bands.",
-                            EndDate = new DateTime(2026, 6, 20, 23, 30, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/concert.jpg",
-                            LocationId = new Guid("46ee85a7-5da3-42b3-96d2-b58fd2b8cfc9"),
-                            MaxParticipants = 800,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 6, 20, 18, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Rock the Night Festival"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000002-0000-0000-0000-000000000002"),
-                            Address = "Inter Expo Center, Sofia",
-                            CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Annual conference for software engineers and tech leaders.",
-                            EndDate = new DateTime(2026, 3, 16, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/conference.jpg",
-                            LocationId = new Guid("b285237b-5ddc-449f-bf3a-c9cf5e805910"),
-                            MaxParticipants = 600,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 3, 15, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Tech Innovators Conference 2026"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000003-0000-0000-0000-000000000003"),
-                            Address = "Sea Garden, Varna",
-                            CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Annual half marathon open to professionals and amateurs.",
-                            EndDate = new DateTime(2026, 4, 10, 14, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/spot-event.jpg",
-                            LocationId = new Guid("2975d8e3-7c0c-4a92-a7e2-655b2cb349f4"),
-                            MaxParticipants = 1000,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 4, 10, 8, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "City Half Marathon"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000004-0000-0000-0000-000000000004"),
-                            Address = "Art Gallery Boris Denev",
-                            CategoryId = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2025, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Exhibition of contemporary Bulgarian artists.",
-                            EndDate = new DateTime(2026, 5, 20, 19, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/spot-event.jpg",
-                            LocationId = new Guid("c85b0784-ea5b-4e53-b0e1-527e5963bfef"),
-                            MaxParticipants = 300,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 5, 5, 10, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Modern Art Expo"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000005-0000-0000-0000-000000000005"),
-                            Address = "Tech Hub Ruse",
-                            CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
-                            CreatedAt = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Practical workshop covering EF Core and Web APIs.",
-                            EndDate = new DateTime(2026, 2, 22, 17, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/workshop.jpg",
-                            LocationId = new Guid("d80720a5-6e69-44a5-87dd-997df1e4ddc8"),
-                            MaxParticipants = 50,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 2, 22, 10, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "ASP.NET Core Hands-on Workshop"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000006-0000-0000-0000-000000000006"),
-                            Address = "Central Beach, Burgas",
-                            CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
-                            CreatedAt = new DateTime(2025, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Street food, live music, and local craft beer.",
-                            EndDate = new DateTime(2026, 7, 12, 23, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/festival-event.jpg",
-                            LocationId = new Guid("fa600614-8aa2-441f-86fa-3b04bd8fb796"),
-                            MaxParticipants = 900,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 7, 10, 12, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Summer Food & Music Festival"
-                        },
-                        new
-                        {
-                            Id = new Guid("a0000007-0000-0000-0000-000000000007"),
-                            Address = "Coworking Space Sofia",
-                            CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            CreatedAt = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Networking meetup for startup founders and investors.",
-                            EndDate = new DateTime(2026, 1, 30, 21, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagePath = "images/events/meet-up.jpg",
-                            LocationId = new Guid("b285237b-5ddc-449f-bf3a-c9cf5e805910"),
-                            MaxParticipants = 120,
-                            OrganizerId = "9dbe8efe-5e69-44a9-aacb-e75f81724fc5",
-                            StartDate = new DateTime(2026, 1, 30, 18, 30, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Startup Founders Meetup"
-                        });
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.EventParticipant", b =>
@@ -305,6 +195,9 @@ namespace EventHub.Data.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastRejectedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
                         .HasMaxLength(300)
@@ -479,10 +372,12 @@ namespace EventHub.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -519,10 +414,12 @@ namespace EventHub.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");

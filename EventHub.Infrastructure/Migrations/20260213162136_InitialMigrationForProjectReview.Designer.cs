@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EventHub.Data.Migrations
+namespace EventHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260122132514_ChangeAddressPropertyToBeInAddress")]
-    partial class ChangeAddressPropertyToBeInAddress
+    [Migration("20260213162136_InitialMigrationForProjectReview")]
+    partial class InitialMigrationForProjectReview
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,11 +104,12 @@ namespace EventHub.Data.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("The Description of the Event");
 
-                    b.Property<DateTime>("EventDate")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2")
-                        .HasComment("The date of the Event");
+                        .HasComment("The end date of the event");
 
                     b.Property<string>("ImagePath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasComment("The Image of the Event");
 
@@ -124,10 +125,14 @@ namespace EventHub.Data.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasComment("The Organizer of the event");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2")
+                        .HasComment("The start date of the Event");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("The Title of the Event");
 
                     b.HasKey("Id");
@@ -169,19 +174,51 @@ namespace EventHub.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasComment("The City where the event is located");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("The Country where the event is located");
-
                     b.Property<int>("Zip")
                         .HasColumnType("int")
                         .HasComment("The Zip Code of the City");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("City", "Zip")
+                        .IsUnique();
+
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.OrganizerRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastRejectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("OrganizerRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -395,7 +432,7 @@ namespace EventHub.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EventHub.Infrastructure.Data.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("EventHub.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
@@ -416,7 +453,7 @@ namespace EventHub.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EventHub.Infrastructure.Data.Identity.ApplicationUser", null)
+                    b.HasOne("EventHub.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -435,7 +472,7 @@ namespace EventHub.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EventHub.Infrastructure.Data.Identity.ApplicationUser", null)
+                    b.HasOne("EventHub.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)

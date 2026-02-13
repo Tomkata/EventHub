@@ -14,6 +14,7 @@ namespace EventHub.Infrastructure.Data.Seed
         {
             await EnsureRoleAsync(roleManager, "Admin");
             await EnsureRoleAsync(roleManager, "Organizer");
+            await EnsureRoleAsync(roleManager, "User");
 
             await EnsureUserAsync(
                 userManager,
@@ -45,10 +46,10 @@ namespace EventHub.Infrastructure.Data.Seed
         }
 
         private static async Task EnsureUserAsync(
-            UserManager<ApplicationUser> userManager,
-            string email,
-            string password,
-            string? role)
+    UserManager<ApplicationUser> userManager,
+    string email,
+    string password,
+    string? role)
         {
             var user = await userManager.FindByEmailAsync(email);
 
@@ -61,7 +62,13 @@ namespace EventHub.Infrastructure.Data.Seed
                     EmailConfirmed = true
                 };
 
-                await userManager.CreateAsync(user, password);
+                var result = await userManager.CreateAsync(user, password);
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create user {email}: " +
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
             }
 
             if (role != null && !await userManager.IsInRoleAsync(user, role))

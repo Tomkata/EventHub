@@ -15,6 +15,7 @@ namespace EventHub
     {
         public static async Task Main(string[] args)    
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -67,45 +68,24 @@ namespace EventHub
 
             var app = builder.Build();
 
-           //role seeder
-            using (var scope = app.Services.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                await RoleSeeder.SeedRolesAsync(roleManager);
-            }
-            
-            //identity seeder
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-                await IdentitySeeder.SeedAsync(userManager, roleManager);
-            }
-
-            //event seeder
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 var context = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                await context.Database.MigrateAsync();
 
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                await IdentitySeeder.SeedAsync(userManager, roleManager);
+                await DataSeeder.SeedAsync(context);
                 await EventSeeder.SeedAsync(context, userManager);
             }
 
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await DataSeeder.SeedAsync(context);
-            }
-
-
-                // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment())
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
                 {
                     app.UseMigrationsEndPoint();
                 }
