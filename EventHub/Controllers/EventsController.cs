@@ -16,7 +16,6 @@ namespace EventHub.Web.Controllers
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Identity.Client;
     using System.Security.Claims;
 
     public class EventsController : Controller
@@ -145,7 +144,6 @@ namespace EventHub.Web.Controllers
             }
             catch (InvalidImageFormatException imageException)
             {
-
                 return await HandleException(model, imageException);
             }
         }
@@ -210,28 +208,16 @@ namespace EventHub.Web.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
-            catch (ImageEmptyException imageException)
-            {
-                return await HandleException(model, imageException);
-            }
-            catch (InvalidImageFormatException imageException)
-            {
-                return await HandleException(model, imageException);
-            }
-            catch (InvalidCategoryException categoryException)
-            {
-                return await HandleException(model, categoryException);
-            }
-            catch (InvalidLocationException locationException)
-            {
-                return await HandleException(model, locationException);
-            }
             catch (InvalidUserPermissionsException)
             {
                 return Unauthorized();
             }
+            catch (Exception ex)
+            {
+                return await HandleException(model, ex);
+            }
         }
-
+        
         private async Task FillDropDowns(EventFormBaseViewModel model)
         {
             var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
@@ -248,24 +234,14 @@ namespace EventHub.Web.Controllers
             {
                 await _participantService.JoinEventAsync(userId, eventId);
                 TempData["Success"] = "You have successfully joined the event.";
-                return RedirectToAction(nameof(Details), new { eventId = eventId });
+                return RedirectToAction(nameof(Index), new { eventId = eventId });
 
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex switch
-                {
-                    EventNotFoundException => "The event could not be found.",
-                    EventExpiredException => "This event has already ended.",
-                    UserNotFoundException => "You need to log in.",
-                    UserAlreadyJoinedException => "You have already joined this event.",
-                    OrganizerJoinOwnEventException => "Organizers cannot join their own events.",
-                    EventFilledException => "This event has reached its maximum capacity.",
-                    AdminCannnotJoinEventException => "Admin cannot join events.",
-                    _ => "An unexpected error occurred. Please try again."
-                };
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index), new { eventId = eventId });
             }
-            return RedirectToAction(nameof(Details), new { eventId = eventId });
         }
 
         public async Task<IActionResult> Left(Guid eventId)

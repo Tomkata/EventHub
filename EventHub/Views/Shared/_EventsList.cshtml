@@ -3,6 +3,7 @@
 @model IEnumerable<EventListViewModel>;
 @{
     var message = TempData["SuccessMessage"] as string ?? string.Empty;
+    var errMessage = TempData["Error"] as string ?? string.Empty;
 }
 
 
@@ -11,6 +12,11 @@
 {
     <p class="h4 alert alert-success">@message</p>  
 }
+@if (!string.IsNullOrEmpty(errMessage))
+{
+    <p class="h4 alert alert-danger">@errMessage</p>
+}
+
 
 @if (User.IsInRole("Admin"))
 {

@@ -3,7 +3,7 @@
     public class OrganizerJoinOwnEventException : Exception
     {
         public OrganizerJoinOwnEventException()
-            :base("The organizer cannot join their own event!")
+            :base("Organizers cannot join their own events.")
         {
         }
     }

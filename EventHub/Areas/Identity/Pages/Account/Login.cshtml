@@ -5,79 +5,451 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+<!-- Page Header -->
+<section class="auth-header-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto text-center">
+                <div class="auth-icon">
+                    <i class="bi bi-box-arrow-in-right"></i>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </form>
-        </section>
+                <h1 class="display-5 fw-bold mb-3">Welcome Back!</h1>
+                <p class="lead mb-0">Sign in to continue to EventHub</p>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
+</section>
+
+<!-- Auth Section -->
+<section class="auth-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row g-0 auth-card">
+                    <!-- Left Side - Main Login Form -->
+                    <div class="col-md-6 auth-form-side">
+                        <div class="p-4 p-lg-5">
+                            <section>
+                                <form id="account" method="post">
+                                    <h2 class="auth-form-title mb-4">
+                                        <i class="bi bi-person-circle text-primary"></i>
+                                        Sign In
+                                    </h2>
+                                    
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert mb-4" role="alert"></div>
+                                    
+                                    <div class="modern-form-group">
+                                        <label asp-for="Input.Email" class="modern-label">
+                                            <i class="bi bi-envelope text-primary"></i> Email Address
+                                        </label>
+                                        <input asp-for="Input.Email" class="modern-input" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                        <span asp-validation-for="Input.Email" class="validation-message"></span>
+                                    </div>
+                                    
+                                    <div class="modern-form-group">
+                                        <label asp-for="Input.Password" class="modern-label">
+                                            <i class="bi bi-lock text-primary"></i> Password
+                                        </label>
+                                        <input asp-for="Input.Password" class="modern-input" autocomplete="current-password" aria-required="true" placeholder="Enter your password" />
+                                        <span asp-validation-for="Input.Password" class="validation-message"></span>
+                                    </div>
+                                    
+                                    <div class="modern-checkbox mb-4">
+                                        <label asp-for="Input.RememberMe" class="checkbox-label">
+                                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                                            <span>@Html.DisplayNameFor(m => m.Input.RememberMe)</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid mb-4">
+                                        <button id="login-submit" type="submit" class="btn btn-auth-primary">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="auth-links text-center">
+                                        <a id="forgot-password" asp-page="./ForgotPassword" class="auth-link">
+                                            <i class="bi bi-question-circle"></i> Forgot your password?
+                                        </a>
+                                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="auth-link">
+                                            <i class="bi bi-envelope-check"></i> Resend email confirmation
+                                        </a>
+                                    </div>
+                                </form>
+                            </section>
                         </div>
-                    </form>
-                }
-            }
-        </section>
+                    </div>
+                    
+                    <!-- Right Side - External Login & Register -->
+                    <div class="col-md-6 auth-side-panel">
+                        <div class="p-4 p-lg-5">
+                            <!-- External Logins -->
+                            <section class="mb-5">
+                                <h3 class="auth-section-title">
+                                    <i class="bi bi-grid-3x3-gap text-white"></i>
+                                    Quick Sign In
+                                </h3>
+                                <div class="divider-line mb-4"></div>
+                                @{
+                                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                    {
+                                        <div class="external-login-info">
+                                            <i class="bi bi-info-circle fs-3 mb-3 d-block"></i>
+                                            <p class="small">
+                                                External authentication services are not configured. 
+                                                <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="text-white text-decoration-underline">Learn more</a>
+                                            </p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                            <div class="external-login-buttons">
+                                                @foreach (var provider in Model.ExternalLogins!)
+                                                {
+                                                    <button type="submit" class="btn btn-external-login" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                                        @provider.DisplayName
+                                                    </button>
+                                                }
+                                            </div>
+                                        </form>
+                                    }
+                                }
+                            </section>
+                            
+                            <!-- Register Section -->
+                            <section>
+                                <h3 class="auth-section-title">
+                                    <i class="bi bi-person-plus text-white"></i>
+                                    New to EventHub?
+                                </h3>
+                                <div class="divider-line mb-4"></div>
+                                <p class="text-white-75 mb-4">
+                                    Create an account to discover amazing events and connect with like-minded people.
+                                </p>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-register-now">
+                                    <i class="bi bi-person-plus-fill me-2"></i> Create Account
+                                </a>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    /* Auth Header */
+    .auth-header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 0 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .auth-header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .auth-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .auth-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .auth-header-section h1,
+    .auth-header-section p {
+        position: relative;
+        z-index: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .auth-header-section p {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Auth Section */
+    .auth-section {
+        background: #f8f9fa;
+        min-height: 70vh;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .auth-form-side {
+        background: white;
+    }
+    
+    .auth-side-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        position: relative;
+    }
+    
+    .auth-side-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .auth-form-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .auth-section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .divider-line {
+        width: 50px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 2px;
+    }
+    
+    .text-white-75 {
+        color: rgba(255, 255, 255, 0.85);
+    }
+    
+    /* Form Styling */
+    .modern-form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .modern-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .modern-input {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: #2d3748;
+    }
+    
+    .modern-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        background: #f8f9ff;
+    }
+    
+    .modern-input::placeholder {
+        color: #a0aec0;
+    }
+    
+    .modern-checkbox {
+        display: flex;
+        align-items: center;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: #64748b;
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    .checkbox-label input {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .validation-message {
+        display: block;
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .modern-alert {
+        border-radius: 12px;
+        border: none;
+        border-left: 4px solid #e53e3e;
+    }
+    
+    /* Buttons */
+    .btn-auth-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-auth-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-register-now {
+        background: white;
+        color: #667eea;
+        border: 2px solid white;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .btn-register-now:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-external-login {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .btn-external-login:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    /* Auth Links */
+    .auth-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .auth-link:hover {
+        color: #764ba2;
+        transform: translateX(5px);
+    }
+    
+    .external-login-info {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Responsive */
+    media (max-width: 768px) {
+        .auth-card {
+            border-radius: 20px;
+        }
+        
+        .auth-form-side,
+        .auth-side-panel {
+            padding: 2rem 1.5rem !important;
+        }
+    }
+</style>
