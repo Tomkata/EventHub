@@ -69,7 +69,7 @@ Three demo accounts are automatically created during seeding:
 |-------|----------|------|-------------|
 | admin@eventhub.com | Admin123! | Admin | Full access, can modify any event, manage requests for organizer, cannot join events |
 | organizer@eventhub.com | Admin123! | Organizer | Can create/manage own events, can join other events |
-| user@eventhub.com | User123! | User | Can browse |
+| user@eventhub.com | User123! | User | Can browse, can join events |
 
 **Note**: Admin accounts cannot join events. Organizers cannot join events they created.
 
