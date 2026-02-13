@@ -294,15 +294,6 @@ Naval Academy Student
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Toma_Andreev-0A66C2?logo=linkedin)](https://bg.linkedin.com/in/toma-andreev-05a7b6399?trk=people-guest_people_search-card)
 [![Instagram](https://img.shields.io/badge/Instagram-toma__andreev-purple?logo=instagram)](https://www.instagram.com/toma_andreev/)
 
----
-
-## 📄 License
-
-This project is created for **educational purposes** as part of programming coursework at the Naval Academy.
-
-Feel free to use this code for learning and reference.
-
----
 
 
 ---
