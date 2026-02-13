@@ -220,13 +220,13 @@ Controllers use the `[Authorize]` attribute with role requirements:
 
 ## Technologies Used
 
-- **ASP.NET Core 8.0 MVC** - Web framework
+- **ASP.NET Core 10 MVC** - Web framework
 - **Entity Framework Core** - ORM for data access
 - **ASP.NET Core Identity** - Authentication and authorization
 - **SQL Server** - Database (LocalDB for development)
 - **Bootstrap 5** - UI framework
 - **Razor Pages** - Identity UI scaffolding
-- **C# 12** - Programming language
+- **C#** - Programming language
 
 ### Design Patterns
 
@@ -274,6 +274,43 @@ Based on the current implementation, realistic improvements for a production sys
 10. **Event Capacity Management**  
     Implement a waitlist system for events that reach capacity.
 
+11. **Custom Accounts and chat**  
+     User create accounts with information and can invite each other and intruduce them.
+    
+12. **NLP(Natural language processing suggestions)**  
+     On base discription and interests on users. The proiles will be suggested each other.
 ---
 
-**Academic Project Context**: This project was developed as part of a university course to demonstrate understanding of ASP.NET Core MVC, Entity Framework Core, layered architecture, and secure web application development practices.
+**Academic Project Context**: This project was developed as part of a SoftUni course to demonstrate understanding of ASP.NET Core MVC, Entity Framework Core, layered architecture, and secure web application development practices.
+
+
+
+## 👨‍💻 Author
+
+**Toma Andreev**  
+Naval Academy Student
+
+[![GitHub](https://img.shields.io/badge/GitHub-Tomkata-black?logo=github)](https://github.com/Tomkata)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Toma_Andreev-0A66C2?logo=linkedin)](https://bg.linkedin.com/in/toma-andreev-05a7b6399?trk=people-guest_people_search-card)
+[![Instagram](https://img.shields.io/badge/Instagram-toma__andreev-purple?logo=instagram)](https://www.instagram.com/toma_andreev/)
+
+---
+
+## 📄 License
+
+This project is created for **educational purposes** as part of programming coursework at the Naval Academy.
+
+Feel free to use this code for learning and reference.
+
+---
+
+
+---
+
+## 📧 Contact
+
+For questions, suggestions, or collaboration:
+- Email: tomaandreev12@gmail.com
+- LinkedIn: https://www.linkedin.com/in/toma-andreev-05a7b6399/
+
+---
