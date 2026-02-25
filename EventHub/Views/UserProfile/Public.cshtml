@@ -1,0 +1,84 @@
+﻿@using EventHub.Web.ViewModels.UserProfile
+@model PublicUserProfileViewModel
+
+@{
+    ViewData["Title"] = $"{Model.FirstName} {Model.LastName}";
+}
+
+<div class="profile-page container py-5">
+
+    <div class="profile-hero row align-items-center mb-5 p-4 rounded-4"
+         style="background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%); color: white;">
+
+        <div class="col-auto">
+            @if (!string.IsNullOrEmpty(Model.ProfileImagePath))
+            {
+                <img src="/@Model.ProfileImagePath"
+                     class="rounded-circle border border-4 border-white shadow"
+                     style="width: 110px; height: 110px; object-fit: cover;" />
+            }
+            else
+            {
+                <div class="rounded-circle border border-4 border-white shadow d-flex align-items-center justify-content-center"
+                     style="width: 110px; height: 110px; background: rgba(255,255,255,0.15); font-size: 2.5rem;">
+                    👤
+                </div>
+            }
+        </div>
+
+        <div class="col">
+            <h1 class="fw-bold mb-0">@Model.FirstName @Model.LastName</h1>
+        </div>
+
+        <div class="col-auto">
+            <a asp-controller="Events" asp-action="Index" class="btn btn-light fw-semibold px-4">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- About -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-person-lines-fill me-2 text-primary"></i>About
+                    </h5>
+                    <p class="text-secondary">
+                        @(string.IsNullOrEmpty(Model.Description) ? "No description yet." : Model.Description)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-stars me-2 text-warning"></i>Interests
+                    </h5>
+                    @if (Model.Interests.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var interest in Model.Interests)
+                            {
+                                <span class="badge rounded-pill px-3 py-2"
+                                      style="background: rgba(67,56,202,0.1); color: #4338ca; font-size: 0.85rem;">
+                                    @interest
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No interests added yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

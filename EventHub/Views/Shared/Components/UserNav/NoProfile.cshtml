@@ -1,0 +1,60 @@
+﻿<ul class="navbar-nav ms-auto align-items-center gap-3 me-4">
+
+    <li class="nav-item">
+        @{
+            var email = User.Identity?.Name ?? "";
+            var username = email.Contains("@") ? email.Split("@")[0] : email;
+        }
+        <span class="hello-user">Hello, <strong>@username</strong>.</span>
+    </li>
+
+    <li class="nav-item">
+        <a asp-action="CreateProfile" asp-controller="UserProfile"
+               class="complete-profile-link">
+            ✦ Complete Profile
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="complete-profile-link logout-btn">
+                Logout
+            </button>
+        </form>
+    </li>
+
+</ul>
+
+<style>
+    .complete-profile-link {
+        color: #ffffff;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        background: rgba(167, 139, 250, 0.2);
+        border: 1px solid rgba(167, 139, 250, 0.6);
+        padding: 6px 14px;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .complete-profile-link:hover {
+            background: rgba(167, 139, 250, 0.4);
+            border-color: #a78bfa;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+    .hello-user {
+        color: #e2e8f0;
+        font-size: 1rem;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+        .hello-user strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+</style>

@@ -1,10 +1,12 @@
 ﻿
 namespace EventHub.Services.Interfaces
 {
-    using Microsoft.AspNetCore.Http;
+    using EventHub.Core.Enums;
 
     public interface IImageService
     {
-        public Task<string> StoreImageAsync(IFormFile imageFile);
+        public Task<string> StoreImageAsync(Stream stream,string fileName,ImageFolder folder);
+
+        public Task DeleteImageAsync(string imagePath);
     }
 }

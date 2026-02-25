@@ -1,8 +1,10 @@
-﻿@using EventHub.Web.ViewModels.Events
+﻿@using EventHub.Services.Common
+@using EventHub.Web.ViewModels.Events
 
-@model IEnumerable<EventListViewModel>;
+@model IEnumerable<EventListViewModel>
 @{
     var message = TempData["SuccessMessage"] as string ?? string.Empty;
+
     var errMessage = TempData["Error"] as string ?? string.Empty;
 }
 
@@ -101,20 +103,19 @@
                                     Details
                                 </a>
                                 
-                                    @if (!eventData.IsMyEvents)
+                                    @if (!eventData.HideJoinLeaveButtons)
                                     {
                                         if (eventData.IsParticipant)
                                         {
-                                            <form asp-action="Left" method="post">
+                                            <form asp-action="Left" asp-controller="Events" method="post">
                                                 <input type="hidden" name="eventId" value="@eventData.Id" />
-                                                <button class="btn btn-danger w-100 m-2" type="submit">
-                                                    Leave
-                                                </button>
+                                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                <button class="btn btn-danger w-100 m-2" type="submit">Leave</button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <form asp-action="Join" method="post">
+                                            <form asp-action="Join" asp-controller="Events" method="post">
                                                 <input type="hidden" name="eventId" value="@eventData.Id" />
                                                 <button class="btn btn-success w-100 m-2" type="submit">
                                                     Join

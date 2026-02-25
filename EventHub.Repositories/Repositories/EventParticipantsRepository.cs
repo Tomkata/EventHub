@@ -6,6 +6,7 @@ namespace EventHub.Repositories.Repositories
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
 
     public class EventParticipantsRepository : IEventParticipantsRepository
     {
@@ -16,7 +17,7 @@ namespace EventHub.Repositories.Repositories
            this._dbContext = dbContext;
         }
 
-        public async Task<UserBasicInfo?> GetOrganizerAsync(string organizerId)
+        public async Task<UserBasicInfo?> UserExistsAsync(string organizerId)
         {
             var organizer = await _dbContext.Users
                 .AsNoTracking()
@@ -95,5 +96,25 @@ namespace EventHub.Repositories.Repositories
                 .Where(x => x.UserId == userId)
                 .Select(x => x.EventId)
                 .ToHashSetAsync();
+
+     
+
+        public IQueryable<Event> GetJoinedEventsByUserId(string userId)
+        {
+            var joinedEventIds = _dbContext.EventParticipants
+                   .AsNoTracking()
+                   .Where(x => x.UserId == userId)
+                   .Select(x => x.EventId);
+
+            return _dbContext.Events
+                .AsNoTracking()
+                .Where(e => joinedEventIds.Contains(e.Id));
+
         }
+
+        public async Task<int> GetJoinedEventCountAsync(string userId)
+        => await _dbContext.EventParticipants.CountAsync(x => x.UserId == userId);
+
+        
+    }
 }

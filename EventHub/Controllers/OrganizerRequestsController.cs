@@ -2,42 +2,49 @@
 
 namespace EventHub.Web.Controllers
 {
+    using AutoMapper;
+    using EventHub.Core.Enums.Organizer;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Core.Exceptions.Oranizer.ForApprove;
     using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Organizers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
 
-    public class OrganizerRequestsController : Controller
+    public class OrganizerRequestsController : BaseController
     {
         private readonly IOrganizerService _organizerService;
+        private readonly IMapper _mapper;
 
-        public OrganizerRequestsController(IOrganizerService organizerService)
+        public OrganizerRequestsController(IOrganizerService organizerService,
+                                           IMapper mapper)
         {
             this._organizerService = organizerService;
+            this._mapper = mapper;
         }
+
+       
 
         [Authorize(Roles =Roles.Admin)]
         [HttpGet]
-        public async Task<IActionResult> Requests()
+        public async Task<IActionResult> Requests(int page = 1,int  pageSize = 10)
         {
-            var requestsDtos = await _organizerService.GetAllPendingRequestsAsync();
+            var requestsDtos = await _organizerService.GetAllPendingRequestsAsync(page, pageSize);
 
+            var mappedData = _mapper.Map<List<OrganizerRequestViewModel>>(requestsDtos.Data);
 
-            var model =  requestsDtos
-                .Select(x => new OrganizerRequestViewModel
-                {
-                    Id = x.Id,
-                    Note = x.Note,
-                    Email = x.Email,
-                    CreatedRequestDate = x.CreatedAt,
-                    UserId = x.UserId
-                })
-                .ToList();
+            var model = new PagedResult<OrganizerRequestViewModel>
+            {
+                Data = mappedData,
+                CurrentPageNumber = requestsDtos.CurrentPageNumber,
+                PageSize = requestsDtos.PageSize,
+                TotalRecords = requestsDtos.TotalRecords
+            };
 
             return View(model);
         }
@@ -53,8 +60,8 @@ namespace EventHub.Web.Controllers
             }
             catch (InvalidApproveUser ex)
             {
-                ModelState.AddModelError("", "Invalid user to approve!");
-                return View(nameof(Requests));
+              TempData["Error"] = "Invalid user to approve!";
+    return RedirectToAction(nameof(Requests));
             }
             catch (UserAlreadyOrganizerException ex)
             {
@@ -71,6 +78,37 @@ namespace EventHub.Web.Controllers
                 ModelState.AddModelError("", "User doesn't exist!");
                 return View(nameof(Requests));
             }
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Index(Status? status = null, int pageSize = 10, int pageNumber = 1)
+        {
+            var allRequestsDto = await _organizerService.GetAllRequestsAsync(pageNumber, pageSize, status);
+
+            var mappedData = _mapper.Map<List<AllRequestsViewModel>>(allRequestsDto.Data);
+
+            var model = new PagedResult<AllRequestsViewModel>
+            {
+                Data = mappedData,
+                CurrentPageNumber = allRequestsDto.CurrentPageNumber,
+                PageSize = allRequestsDto.PageSize,
+                TotalRecords = allRequestsDto.TotalRecords
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> DemoteOrganizer(string userId)
+        {
+            
+
+            await _organizerService.DemoteOrganizerToUserAsync(userId);
+            return RedirectToAction(nameof(Index));
         }
 
         [Authorize(Roles = Roles.Admin)]

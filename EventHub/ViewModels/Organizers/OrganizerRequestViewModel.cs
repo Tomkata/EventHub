@@ -9,6 +9,6 @@ namespace EventHub.Web.ViewModels.Organizers
         public string UserId { get; set; } = null!;
         public string? Note { get; set; }
         public string Email { get; set; }
-        public DateTime CreatedRequestDate { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

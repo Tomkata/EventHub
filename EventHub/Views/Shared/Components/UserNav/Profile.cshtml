@@ -1,0 +1,48 @@
+﻿@model EventHub.Web.ViewModels.UserProfile.UserNavVm
+
+@{
+    var avatar = string.IsNullOrWhiteSpace(Model.ImageUrl)
+? Url.Content("~/images/default-avatar.jpg")
+: Url.Content("~/" + Model.ImageUrl);
+}
+
+<ul class="navbar-nav ms-auto align-items-center">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center"
+               href="#"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+
+            <img src="@avatar"
+                 onerror="this.src='/images/profiles/default-avatar.jpg'"
+                 alt="avatar"
+                 style="width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8px;" />
+
+            <span>@Model.DisplayName</span>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item"
+                       asp-controller="UserProfile"
+                       asp-action="Details">
+                    My Profile
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item"
+                       asp-controller="UserProfile"
+                       asp-action="Update">
+                    Edit Profile
+                </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="px-3">
+                    <button type="submit" class="btn btn-link p-0">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </li>
+</ul>

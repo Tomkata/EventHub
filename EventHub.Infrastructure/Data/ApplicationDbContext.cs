@@ -21,7 +21,9 @@ namespace EventHub.Infrastructure.Data
         public virtual DbSet<Location>  Locations { get; set; }
         public virtual DbSet<EventParticipant> EventParticipants { get; set; }
         public virtual DbSet<OrganizerRequest> OrganizerRequests { get; set; }
-
+        public virtual DbSet<UserProfile> UserProfiles { get; set; }
+        public virtual DbSet<Interest>  Interests { get; set; }
+        public virtual DbSet<UserProfileInterest>  UserProfileInterests { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -35,6 +37,8 @@ namespace EventHub.Infrastructure.Data
             builder.ApplyConfiguration(new EventConfiguration());
             builder.ApplyConfiguration(new EventParticipantConfiguration());
             builder.ApplyConfiguration(new OrganizerRequestConfiguration());
+            builder.ApplyConfiguration(new UserProfileInterestConfiguration());
+            builder.ApplyConfiguration(new UserProfileConfiguration());
 
 
             base.OnModelCreating(builder);

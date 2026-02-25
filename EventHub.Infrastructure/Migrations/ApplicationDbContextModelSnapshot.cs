@@ -151,11 +151,29 @@ namespace EventHub.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("EventId", "UserId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("EventParticipants");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.Interest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("InterestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Interests");
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.Location", b =>
@@ -216,6 +234,58 @@ namespace EventHub.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("OrganizerRequests");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.UserProfileInterest", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("InterestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "InterestId");
+
+                    b.HasIndex("InterestId");
+
+                    b.ToTable("UserProfileInterests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -450,7 +520,7 @@ namespace EventHub.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EventHub.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("EventHub.Core.Models.UserProfile", "OrganizerProfile")
                         .WithMany()
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -459,21 +529,61 @@ namespace EventHub.Infrastructure.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Location");
+
+                    b.Navigation("OrganizerProfile");
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.EventParticipant", b =>
                 {
-                    b.HasOne("EventHub.Core.Models.Event", null)
+                    b.HasOne("EventHub.Core.Models.Event", "Event")
                         .WithMany("EventParticipants")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EventHub.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("EventHub.Core.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
+                {
+                    b.HasOne("EventHub.Core.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("EventHub.Infrastructure.Identity.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("EventHub.Core.Models.UserProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.UserProfileInterest", b =>
+                {
+                    b.HasOne("EventHub.Core.Models.Interest", "Interest")
+                        .WithMany("UserProfileInterests")
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EventHub.Core.Models.UserProfile", "UserProfile")
+                        .WithMany("UserProfileInterests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Interest");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -537,9 +647,19 @@ namespace EventHub.Infrastructure.Migrations
                     b.Navigation("EventParticipants");
                 });
 
+            modelBuilder.Entity("EventHub.Core.Models.Interest", b =>
+                {
+                    b.Navigation("UserProfileInterests");
+                });
+
             modelBuilder.Entity("EventHub.Core.Models.Location", b =>
                 {
                     b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
+                {
+                    b.Navigation("UserProfileInterests");
                 });
 #pragma warning restore 612, 618
         }

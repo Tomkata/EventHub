@@ -1,5 +1,7 @@
 ﻿@using EventHub.Web.ViewModels.Events
-@model IEnumerable<EventListViewModel>
+@using EventHub.Services.Common
+@model PagedResult<EventListViewModel>
+
 
 @{
     ViewData["Title"] = "Events";
@@ -11,5 +13,13 @@
         <i class="bi bi-calendar3"></i> Browse Events
     </h1>
 
-    @await Html.PartialAsync("_EventsList", Model)
+    @await Html.PartialAsync("_EventsList", Model.Data)
+
+    @await Html.PartialAsync("_Pagination", new PaginationViewModel
+    {
+        CurrentPageNumber = Model.CurrentPageNumber,
+        TotalPages = Model.TotalPages,
+        TotalRecords = Model.TotalRecords
+    })
+
 </div>

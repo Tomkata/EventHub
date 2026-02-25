@@ -9,7 +9,7 @@ namespace EventHub.Repositories.Interfaces
     public interface IEventParticipantsRepository
     {
         Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid eventId);
-        Task<UserBasicInfo ?> GetOrganizerAsync(string organizerId);
+        Task<UserBasicInfo ?> UserExistsAsync(string userId);
 
         Task<int> GetParticipantsCountAsync(Guid eventId);
 
@@ -20,6 +20,10 @@ namespace EventHub.Repositories.Interfaces
         Task RemoveParticipantFromEventAsync(string userId, Guid eventId);
 
         Task<HashSet<Guid>> GetJoinedEventIdsByUserAsync(string userId);
+        IQueryable<Event> GetJoinedEventsByUserId(string userId);
+
+        Task<int> GetJoinedEventCountAsync(string userId);
+
         Task SaveChangesAsync();
     }
 }

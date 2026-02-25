@@ -2,9 +2,12 @@
 
 namespace EventHub.Services.Services
 {
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
     using EventHub.Core.Common.Validation.Organizer;
     using EventHub.Core.DTOs.Organizer;
     using EventHub.Core.Enums.Organizer;
+    using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Core.Exceptions.Oranizer.ForApprove;
     using EventHub.Core.Exceptions.Oranizer.ForDemote;
@@ -14,18 +17,27 @@ namespace EventHub.Services.Services
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using System.Data;
 
     public class OrganizerService : IOrganizerService
     {
         private readonly IOrganizerRequestRepository _requestRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
+        private readonly IUserProfileRepository _userProfileRepository;
         public OrganizerService(IOrganizerRequestRepository requestRepository,
-                                    UserManager<ApplicationUser> userManager)
+                                    UserManager<ApplicationUser> userManager,
+                                    IMapper mapper,
+                                    IUserProfileRepository userProfileRepository)
         {
             this._requestRepository = requestRepository;    
             this._userManager = userManager;
+            this._mapper = mapper;
+            this._userProfileRepository = userProfileRepository;
         }
 
         public async Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId)
@@ -58,12 +70,24 @@ namespace EventHub.Services.Services
                 }
 
             }
+
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains(Roles.Admin))
+                throw new AdminCannnotJoinEventException();
+
+            var profile = await _userProfileRepository.GetByUserIdAsync(userId);
+
+            if (profile == null)
+                throw new CreateProfileApplyException();
+
             var requester = new OrganizerRequest
             {
                 UserId = userId,
                 Email = formDto.Email,
                 Note = formDto.Note,
-                Status = Status.Pending
+                Status = Status.Pending,
+                CreatedAt = DateTime.UtcNow
             };
 
             await _requestRepository.AddAsync(requester);
@@ -96,7 +120,7 @@ namespace EventHub.Services.Services
         }
 
       
-
+        //TODO: Add in advanced module this business logic(It is ready to be used)
         public async Task DemoteOrganizerToUserAsync(string userId)
         {
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
@@ -119,23 +143,18 @@ namespace EventHub.Services.Services
             await _requestRepository.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync()
-        {
-            var pendingRequests = await _requestRepository.GetPendingRequestsAsync();
+        public async Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(int pageNumber, int pageSize)
+            => await _requestRepository.GetPendingRequests()
+                .ProjectTo<PendingRequestForOrganizerDto>(_mapper.ConfigurationProvider)
+                .ToPagedResultAsync(pageNumber,pageSize);
 
-            var pendingRequestsDtos =  pendingRequests
-                 .Select(x => new PendingRequestForOrganizerDto
-                 {
-                     Id = x.Id,
-                     Email = x.Email,
-                     Note = x.Note,
-                     UserId = x.UserId,
-                     CreatedAt = x.CreatedAt
-                 })
-                 .ToList();
-
-            return pendingRequestsDtos;
-        }
+        public async Task<PagedResult<OrganizerRequestDto>> GetAllRequestsAsync(
+            int pageNumber, int pageSize, Status? status = null)
+            =>
+                await _requestRepository.GetAll()
+                .Where(x => !status.HasValue || x.Status == status)
+                .ProjectTo<OrganizerRequestDto>(_mapper.ConfigurationProvider)
+                .ToPagedResultAsync(pageNumber, pageSize);
 
         public async Task<Status> GetOrganizerStateAsync(string userId)
         {

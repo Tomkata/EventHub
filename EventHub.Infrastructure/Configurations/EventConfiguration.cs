@@ -30,10 +30,10 @@ namespace EventHub.Infrastructure.Configurations
                  .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasOne<ApplicationUser>()
-                .WithMany()
-                .HasForeignKey(x=>x.OrganizerId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                  .HasOne(x => x.OrganizerProfile)
+                  .WithMany()
+                  .HasForeignKey(x => x.OrganizerId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
 
            

@@ -10,25 +10,24 @@ namespace EventHub.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<EventParticipant> builder)
         {
-    
+
             builder.
-                HasKey(x => new { x.EventId,  x.UserId });
+                HasKey(x => new { x.EventId, x.UserId });
 
             builder
-                .HasOne<ApplicationUser>()
-                .WithMany()
-                .HasForeignKey(x => x.UserId)   
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            builder
-                .HasOne<Event>()    
+                .HasOne(x=>x.Event)    
                 .WithMany(x=>x.EventParticipants)
                 .HasForeignKey(x => x.EventId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-      
-           
+            builder
+              .HasOne(ep => ep.UserProfile)
+              .WithMany()
+              .HasForeignKey(ep => ep.UserId)
+              .OnDelete(DeleteBehavior.Restrict);
+
+
+
 
         }
     }

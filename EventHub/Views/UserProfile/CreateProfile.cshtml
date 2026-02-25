@@ -1,0 +1,158 @@
+﻿@using EventHub.Web.ViewModels.UserProfile
+@model CreateUserProfileViewModel
+
+@{
+    ViewData["Title"] = "Create Profile";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/views/create-profile-style.css" asp-append-version="true" />
+
+}
+
+<!-- Page Header -->
+<section class="form-header-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-person-plus"></i> Create New Profile
+                </h1>
+                <p class="lead mb-0">Fill in the details to create a profile</p>
+            </div>
+        </div>
+    </div>
+</section>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger rounded-3 text-center">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+    </div>
+}
+<section class="form-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="modern-form-card">
+                    <form asp-action="CreateProfile"
+                          method="post"
+                          class="modern-form"
+                          enctype="multipart/form-data">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert"></div>
+
+                        <!-- First Name & Last Name -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="FirstName" class="modern-label">
+                                        <i class="bi bi-person text-primary"></i> First Name
+                                    </label>
+                                    <input asp-for="FirstName" type="text" class="modern-input" placeholder="Enter your first name" />
+                                    <span asp-validation-for="FirstName" class="validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="LastName" class="modern-label">
+                                        <i class="bi bi-person text-primary"></i> Last Name
+                                    </label>
+                                    <input asp-for="LastName" type="text" class="modern-input" placeholder="Enter your last name" />
+                                    <span asp-validation-for="LastName" class="validation-message"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="modern-form-group">
+                            <label asp-for="Description" class="modern-label">
+                                <i class="bi bi-card-text text-info"></i> Description
+                            </label>
+                            <textarea asp-for="Description" 
+                            class="modern-textarea" rows="5" placeholder="Tell others a bit about yourself...">
+
+                            </textarea>
+                            <span asp-validation-for="Description" class="validation-message"></span>
+                            <small class="form-text text-muted">Tell attendees what to expect from your event</small>
+                        </div>
+
+                       <div class="col-md-6">
+                                <div class="modern-form-group">
+                                    <label asp-for="PhoneNumber" class="modern-label">
+                                        <i class="bi bi-person text-primary"></i> Phone number
+                                    </label>
+                                    <input asp-for="PhoneNumber" type="text" class="modern-input" placeholder="Enter your phone number" />
+                                    <span asp-validation-for="PhoneNumber" class="validation-message"></span>
+                                </div>
+                            </div>
+
+                        <!-- Profile Picture -->
+                        <div class="modern-form-group">
+                            <label asp-for="Image" class="modern-label">
+                                <i class="bi bi-image text-primary"></i> Profile Picture
+                            </label>
+                            <input asp-for="Image" type="file" class="modern-input-file" accept="image/*" />
+                            <span asp-validation-for="Image" class="validation-message"></span>
+                            <small class="form-text text-muted">Upload an eye-catching image for your event</small>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="modern-form-group">
+                            <label asp-for="LocationId" class="modern-label">
+                                <i class="bi bi-geo-alt text-warning"></i> Location
+                            </label>
+                            <select asp-for="LocationId" class="modern-select">
+                                <option value="">-- Select Location --</option>
+                                @foreach (var location in Model.Locations)
+                                {
+                                    <option value="@location.Id">@location.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="LocationId" class="validation-message"></span>
+                        </div>
+
+                       <!-- Interests -->
+<div class="form-card">
+    <div class="form-card-title">
+        <i class="bi bi-stars"></i> Interests
+    </div>
+    <div class="interests-grid">
+        @foreach (var interest in Model.Interests)
+        {
+            var isChecked = Model.SelectedInterestIds?.Contains(interest.Id) == true;
+            <div class="interest-item">
+                <input type="checkbox"
+                       name="SelectedInterestIds"
+                       value="@interest.Id"
+                       id="interest_@interest.Id"
+                       class="interest-chip"
+                       @(isChecked ? "checked" : "") />
+                <label for="interest_@interest.Id" class="interest-label">
+                    @interest.Name
+                </label>
+            </div>
+        }
+    </div>
+    <span asp-validation-for="SelectedInterestIds" class="text-danger small d-block mt-2"></span>
+</div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-cancel">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-submit">
+                                <i class="bi bi-check-circle me-2"></i> Create Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

@@ -1,0 +1,102 @@
+﻿@using EventHub.Services.Common
+@model PaginationViewModel
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="d-flex justify-content-center mt-4">
+        <div class="pagination-wrapper d-flex align-items-center gap-2">
+
+            @if (Model.HasPreviousPage)
+            {
+                <a href="?page=@(Model.CurrentPageNumber - 1)"
+                       class="page-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            }
+            else
+            {
+                <span class="page-btn disabled">
+                    <i class="bi bi-chevron-left"></i>
+                </span>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.CurrentPageNumber)
+                {
+                    <span class="page-btn active">@i</span>
+                }
+                else if (i == 1 || i == Model.TotalPages || Math.Abs(i - Model.CurrentPageNumber) <= 1)
+                {
+                    <a href="?page=@i" class="page-btn">@i</a>
+                }
+                else if (Math.Abs(i - Model.CurrentPageNumber) == 2)
+                {
+                    <span class="page-dots">…</span>
+                }
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <a href="?page=@(Model.CurrentPageNumber + 1)"
+                       class="page-btn">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            }
+            else
+            {
+                <span class="page-btn disabled">
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            }
+
+        </div>
+    </nav>
+
+    <p class="text-center text-muted small mt-2">
+        Page @Model.CurrentPageNumber of @Model.TotalPages
+        &nbsp;·&nbsp; @Model.TotalRecords total results
+    </p>
+}
+
+<style>
+    .page-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: #6366f1;
+        background: white;
+        border: 1.5px solid #e5e7eb;
+        transition: all 0.15s;
+    }
+
+        .page-btn:hover:not(.disabled):not(.active) {
+            background: #f5f3ff;
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: transparent;
+            color: white;
+        }
+
+        .page-btn.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+
+    .page-dots {
+        color: #9ca3af;
+        font-weight: 600;
+        padding: 0 4px;
+    }
+</style>

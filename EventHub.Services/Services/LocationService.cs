@@ -1,6 +1,9 @@
 ﻿
 namespace EventHub.Services.Services
 {
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
+    using EventHub.Core.Common;
     using EventHub.Core.DTOs.Location;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
@@ -10,26 +13,18 @@ namespace EventHub.Services.Services
     public class LocationService : ILocationService
     {
         private readonly ILocationRepository  _locationRepository;
+        private readonly IMapper _mapper;
 
-        public LocationService(ILocationRepository locationRepository)
+        public LocationService(ILocationRepository locationRepository,
+                                IMapper mapper)
         {
-            _locationRepository = locationRepository;
+            this._locationRepository = locationRepository;
+            this._mapper = mapper;
         }
 
-        public async Task<List<LocationDto>> GetLocationsForDropdownAsync()
-        {
-            var locations = await _locationRepository.GetLocationsAsync();
-
-            var locationsDtos = locations.
-                Select(x => new LocationDto
-                {
-                    Id = x.Id,
-                    City = x.City,
-                    ZipCode = x.Zip
-                })
-                .ToList();
-
-            return locationsDtos;
-        }
+        public async Task<List<DropdownOptionModel>> GetLocationsForDropdownAsync()
+    => await _locationRepository.GetLocations()
+        .ProjectTo<DropdownOptionModel>(_mapper.ConfigurationProvider)
+        .ToListAsync();
     }
 }

@@ -28,11 +28,11 @@ namespace EventHub.Web.ViewModels.Events
         [FutureDate(ErrorMessage = EventMessages.InvalidStartDate)]
         [Required(ErrorMessage = ValidationMessages.Required)]
 
-        public DateTime? StartDate { get; set; }
+        public DateTime? StartDate { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = ValidationMessages.Required)]
         [DateGreaterThan(nameof(StartDate), ErrorMessage = EventMessages.InvalidEndDate)]
-        public DateTime? EndDate { get; set; }
+        public DateTime? EndDate { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid CategoryId { get; set; }

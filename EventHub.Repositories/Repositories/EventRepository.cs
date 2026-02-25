@@ -3,14 +3,17 @@ namespace EventHub.Repositories.Repositories
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     public class EventRepository : IEventRepository
     {
-
+        //TODO: Next course need to decide if I want to swtch to generic repo pattern ?(will analyze that)
         private readonly ApplicationDbContext _dbContext;
 
         public EventRepository(ApplicationDbContext dbContext)
@@ -30,65 +33,68 @@ namespace EventHub.Repositories.Repositories
             return eventEntity;
         }
 
-        public async Task<Event?> GetByIdReadOnlyAsync(Guid id)
+        public async Task<DetailedEventDto?> GetByIdReadOnlyAsync(Guid id)
         {
-            var eventEntity = await _dbContext.Events
-                   .AsNoTracking()
-                     .Include(x => x.Category)
-                     .Include(x => x.Location)
-                     .Include(x => x.EventParticipants)
-                     .AsSplitQuery()
-                     .FirstOrDefaultAsync(x => x.Id == id);
+            var dto = await _dbContext.Events
+                .Where(x => x.Id == id)
+                .Select(e => new DetailedEventDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Description = e.Description,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    ImagePath = e.ImagePath,
+                    Address = e.Address,
+                    MaxParticipants = e.MaxParticipants,
+                    ParticipantsCount = e.EventParticipants.Count(),
 
-            return eventEntity;
+                    OrganizerName = (e.OrganizerProfile.FirstName + " " + e.OrganizerProfile.LastName).Trim(),
+
+                    ParticipantList = e.EventParticipants
+                    .Select(ep => new ParticipantDto
+                    {
+                        UserId = ep.UserId,
+                        DisplayName = ((ep.UserProfile.FirstName ?? "") + " " + (ep.UserProfile.LastName ?? "")).Trim(),
+                        ProfileImagePath = ep.UserProfile.ProfileImagePath
+                    })
+                    .ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            return dto;
         }
 
         public async Task AddAsync(Event entity)
         {
             await _dbContext.Events.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task RemoveAsync(Event entity)
         {
             _dbContext.Events.Remove(entity);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Event entity)
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Event>> GetAllAsync()
-        {
-            return await _dbContext.Events
-                  .AsNoTracking()
-                  .Include(x => x.Category)
-                  .Include(x => x.Location)
-                  .Include(x => x.EventParticipants)
-                  .AsSplitQuery()
-                  .ToListAsync();
         }
 
 
-        public async Task<IEnumerable<Event>> GetAllEventsByOrganizerIdAsync(string id)
+
+        public IQueryable<Event> GetAll()
         {
-            return await _dbContext.Events
+            return _dbContext.Events.AsNoTracking();
+        }
+
+
+        public IQueryable<Event> GetByOrganizerId(string id)
+        {
+            return _dbContext.Events
                    .AsNoTracking()
-                   .Where(x => x.OrganizerId == id)
-                   .Include(x => x.Category)
-                     .Include(x => x.Location)
-                     .Include(x => x.EventParticipants)
-                     .AsSplitQuery()
-                   .ToListAsync();
+                   .Where(x => x.OrganizerId == id);
         }
 
         public async Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id)
         {
             var eventDto = await _dbContext.Events
                 .AsNoTracking()
-                .Where(x=>x.Id == id)
+                .Where(x => x.Id == id)
              .Select(x => new EventJoinInfo
              {
                  Id = x.Id,
@@ -100,7 +106,16 @@ namespace EventHub.Repositories.Repositories
              .FirstOrDefaultAsync();
 
             return eventDto;
-
         }
+        public async Task SaveChangesAsync()
+        {
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public IQueryable<Event?> Query()
+        => _dbContext.Events
+            .AsNoTracking()
+            .AsQueryable();
     }
 }

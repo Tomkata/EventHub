@@ -18,7 +18,7 @@ namespace EventHub.Web.ViewModels.Events
         public int ParticipantsCount { get; set; }
         public bool CanEdit { get; set; }
         public bool CanDelete { get; set; }
-        public bool IsMyEvents { get; set; } = false;
+        public bool HideJoinLeaveButtons { get; set; } = false;
         public bool IsParticipant { get; set; }
 
     }

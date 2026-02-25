@@ -1,6 +1,11 @@
 ﻿@using EventHub.Web.ViewModels.Events
 @model DetailedEventViewModel
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/views/event-details.css" asp-append-version="true" />
+
+}
+
 @{
     ViewData["Title"] = Model.Title;
 }
@@ -10,12 +15,7 @@
         @TempData["Error"]
     </div>
 }
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
-    </div>
-}
+
 
 <div class="container mt-5">
     <!-- Event Image -->
@@ -56,7 +56,6 @@
                 </div>
             </div>
 
-            <!-- Description -->
             @if (!string.IsNullOrEmpty(Model.Description))
             {
                 <div class="mb-4">
@@ -74,22 +73,86 @@
             </div>
 
             <!-- Participants List -->
-            <div class="mb-4">
-                <h5 class="mb-3">Attendees</h5>
-                @if (Model.Participants != null && Model.Participants.Any())
-                {
-                    <ul class="list-group">
-                        @foreach (var participant in Model.Participants)
-                        {
-                            <li class="list-group-item">@participant.UserName</li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted">No participants yet. Be the first to join!</p>
-                }
+            <h5 class="mb-3">Attendees</h5>
+
+            <!-- Attendees Button -->
+            <button type="button" class="btn-attendees" data-bs-toggle="modal" data-bs-target="#attendeesModal">
+                <i class="bi bi-people-fill me-2"></i>
+               View Attendees
+                <span class="attendees-count">@Model.Participants.Count()</span>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="attendeesModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content attendees-modal">
+
+                        <div class="modal-header border-0 pb-0">
+                            <div>
+                                <h5 class="modal-title fw-bold">Attendees</h5>
+                                <p class="text-muted small mb-0">@Model.ParticipantsCount out of @Model.MaxParticipants spots filled</p>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <!-- Progress bar -->
+                        <div class="px-4 pt-3">
+                            @{
+                                var percent = Model.MaxParticipants > 0
+                                    ? (int)((double)Model.ParticipantsCount / Model.MaxParticipants * 100)
+                                    : 0;
+                            }
+                            <div class="progress" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: @percent%; background: linear-gradient(90deg, #6366f1, #8b5cf6);">
+                                </div>
+                            </div>
+                            <p class="text-end small text-muted mt-1">@percent% full</p>
+                        </div>
+
+                        <div class="modal-body pt-1">
+                            @if (Model.Participants != null && Model.Participants.Any())
+                            {
+                                <ul class="attendee-list">
+                                    @foreach (var participant in Model.Participants)
+                                    {
+                                        <li class="attendee-item">
+                                            @if (!string.IsNullOrEmpty(participant.ProfileImagePath))
+                                            {
+                                                <img src="~/@participant.ProfileImagePath"
+                                                     class="attendee-avatar"
+                                                     alt="@participant.DisplayName" />
+                                            }
+                                            else
+                                            {
+                                                <div class="attendee-avatar-placeholder">
+                                                    @participant.DisplayName.FirstOrDefault()
+                                                </div>
+                                            }
+                                            <a asp-controller="UserProfile"
+                                                   asp-action="Public"
+                                                   asp-route-userId="@participant.UserId"
+                                                   class="attendee-name">
+                                                @participant.DisplayName
+                                            </a>
+                                            <i class="bi bi-chevron-right text-muted ms-auto small"></i>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <div class="empty-attendees">
+                                    <i class="bi bi-people" style="font-size: 2.5rem; color: #c4b5fd;"></i>
+                                    <p class="mt-2 text-muted">No participants yet.<br />Be the first to join!</p>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
             </div>
+
 
             <div class="d-flex gap-2 justify-content-center">
                 <a href="@Url.Action("Index", "Events")" class="btn btn-secondary mb-3">Back to Events</a>
@@ -120,3 +183,6 @@
         </div>
     </div>
 </div>
+
+    
+   

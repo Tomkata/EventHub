@@ -1,0 +1,154 @@
+﻿@using EventHub.Web.ViewModels.UserProfile
+@model EditUserProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/views/edit-event-style.css" asp-append-version="true" />
+
+}
+
+<div class="edit-profile-page">
+    <div class="container" style="max-width: 860px;">
+
+
+
+        <div class="page-header">
+            <div>
+                <h1><i class="bi bi-pencil-square me-2"></i>Edit Profile</h1>
+                <p>Update your personal information and preferences</p>
+            </div>
+            <a asp-action="Details" class="btn btn-light fw-semibold px-4">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+
+        <form asp-action="Update"
+        asp-controller="UserProfile"
+        method="post" enctype="multipart/form-data">
+        
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert"></div>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ExistingImagePath" />
+
+            <!-- Profile Photo -->
+            <div class="form-card">
+                <div class="form-card-title">
+                    <i class="bi bi-camera"></i> Profile Photo
+                </div>
+                <div class="image-upload-zone">
+                    <input type="file" asp-for="NewImage" accept="image/*" id="imageInput" />
+                    @if (!string.IsNullOrEmpty(Model?.ExistingImagePath))
+                    {
+                        <img src="/@Model.ExistingImagePath" class="current-avatar" id="avatarPreview" />
+                    }
+                    else
+                    {
+                        <div class="avatar-placeholder" id="avatarPlaceholder">👤</div>
+                        <img src="" class="current-avatar d-none" id="avatarPreview" />
+                    }
+                    <p class="mb-0 text-muted fw-semibold">Click to upload a new photo</p>
+                    <p class="field-hint">JPG, PNG or GIF — max 5MB</p>
+                </div>
+                <input type="hidden" asp-for="ExistingImagePath" />
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">
+                    <i class="bi bi-person"></i> Basic Information
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FirstName" class="form-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="John" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LastName" class="form-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Doe" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="+359 88 888 8888" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LocationId" class="form-label">Location</label>
+                        <select asp-for="LocationId" class="form-select">
+                            <option value="">— Select city —</option>
+                            @foreach (var location in Model.Locations)
+                            {
+                                <option value="@location.Id" >
+                                    @location.Name
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="LocationId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label">About Me</label>
+                        <textarea asp-for="Description" class="form-control" rows="4"
+                                  placeholder="Tell others a bit about yourself..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">
+                    <i class="bi bi-stars"></i> Interests
+                </div>
+                <div class="interests-grid">
+                    @foreach (var interest in Model.Interests)
+                    {
+                        var isChecked = Model.SelectedInterestIds?.Contains(interest.Id) == true;
+                        <input type="checkbox"
+                               class="interest-chip"
+                               name="SelectedInterestIds"
+                               value="@interest.Id"
+                               id="interest_@interest.Id"
+                        @(isChecked ? "checked" : "") />
+                        <label for="interest_@interest.Id">@interest.Name</label>
+                    }
+                </div>
+                <span asp-validation-for="SelectedInterestIds" class="text-danger small d-block mt-2"></span>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end mb-5">
+                <a asp-action="Details" asp-controller="UserProfile" class="btn btn-outline-secondary btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-save">
+                    <i class="bi bi-check-lg me-2"></i> Save Changes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('imageInput').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            const preview = document.getElementById('avatarPreview');
+            const placeholder = document.getElementById('avatarPlaceholder');
+
+            preview.src = ev.target.result;
+            preview.classList.remove('d-none');
+            if (placeholder) placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

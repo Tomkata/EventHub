@@ -13,7 +13,7 @@
             "End date must be after start date.";
 
         public const string InvalidStartDate =
-     "Start date must be after start date.";
+     "Start date must be in the future.";
 
         public const string InvalidParticipants =
             "Participants must be between {1} and {2}.";

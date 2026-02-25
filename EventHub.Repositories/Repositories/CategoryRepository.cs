@@ -18,10 +18,9 @@ namespace EventHub.Repositories.Repositories
                  .AsNoTracking()
                  .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<IEnumerable<Category>> GetCategoriesAsync()
-       => await _dbContext.Categories
+        public IQueryable<Category> GetCategories()
+       => _dbContext.Categories
             .AsNoTracking()
-            .OrderBy(x => x.Name)
-                .ToListAsync();
+            .OrderBy(x => x.Name);
     }
 }

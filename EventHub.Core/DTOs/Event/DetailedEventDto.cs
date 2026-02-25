@@ -17,7 +17,8 @@ namespace EventHub.Core.DTOs
         public string OrganizerId { get; set; } = null!;    
         public string City { get; set; } = null!;
         public Guid LocationId { get; set; }
-        public string Address { get; set; } = null!;        
+        public string Address { get; set; } = null!;
+        public int ParticipantsCount { get; set; }
         public List<ParticipantDto>  ParticipantList { get; set; } = new List<ParticipantDto>();
     }
 }

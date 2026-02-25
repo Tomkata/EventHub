@@ -20,20 +20,23 @@ namespace EventHub.Repositories.Repositories
         public async Task AddAsync(OrganizerRequest organizer)
             => await _dbContext.OrganizerRequests.AddAsync(organizer);
 
-        public async Task<OrganizerRequest?> GetByUserIdAsync(string userId)=>
-            await _dbContext.OrganizerRequests
+        public IQueryable<OrganizerRequest> GetAll()
+       => _dbContext.OrganizerRequests
+            .AsNoTracking();
+
+        public async Task<OrganizerRequest?> GetByUserIdAsync(string userId)
+            => await _dbContext.OrganizerRequests
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
 
-        public async Task<IEnumerable<OrganizerRequest>> GetPendingRequestsAsync()
-            => await _dbContext.OrganizerRequests
+        public IQueryable<OrganizerRequest> GetPendingRequests()
+            => _dbContext.OrganizerRequests
             .AsNoTracking()
             .Where(x => x.Status == Status.Pending)
-            .ToListAsync();
+            .OrderBy(x => x.CreatedAt);
 
         public async Task SaveChangesAsync()
         {
-
             await _dbContext.SaveChangesAsync();
         }
     }

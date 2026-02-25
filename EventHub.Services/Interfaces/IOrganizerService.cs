@@ -3,6 +3,8 @@ namespace EventHub.Services.Interfaces
 {
     using EventHub.Core.DTOs.Organizer;
     using EventHub.Core.Enums.Organizer;
+    using EventHub.Core.Models;
+    using EventHub.Services.Common;
 
     public interface IOrganizerService
     {
@@ -16,7 +18,9 @@ namespace EventHub.Services.Interfaces
 
         Task<Status> GetOrganizerStateAsync(string userId);
 
-        Task<IEnumerable<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync();
+        Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(int pageNumber, int pageSize);
+
+        Task<PagedResult<OrganizerRequestDto>> GetAllRequestsAsync(int pageNumber,int pageSize, Status? status = null);
 
     }
 }

@@ -76,7 +76,112 @@ namespace EventHub.Infrastructure.Data.Seed
             LocationId = sofiaId,
             Address = "Sofia Coworking Space",
             OrganizerId = organizer.Id
-        }
+        },
+         new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+          new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+           new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+            new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+             new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+              new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
+               new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = "Rock the Night Festival",
+            Description = "Open-air rock concert featuring Bulgarian bands.",
+            ImagePath = "images/events/concert.jpg",
+            CreatedAt = DateTime.UtcNow,
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(3).AddHours(5),
+            MaxParticipants = 500,
+            CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            LocationId = plovdivId,
+            Address = "Rowing Canal, Plovdiv",
+            OrganizerId = organizer.Id
+        },
     };
 
             await context.Events.AddRangeAsync(events);

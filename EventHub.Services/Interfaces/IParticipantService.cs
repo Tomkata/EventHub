@@ -1,4 +1,6 @@
 ﻿
+using EventHub.Core.DTOs;
+
 namespace EventHub.Services.Interfaces
 {
     public interface IParticipantService
@@ -8,5 +10,9 @@ namespace EventHub.Services.Interfaces
         Task LeftEventAsync(string userId, Guid eventId);
 
         Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId);
+
+        Task<List<EventDto>> GetJoinedEvents(string userId);
+
+        Task<int> GetJoinedEventCountAsync(string userId);
     }
 }

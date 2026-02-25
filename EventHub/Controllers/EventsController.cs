@@ -2,13 +2,16 @@
 
 namespace EventHub.Web.Controllers
 {
+    using AutoMapper;
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.Enums;
     using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Event.ForLeft;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.Events;
@@ -16,61 +19,55 @@ namespace EventHub.Web.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
 
-    public class EventsController : Controller
+    public class EventsController : BaseController
     {
         private readonly IEventService _eventService;
         private readonly IImageService _imageService;
         private readonly IEventFormOptionsService _eventFormOptionsService;
         private readonly IOrganizerService _organizerService;
         private readonly IParticipantService _participantService;
+        private readonly IMapper _mapper;
 
 
         public EventsController(IEventService eventService,
                                 IImageService imageService,
                                 IEventFormOptionsService eventFormOptionsService, 
-                                IParticipantService participantService)
+                                IParticipantService participantService,
+                                IMapper mapper)
         {
             this._eventService = eventService;
             this._imageService = imageService;
             this._eventFormOptionsService = eventFormOptionsService;
             this._participantService = participantService;
+            this._mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            var allEvents = await _eventService.GetEventsAsync();
+            var allEvents = await _eventService.GetEventsAsync(page, pageSize);
 
             HashSet<Guid> joinedIds = new();
 
             if (User.Identity?.IsAuthenticated == true)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = GetUserId();
                 joinedIds = await _participantService.GetJoinedEventIdsAsync(userId);
             }
 
+            var eventList = _mapper.Map<List<EventListViewModel>>(
+              allEvents.Data,
+              opt => opt.Items["JoinedIds"] = joinedIds
+              );
 
+            var model = new PagedResult<EventListViewModel>
+            {
+                Data = eventList,
+                CurrentPageNumber = allEvents.CurrentPageNumber,
+                PageSize = allEvents.PageSize,
+                TotalRecords = allEvents.TotalRecords
+            };
+            return View(model);
 
-            var eventList =
-                 allEvents.Select(x => new EventListViewModel
-                 {
-                     Id = x.Id,
-                     Title = x.Title,
-                     ImagePath = x.ImagePath,
-                     Category = x.Category,
-                     CategoryId = x.CategoryId,
-                     CityId = x.CityId,
-                     CityName = x.City,
-                     StartDate = x.StartDate,
-                     EndDate = x.EndDate,
-                     MaxParticipants = x.MaxParticipants,
-                     ParticipantsCount = x.ParticipantsCount,
-                     CanDelete = false,
-                     CanEdit = false,
-                     IsParticipant = joinedIds.Contains(x.Id)
-                 })
-                .ToList();
-
-            return View(eventList);
         }
 
 
@@ -105,32 +102,16 @@ namespace EventHub.Web.Controllers
                     return View(model);
                 }
 
-                var imageUrl = await _imageService.StoreImageAsync(model.Image);
+                using var stream = model.Image.OpenReadStream();
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var imageUrl = await _imageService.StoreImageAsync(stream,model.Image.FileName, ImageFolder.Events);
 
-                if (userId == null)
-                {
-                    ModelState.AddModelError(nameof(userId), "The user is not logged in.");
-                    return View(model);
-                }
+                var requestingUserId = GetUserId();
+
+                var @event = _mapper.Map<CreateEventDto>(model);
 
 
-                var eventDate = new CreateEventDto
-                {
-                    Title = model.Title,
-                    Description = model.Description,
-                    MaxParticipants = model.MaxParticipants,
-                    Address = model.Address,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    ImagePath = imageUrl,
-                    CategoryId = model.CategoryId,
-                    LocationId = model.LocationId,
-                    OrganizerId = userId!
-                };
-
-                await _eventService.CreateAsync(eventDate);
+                await _eventService.CreateAsync(@event, requestingUserId);
 
                 TempData["SuccessMessage"] = "Event created successfully!";
 
@@ -148,7 +129,7 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         public async Task<IActionResult> Update(Guid eventId)
         {
 
@@ -177,30 +158,20 @@ namespace EventHub.Web.Controllers
             }
             try
             {
-                var eventToUpdate = new EditEventDto
-                {
-                    Title = model.Title,
-                    Description = model.Description,
-                    MaxParticipants = model.MaxParticipants,
-                    Address = model.Address,
-                    StartDate = (DateTime)model.StartDate,
-                    EndDate = (DateTime)model.EndDate,
-                    CategoryId = model.CategoryId,
-                    LocationId = model.LocationId,
-                    ImagePath = model.ExistingImagePath
-                };
-
+                var eventToUpdate = _mapper.Map<EditEventDto>(model);
 
                 if (model.NewImage != null)
                 {
 
-                    var newImagePath = await _imageService.StoreImageAsync(model.NewImage);
-                    eventToUpdate.ImagePath = newImagePath;
+                    using var stream = model.NewImage.OpenReadStream();
+
+                    var imageUrl = await _imageService.StoreImageAsync(stream, model.NewImage.FileName, ImageFolder.Events);
+                    eventToUpdate.ImagePath = imageUrl;
                 }
 
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var isAdmin = User.IsInRole(Roles.Admin);
+                var userId = GetUserId();
+                var isAdmin = IsAdmin();
 
                 await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin);
 
@@ -230,7 +201,7 @@ namespace EventHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Join(Guid eventId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
 
             if (string.IsNullOrWhiteSpace(userId))
                 throw new UnauthorizedAccessException();
@@ -238,8 +209,13 @@ namespace EventHub.Web.Controllers
             try
             {
                 await _participantService.JoinEventAsync(userId, eventId);
-                TempData["Success"] = "You have successfully joined the event.";
-                return RedirectToAction(nameof(Index), new { eventId = eventId });
+                TempData["SuccessMessage"] = "You have successfully joined the event.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (UserDontHavePrfileException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(actionName:"CreateProfile",controllerName: "UserProfile");
 
             }
             catch (Exception ex)
@@ -252,14 +228,13 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Left(Guid eventId)
+        public async Task<IActionResult> Left(Guid eventId, string? returnUrl = null)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             try
             {
-                await _participantService.LeftEventAsync(userId,eventId);
+                await _participantService.LeftEventAsync(userId, eventId);
                 TempData["SuccessMessage"] = "You have successfully left the event.";
-                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -269,9 +244,12 @@ namespace EventHub.Web.Controllers
                     EventNotFoundException => "The event could not be found.",
                     _ => "An unexpected error occurred."
                 };
-
-                return RedirectToAction(nameof(Index));
             }
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return LocalRedirect(returnUrl);
+
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -282,8 +260,8 @@ namespace EventHub.Web.Controllers
         {
             try
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var isAdmin = User.IsInRole(Roles.Admin);
+                var userId = GetUserId();
+                var isAdmin = IsAdmin();
 
 
                 await _eventService.DeleteAsync(eventId, userId, isAdmin);
@@ -301,23 +279,7 @@ namespace EventHub.Web.Controllers
         {
 
             var eventDto = await _eventService.GetByIdAsync(eventId);
-
-            var model = new DetailedEventViewModel
-            {
-                Id = eventDto.Id,
-                Title = eventDto.Title,
-                Description = eventDto.Description,
-                StartDate = eventDto.StartDate,
-                EndDate = eventDto.EndDate,
-                Category = eventDto.CategoryName,
-                CityName = eventDto.City,
-                ImagePath = eventDto.ImagePath,
-                ParticipantsCount = eventDto.ParticipantList.Count(),
-                MaxParticipants = eventDto.MaxParticipants,
-                Participants = eventDto.ParticipantList
-            };
-
-
+            var model = _mapper.Map<DetailedEventViewModel>(eventDto);
             return View(model);
         }
 
@@ -357,26 +319,16 @@ namespace EventHub.Web.Controllers
             return model;
         }
 
-        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)
+        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)    
         {
-            var eventData = await _eventService.GetByIdAsync(Id);
+            var eventData = await _eventService.GetForEditAsync(Id);
 
+            var model = _mapper.Map<EditEventViewModel>(eventData);
 
-            var model = new EditEventViewModel
-            {
-                Id = eventData.Id,
-                Title = eventData.Title,
-                Address = eventData.Address,
-                Description = eventData.Description,
-                StartDate = eventData.StartDate,
-                EndDate = eventData.EndDate,
-                MaxParticipants = eventData.MaxParticipants,
-                ExistingImagePath = eventData.ImagePath,
-                CategoryId = eventData.CategoryId,
-                LocationId = eventData.LocationId
-            };
             return model;
         }
+
+
 
     }
 

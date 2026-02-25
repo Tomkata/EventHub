@@ -7,6 +7,6 @@ namespace EventHub.Repositories.Interfaces
     {
         public Task<Category?> GetByIdAsync(Guid id);
 
-        public Task<IEnumerable<Category>> GetCategoriesAsync();
+        public IQueryable<Category> GetCategories();
     }
 }

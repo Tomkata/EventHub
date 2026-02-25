@@ -1,5 +1,6 @@
-﻿@using EventHub.Web.ViewModels.Organizers
-@model IEnumerable<OrganizerRequestViewModel>
+﻿@using EventHub.Services.Common
+@using EventHub.Web.ViewModels.Organizers
+@model PagedResult<OrganizerRequestViewModel>
 
 @{
     ViewData["Title"] = "Organizer Requests";
@@ -9,7 +10,6 @@
 
 <div class="container-fluid py-5 bg-light min-vh-100">
     <div class="container">
-        <!-- Header Section -->
         <div class="mb-5">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -25,33 +25,30 @@
             <hr class="my-4">
         </div>
 
-        <!-- Requests List -->
-        @if (Model != null && Model.Any())
+        @if (Model != null && Model.Data.Any())
         {
             <div class="row g-4">
-                @foreach (var request in Model)
+                @foreach (var request in Model.Data)
                 {
                     <div class="col-12">
                         <div class="card border-0 shadow-sm hover-shadow transition">
                             <div class="card-body p-4">
                                 <div class="row align-items-center">
-                                    <!-- Left Section: User Info -->
                                     <div class="col-md-7">
                                         <div class="d-flex align-items-start gap-3">
-                                            <!-- Avatar -->
+
                                             <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
                                                  style="width: 60px; height: 60px; flex-shrink: 0;">
                                                 <i class="bi bi-envelope-fill fs-5"></i>
                                             </div>
 
-                                            <!-- User Details -->
                                             <div class="flex-grow-1">
                                                 <h5 class="card-title mb-1">
                                                     <a href="mailto:@request.Email" class="text-decoration-none">@request.Email</a>
                                                 </h5>
                                                 <p class="text-muted mb-2">
                                                     <i class="bi bi-calendar me-1"></i>
-                                                    Applied on: <strong>@request.CreatedRequestDate.ToString("MMMM dd, yyyy")</strong>
+                                                    Applied on: <strong>@request.CreatedAt.ToString("MMMM dd, yyyy")</strong>
                                                 </p>
 
                                                 @if (!string.IsNullOrEmpty(request.Note))
@@ -66,12 +63,12 @@
                                         </div>
                                     </div>
 
-                                    <!-- Right Section: Actions -->
+
                                     <div class="col-md-5">
                                         <div class="d-flex gap-2 flex-wrap justify-content-md-end">
                                             <form asp-action="ApproveRequest" asp-controller="OrganizerRequests"
                                                   asp-route-id="@request.Id" asp-route-email="@request.Email"
-                                                  asp-route-note="@request.Note" asp-route-createDate="@request.CreatedRequestDate" 
+                                                  asp-route-note="@request.Note" asp-route-createDate="@request.CreatedAt" 
                                                   asp-route-userId="@request.UserId" method="post" style="display: inline;">
                                                 <button type="submit" class="btn btn-success btn-lg rounded-3"
                                                         title="Approve this application">
@@ -81,7 +78,7 @@
 
                                             <form asp-action="RejectRequest" asp-controller="OrganizerRequests"
                                                   asp-route-id="@request.Id" asp-route-email="@request.Email"
-                                                  asp-route-note="@request.Note" asp-route-createDate="@request.CreatedRequestDate"
+                                                  asp-route-note="@request.Note" asp-route-createDate="@request.CreatedAt"
                                                   asp-route-userId="@request.UserId" method="post" style="display: inline;">
                                                 <button type="submit" class="btn btn-danger btn-lg rounded-3"
                                                         title="Reject this application">
@@ -99,7 +96,6 @@
         }
         else
         {
-            <!-- Empty State -->
             <div class="text-center py-5">
                 <div class="mb-4">
                     <i class="bi bi-inbox fs-1 text-muted"></i>
@@ -111,6 +107,12 @@
                 </a>
             </div>
         }
+        @await Html.PartialAsync("_Pagination", new PaginationViewModel
+        {
+            CurrentPageNumber = Model.CurrentPageNumber,
+            TotalPages = Model.TotalPages,
+            TotalRecords = Model.TotalRecords
+        })
     </div>
 </div>
 

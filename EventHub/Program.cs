@@ -10,6 +10,7 @@ namespace EventHub
     using EventHub.Services;
     using Microsoft.AspNetCore.Identity;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
+    using EventHub.Services.Mapping;
 
     public class Program
     {
@@ -22,7 +23,7 @@ namespace EventHub
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-
+                
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>()
@@ -62,6 +63,8 @@ namespace EventHub
 
             builder.Services.AddServicesAndRepositories();
 
+            builder.Services.AddAutoMapper(typeof(Program).Assembly,
+                typeof(ServiceMappingProfile).Assembly);
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -81,6 +84,7 @@ namespace EventHub
                 await IdentitySeeder.SeedAsync(userManager, roleManager);
                 await DataSeeder.SeedAsync(context);
                 await EventSeeder.SeedAsync(context, userManager);
+                await InterestSeeder.SeedAsync(context);
             }
 
 

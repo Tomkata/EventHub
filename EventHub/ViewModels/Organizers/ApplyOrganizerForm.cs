@@ -1,7 +1,7 @@
 ﻿namespace EventHub.Web.ViewModels.Organizers
 {
     using System.ComponentModel.DataAnnotations;
-    using EventHub.Core.Common.Validation.Messages;
+    using EventHub.Core.Common.Validation.Organizer;
     using EventHub.Core.Enums.Organizer;
 
     public class ApplyOrganizerForm
@@ -15,8 +15,10 @@
 
         
         public string? UserId { get; set; } = null!;
-        [StringLength(OrganizerMessages.MaximumNoteLength,
-           MinimumLength = OrganizerMessages.MinimumNoteLength)]
+        [StringLength(OrganizerValidation.MaximumNoteLength,
+           MinimumLength = OrganizerValidation.MinimumNoteLength)]
         public string? Note { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

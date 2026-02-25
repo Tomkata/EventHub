@@ -24,7 +24,7 @@ namespace EventHub.Services.Services
 
             return new EventFormOptionsDto(
                 categories.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }),
-                locations.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.City })
+                locations.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name })
             );
         }
     }

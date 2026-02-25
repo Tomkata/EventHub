@@ -3,6 +3,8 @@
 namespace EventHub.Core.Models
 {
     using EventHub.Core.Common.Validation;
+    using EventHub.Core.Common.Validation.Messages;
+    using EventHub.Core.EventValidation;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -32,7 +34,7 @@ namespace EventHub.Core.Models
 
         [Comment("The Image of the Event")]
         [Required]
-        public string? ImagePath { get; set; }
+        public string ImagePath { get; set; }
 
 
 
@@ -48,10 +50,12 @@ namespace EventHub.Core.Models
 
 
         [Comment("The start date of the Event")]
+        [FutureDate(ErrorMessage = EventMessages.InvalidStartDate)]
         [Required]
-        public DateTime StartDate { get; set; } 
+        public DateTime StartDate   { get; set; } 
 
         [Comment("The end date of the event")]
+        [DateGreaterThan(nameof(StartDate), ErrorMessage = EventMessages.InvalidEndDate)]
         [Required]
         public DateTime EndDate { get; set; }
 
@@ -90,8 +94,7 @@ namespace EventHub.Core.Models
         [Comment("The Organizer of the event")]
         [Required]
         public string OrganizerId { get; set; }
-
-
+        public UserProfile OrganizerProfile { get; set; } = null!;
         public virtual ICollection<EventParticipant> EventParticipants { get; set; }
     }
 }

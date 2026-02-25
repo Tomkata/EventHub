@@ -4,7 +4,7 @@ namespace EventHub.Core.Models
 {
     using EventHub.Core.Enums.Organizer;
     using System.ComponentModel.DataAnnotations;
-    using Common.Validation.Messages;
+    using EventHub.Core.Common.Validation.Organizer;
 
     public class OrganizerRequest
     {
@@ -18,13 +18,12 @@ namespace EventHub.Core.Models
         public string UserId { get; set; }
         public Status Status { get; set; }
 
-        [StringLength(OrganizerMessages.MaximumNoteLength)]
+        [StringLength(OrganizerValidation.MaximumNoteLength)]
         public string? Note { get; set; }
         [EmailAddress]
         [Required]
         public string Email { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime? LastRejectedAt { get; set; }
-
     }
 }

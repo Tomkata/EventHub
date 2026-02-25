@@ -2,6 +2,7 @@
 
 namespace EventHub.Web.Controllers
 {
+    using AutoMapper;
     using EventHub.Core.Common.Validation.Organizer;
     using EventHub.Core.DTOs.Organizer;
     using EventHub.Core.Exceptions.Oranizer.ForApply;
@@ -11,21 +12,24 @@ namespace EventHub.Web.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
 
-    public class OrganizersController : Controller
+    public class OrganizersController : BaseController
     {
 
         private readonly IOrganizerService _organizerService;
+        private readonly IMapper _mapper;
 
-        public OrganizersController(IOrganizerService organizerService)
+        public OrganizersController(IOrganizerService organizerService,
+                                     IMapper mapper)
         {
             this._organizerService = organizerService;
+            this._mapper = mapper;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Apply()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
 
             var organizerState = await _organizerService.GetOrganizerStateAsync(userId!);
             var model = new ApplyOrganizerForm();
@@ -40,7 +44,7 @@ namespace EventHub.Web.Controllers
         public async Task<IActionResult> Apply(ApplyOrganizerForm model)
         {
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
 
             if (userId == null)
             {
@@ -58,17 +62,21 @@ namespace EventHub.Web.Controllers
 
             try
             {
-                var dto = new OrganizerRequestFormDto
-                {
-                    Email = model.Email,
-                    UserId = userId,
-                    Note = model.Note
-                };
+                var dto = _mapper.Map<OrganizerRequestFormDto>(model);
 
                 await _organizerService.ApplyForOrganizerAsync(dto, userId);
 
                 TempData["SuccessMessage"] = "Your organizer application has been submitted successfully!";
                 return RedirectToAction(nameof(Apply));
+            }
+            catch(CreateProfileApplyException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(actionName: "CreateProfile", controllerName: "UserProfile");
+            }
+            catch (AdminCannotApplyException ex)
+            {
+                TempData["Error"] = ex.Message;
             }
             catch (UserAlreadyOrganizerException ex)
             {

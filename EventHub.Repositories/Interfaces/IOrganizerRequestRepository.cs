@@ -10,6 +10,11 @@ namespace EventHub.Repositories.Interfaces
         Task<OrganizerRequest?> GetByUserIdAsync(string userId);
         Task SaveChangesAsync();
 
-        Task<IEnumerable<OrganizerRequest>> GetPendingRequestsAsync();
+        IQueryable<OrganizerRequest> GetPendingRequests();
+
+        IQueryable<OrganizerRequest> GetAll();
     }
 }
+
+
+

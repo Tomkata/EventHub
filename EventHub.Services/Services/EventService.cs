@@ -1,5 +1,7 @@
 ﻿namespace EventHub.Services.Services
 {
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Category;
@@ -9,7 +11,9 @@
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
     using EventHub.Repositories.Interfaces;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
+    using Microsoft.EntityFrameworkCore;
 
     public class EventService : IEventService
     {
@@ -17,119 +21,59 @@
         private readonly IEventParticipantsRepository _participantsRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ILocationRepository  _locationRepository;
+        private readonly IMapper _mapper;
+
         public EventService(IEventRepository eventRepository,
                             IEventParticipantsRepository participantsRepository,
                             ICategoryRepository categoryRepository,
-                            ILocationRepository locationRepository)
+                            ILocationRepository locationRepository,
+                            IMapper mapper)
         {
             this._eventRepository = eventRepository;
             this._participantsRepository = participantsRepository;
             this._categoryRepository = categoryRepository;
-            this._locationRepository = locationRepository; 
+            this._locationRepository = locationRepository;
+            this._mapper = mapper;
         }
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
         {
+            var dto = await _eventRepository.GetByIdReadOnlyAsync(id);
 
-            var entity = await _eventRepository.GetByIdReadOnlyAsync(id);
-
-            if (entity == null)
+            if (dto == null)
                 throw new InvalidEventException();
-
-            var participants = await _participantsRepository.GetParticipantsAsync(entity.Id);
-
-            var participantsDto = participants
-                .Select(x => new ParticipantDto
-                {
-                    UserId = x.Id,
-                    UserName = x.UserName
-                })
-                .ToList();
-
-
-            var organizer = await _participantsRepository.GetOrganizerAsync(entity.OrganizerId);
-
-            if (organizer == null) throw new InvalidOrganizerException();
-
-            var dto = new DetailedEventDto
-            {
-
-                Id = entity.Id,
-                Title = entity.Title,
-                CategoryName = entity.Category.Name,
-                MaxParticipants = entity.MaxParticipants,
-                Description = entity.Description,
-                StartDate = entity.StartDate,
-                EndDate = entity.EndDate,
-                OrganizerName = organizer.UserName,
-                City = entity.Location.City,
-                Address = entity.Address,
-                ImagePath = entity.ImagePath,
-                ParticipantList = participantsDto,
-                CategoryId = entity.CategoryId,
-                LocationId = entity.Location.Id,
-                OrganizerId = entity.OrganizerId
-            };
 
             return dto;
         }
 
-        public async Task<UserBasicInfo> GetOrganizerAsync(string organizerId)
-            => await _participantsRepository.GetOrganizerAsync(organizerId)!;
-
-        public async Task<IEnumerable<EventDto>> GetEventsAsync()
+        public async Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber,int pageSize)
         {
-            var events =  await _eventRepository.GetAllAsync();
-
-            var dtos =   events
-                .Select(e => new EventDto
-                {
-                    Id = e.Id,
-                    Title = e.Title,
-                    MaxParticipants = e.MaxParticipants,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    CityId = e.LocationId,
-                    City = e.Location.City,
-                    CategoryId = e.CategoryId,
-                    Category = e.Category.Name,
-                    ParticipantsCount = e.EventParticipants.Count(),
-                    ImagePath = e.ImagePath
-                })
-                .ToList();
-
-            return dtos;
+            return await _eventRepository
+                 .GetAll()
+                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
+                 .ToPagedResultAsync(pageNumber, pageSize);
         }
 
-        public async Task CreateAsync(CreateEventDto dto)
+        public async Task CreateAsync(CreateEventDto dto,string requestingUserId)
         {
             if (!await CategoryExistsAsync(dto.CategoryId))
                 throw new InvalidCategoryException();
             if (!await LocationExistsAsync(dto.LocationId))
                 throw new InvalidLocationException();
 
-            if (!await IsOrganizerExistAsync(dto.OrganizerId))
+            if (!await UserExistsAsync(requestingUserId))
                 throw new InvalidOrganizerException();
 
-                var eventEntity = new Event
-                {
-                    Title = dto.Title,
-                    StartDate = dto.StartDate,
-                    EndDate = dto.EndDate,
-                    ImagePath = dto.ImagePath,
-                    Address = dto.Address,
-                    MaxParticipants = dto.MaxParticipants,
-                    Description = dto.Description,
-                    CategoryId = dto.CategoryId,
-                    LocationId = dto.LocationId,
-                    OrganizerId = dto.OrganizerId,
-                };
+            var eventEntity = _mapper.Map<Event>(dto);
+
+            eventEntity.OrganizerId = requestingUserId;
 
             await _eventRepository.AddAsync(eventEntity);
+            await _eventRepository.SaveChangesAsync();
         }
 
-        private async Task<bool> IsOrganizerExistAsync(string Id)=>
-            await _participantsRepository.GetOrganizerAsync(Id) == null ? false : true;
+        private async Task<bool> UserExistsAsync(string Id)=>
+            await _participantsRepository.UserExistsAsync(Id) == null ? false : true;
 
         public async Task UpdateAsync(Guid id, EditEventDto dto,string requestingUserId, bool isAdmin)
         {
@@ -146,9 +90,6 @@
 
          ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
             
-           
-
-
             eventEntity.Title = dto.Title;
             eventEntity.LocationId = dto.LocationId;
             eventEntity.CategoryId = dto.CategoryId;
@@ -162,20 +103,22 @@
             if (dto.ImagePath != null)
                 eventEntity.ImagePath = dto.ImagePath;
 
-            await _eventRepository.UpdateAsync(eventEntity);
+            await _eventRepository.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid eventId,string requestingUserId, bool isAdmin)
         {
             var eventEntity = await _eventRepository.GetByIdAsync(eventId);
 
-            ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
-
-
             if (eventEntity == null)
                 throw new InvalidEventException();
 
+            ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
+
+
+
             await _eventRepository.RemoveAsync(eventEntity);
+            await _eventRepository.SaveChangesAsync();
         }
 
         private async Task<bool> LocationExistsAsync(Guid Id) =>
@@ -186,29 +129,9 @@
 
         public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId)
         {
-            //I will use IsOrganizerExist in controller and check if this is the organizer.
-            if (!await IsOrganizerExistAsync(organizerId))
-                throw new InvalidOrganizerException();
-
-            var events = await _eventRepository.GetAllEventsByOrganizerIdAsync(organizerId);
-
-            var dtos = events
-                .Select(e => new EventDto
-                {
-                    Id = e.Id,
-                    Title = e.Title,
-                    MaxParticipants = e.MaxParticipants,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    CityId = e.LocationId,
-                    City = e.Location.City,
-                    CategoryId = e.CategoryId,
-                    Category = e.Category.Name,
-                    ImagePath = e.ImagePath
-                })
-                .ToList();
-
-            return dtos;
+            return await _eventRepository.GetByOrganizerId(organizerId)
+                .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
 
         private void ValidateUserCanModifyEvent(bool isAdmin,string organizerId, string requestingUserId)
@@ -218,7 +141,63 @@
                 if (organizerId != requestingUserId)
                     throw new InvalidUserPermissionsException();
             }
-            
+        }
+
+        public async Task<EditEventDto> GetForEditAsync(Guid id)
+        {
+            var entity = await _eventRepository.GetByIdAsync(id);
+
+            if (entity == null)
+                throw new InvalidEventException();
+
+            return _mapper.Map<EditEventDto>(entity);
+        }
+
+        public async Task<PagedResult<EventDto>> SearchBy(string? Tite,
+            DateTime? StartDate, 
+            DateTime? EndDate,
+            Guid? LocationId, 
+            Guid? CategoryId,
+            int pageNumber,
+            int pageSize)
+        {
+            var query = _eventRepository.Query();
+            query = ApplyFilters(Tite, StartDate, EndDate, LocationId, CategoryId, query);
+
+            return await query
+                .Select(e => new EventDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    ImagePath = e.ImagePath,
+                    City = e.Location.City,
+                    Category = e.Category.Name,
+                    ParticipantsCount = e.EventParticipants.Count(),
+                    MaxParticipants = e.MaxParticipants
+                })
+                .ToPagedResultAsync(pageNumber,pageSize);
+        }
+
+        private static IQueryable<Event> ApplyFilters(string? Tite, DateTime? StartDate, DateTime? EndDate, Guid? LocationId, Guid? CategoryId, IQueryable<Event?> query)
+        {
+            if (!string.IsNullOrEmpty(Tite))
+                query = query.Where(x => x.Title.Contains(Tite.Trim()));
+
+            if (StartDate.HasValue)
+                query = query.Where(x => x.StartDate >= StartDate.Value);
+
+            if (EndDate.HasValue)
+                query = query.Where(x => x.EndDate <= EndDate.Value);
+
+            if (LocationId.HasValue)
+                query = query.Where(x => x.LocationId == LocationId.Value);
+
+            if (CategoryId.HasValue)
+                query = query.Where(x => x.CategoryId == CategoryId.Value);
+
+            return query;
         }
     }
 }

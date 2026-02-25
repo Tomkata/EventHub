@@ -1,6 +1,7 @@
 ﻿
 namespace EventHub.Web.Controllers
 {
+    using AutoMapper;
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Services.Interfaces;
@@ -8,17 +9,21 @@ namespace EventHub.Web.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
 
-    public class OrganizerEventsController : Controller
+    public class OrganizerEventsController : BaseController
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEventService _eventService;
+        private readonly IMapper _mapper;
 
         public OrganizerEventsController(UserManager<ApplicationUser> userManager,
-                                          IEventService eventService)
+                                          IEventService eventService,
+                                          IMapper mapper)
         {
             this._userManager = userManager;
             this._eventService = eventService;
+            this._mapper = mapper;
         }
 
 
@@ -26,34 +31,18 @@ namespace EventHub.Web.Controllers
         [Authorize(Roles = Roles.Organizer)]
         public async Task<IActionResult> MyEvents()
         {
-            var currUser =  await GetCurrentUserAsync();
-            var dtos = await _eventService.GetEventsByOrganizerIdAsync(currUser.Id);
+            var userId = GetUserId();
+            var dtos = await _eventService.GetEventsByOrganizerIdAsync(userId);
 
-            var events = dtos
-                .Select(x => new EventListViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    ImagePath = x.ImagePath,
-                    Category = x.Category,
-                    CategoryId = x.CategoryId,
-                    CityId = x.CityId,
-                    CityName = x.City,
-                    StartDate = x.StartDate,
-                    EndDate = x.EndDate,
-                    MaxParticipants = x.MaxParticipants,
-                    ParticipantsCount = x.ParticipantsCount,
-                    CanDelete = true,
-                    CanEdit = true,
-                    IsMyEvents = true
-                })
-                .ToList();
+            var models = _mapper.Map<List<EventListViewModel>>(dtos, opt =>
+            {
+                opt.Items["IsOrganizerView"] = true;
+            });
 
-            return View(events);
+            return View(models);
         }
 
 
 
-        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }

@@ -20,10 +20,9 @@ namespace EventHub.Repositories.Repositories
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);
 
-        public async Task<IEnumerable<Location>> GetLocationsAsync()
-       => await _dbContext.Locations
+        public IQueryable<Location> GetLocations()
+       =>  _dbContext.Locations
             .AsNoTracking()
-            .OrderBy(x => x.City)
-            .ToListAsync();
+            .OrderBy(x => x.City);
     }
 }

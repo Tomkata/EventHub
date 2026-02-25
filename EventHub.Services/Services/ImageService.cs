@@ -3,11 +3,11 @@
 namespace EventHub.Services.Services
 {
     using EventHub.Core.enums.Image;
+    using EventHub.Core.Enums;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Services.Images;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
 
     //Image validation service
     /*
@@ -15,9 +15,7 @@ namespace EventHub.Services.Services
     we will validate this, couse the bytes are gonna be different 
     */
 
-    // REMINDER !!!!!!
-    // TODO: Remove ASP.NET dependency from ImageService (replace IFormFile with Stream abstraction LATER).*/
-
+    
     public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment env;
@@ -27,12 +25,26 @@ namespace EventHub.Services.Services
             this.env = webHostEnvironment;  
         }
 
-        public async Task<string> StoreImageAsync(IFormFile imageFile)
+        public  Task DeleteImageAsync(string imagePath)
         {
-            if (imageFile == null) throw new ImageEmptyException();
-            if (imageFile.Length == 0) throw new ImageEmptyException();
+            if (imagePath == null) throw new ImageEmptyException();
 
-             using  var stream = imageFile.OpenReadStream();
+
+            var physicalPath = Path.Combine(env.WebRootPath, imagePath);
+
+            if (File.Exists(physicalPath))
+                File.Delete(physicalPath);
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<string> StoreImageAsync(Stream stream,
+            string imageFile,
+            ImageFolder folder)
+        {
+            if (stream == null || stream.Length == 0)
+                throw new ImageEmptyException();
+
 
             byte[] buffer = new byte[16];
 
@@ -42,26 +54,30 @@ namespace EventHub.Services.Services
                 isReaded =  await stream.ReadAsync(buffer,0,buffer.Length);
 
             //if the readed bytes are less than 4, the format is invalid
-            if(isReaded < 4) throw new InvalidImageFormatException();
+            if(isReaded < 4) 
+                throw new InvalidImageFormatException();
 
             var format = FindImageFormat(buffer);
 
-            if (format  == ImageFormat.unknown) throw new InvalidImageFormatException();
+            if (format  == ImageFormat.unknown)
+                throw new InvalidImageFormatException();
+
+            stream.Position = 0;
 
             var guid = Guid.NewGuid();
             var fileName = $"{guid}.{format}";
 
-            var physicalFolder = Path.Combine(env.WebRootPath, "images", "events");
+            var physicalFolder = Path.Combine(env.WebRootPath, "images", folder.ToString().ToLower());
 
             Directory.CreateDirectory(physicalFolder);
 
             var physicalPath = Path.Combine(physicalFolder, fileName);
-                
+                 
             using var fileStream = new FileStream(physicalPath, FileMode.Create);
 
-                await imageFile.CopyToAsync(fileStream);
+            await stream.CopyToAsync(fileStream);
 
-            var imageUrl = $"images/events/{fileName}";
+            var imageUrl = $"images/{folder.ToString().ToLower()}/{fileName}";
             return imageUrl;
         }
 

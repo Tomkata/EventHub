@@ -2,48 +2,48 @@
 
 namespace EventHub.Web.Controllers
 {
+    using AutoMapper;
     using EventHub.Infrastructure;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+
     public class AdminEventsController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly IMapper _mapper;
 
-        public AdminEventsController(IEventService eventService)
+        public AdminEventsController(IEventService eventService,
+                                     IMapper mapper)
         {
             this._eventService = eventService;
+            this._mapper = mapper;
         }
 
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AllEvents()
+        public async Task<IActionResult> AllEvents(int page = 1, int pageSize = 10)
         {
-            var events = await _eventService.GetEventsAsync();
 
-            bool isAdmin = User.IsInRole("Admin");
+            var events = await _eventService.GetEventsAsync(page, pageSize);
 
-            var eventList =
-                 events.Select(x => new EventListViewModel
-                 {
-                     Id = x.Id,
-                     Title = x.Title,
-                     ImagePath = x.ImagePath,
-                     Category = x.Category,
-                     CategoryId = x.CategoryId,
-                     CityId = x.CityId,
-                     CityName = x.City,
-                     StartDate = x.StartDate,
-                     EndDate = x.EndDate,
-                     MaxParticipants = x.MaxParticipants,
-                     ParticipantsCount = x.ParticipantsCount,
-                     CanDelete = isAdmin,
-                     CanEdit = isAdmin,
-                     IsMyEvents = true
-                 })
-                .ToList();
 
-            return View(eventList);
+            var eventList = _mapper.Map<List<EventListViewModel>>(
+                  events.Data,
+                  opt => opt.Items["IsAdminView"] = true
+              );
+
+            var model = new PagedResult<EventListViewModel>
+            {
+                Data = eventList,
+                CurrentPageNumber = events.CurrentPageNumber,
+                PageSize = events.PageSize,
+                TotalRecords = events.TotalRecords
+            };
+
+            return View(model);
         }
     }
 }
