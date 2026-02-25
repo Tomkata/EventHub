@@ -122,6 +122,7 @@ namespace EventHub.Services.Services
             profile.LastName = dto.LastName;
             profile.Description = dto.Description;
             profile.LocationId = dto.LocationId;
+            profile.Phone = dto.PhoneNumber;
             profile.UserProfileInterests = interests
                 .Select(x => new UserProfileInterest
                 {

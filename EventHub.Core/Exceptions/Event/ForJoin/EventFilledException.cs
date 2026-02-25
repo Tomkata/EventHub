@@ -3,7 +3,7 @@
     public class EventFilledException : Exception
     {
         public EventFilledException()
-            :base("This event is full.!")
+            :base("This event is full.")
         {
         }
     }

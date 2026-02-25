@@ -18,5 +18,6 @@ namespace EventHub.Services.Common
         public bool HasNextPage => this.CurrentPageNumber < this.TotalPages;
         public bool HasPreviousPage => this.CurrentPageNumber > 1;
 
+
     }
 }

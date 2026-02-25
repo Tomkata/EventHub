@@ -10,13 +10,16 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.Exceptions.Event.ForLeft;
     using EventHub.Core.Exceptions.Image;
     using EventHub.Core.Exceptions.User;
+    using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Infrastructure;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.Events;
+    using Humanizer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Runtime.InteropServices;
     using System.Security.Claims;
 
     public class EventsController : BaseController
@@ -42,9 +45,22 @@ namespace EventHub.Web.Controllers
             this._mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        
+        public async Task<IActionResult> Index(SearchEventByFilterViewModel search,
+            int page = 1,
+            int pageSize = 10)
         {
-            var allEvents = await _eventService.GetEventsAsync(page, pageSize);
+
+            var paged = await _eventService.SearchBy(
+               search.Title,
+               search.StartDate,
+               search.EndDate,
+               search.LocationId,
+               search.CategoryId,
+               page,
+               pageSize
+                );
+
 
             HashSet<Guid> joinedIds = new();
 
@@ -55,17 +71,24 @@ namespace EventHub.Web.Controllers
             }
 
             var eventList = _mapper.Map<List<EventListViewModel>>(
-              allEvents.Data,
+              paged.Data,
               opt => opt.Items["JoinedIds"] = joinedIds
               );
 
-            var model = new PagedResult<EventListViewModel>
+
+
+            var model = new EventsIndexViewModel   
             {
-                Data = eventList,
-                CurrentPageNumber = allEvents.CurrentPageNumber,
-                PageSize = allEvents.PageSize,
-                TotalRecords = allEvents.TotalRecords
+                Search = search,
+                Paged = new PagedResult<EventListViewModel>
+                {
+                    Data = eventList,
+                    CurrentPageNumber = paged.CurrentPageNumber,
+                    PageSize = paged.PageSize,
+                    TotalRecords = paged.TotalRecords
+                }
             };
+
             return View(model);
 
         }
@@ -109,6 +132,7 @@ namespace EventHub.Web.Controllers
                 var requestingUserId = GetUserId();
 
                 var @event = _mapper.Map<CreateEventDto>(model);
+                @event.ImagePath = imageUrl;
 
 
                 await _eventService.CreateAsync(@event, requestingUserId);
@@ -116,6 +140,11 @@ namespace EventHub.Web.Controllers
                 TempData["SuccessMessage"] = "Event created successfully!";
 
                 return RedirectToAction(nameof(Index));
+            }
+            catch (ProfileNotFoundException profileException)
+            {
+                TempData["Error"] = profileException.Message;
+                return RedirectToAction(actionName: "CreateProfile", controllerName: "UserProfile");
             }
             catch (ImageEmptyException imageException)
             {

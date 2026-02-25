@@ -21,5 +21,7 @@ namespace EventHub.Web.ViewModels.Events
         public bool HideJoinLeaveButtons { get; set; } = false;
         public bool IsParticipant { get; set; }
 
+        public bool IsSearching { get; set; }
+
     }
 }

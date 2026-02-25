@@ -59,7 +59,7 @@ namespace EventHub.Services.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             if (roles.Contains(Roles.Admin))
-                throw new AdminCannotApplyException();
+                throw new AdminCannnotJoinEventException();
 
             if (roles.Contains(Roles.Organizer))
             {

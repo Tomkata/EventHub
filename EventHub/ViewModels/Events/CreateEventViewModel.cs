@@ -48,7 +48,8 @@ namespace EventHub.Web.ViewModels.Events
         public Guid CategoryId { get; set; }
         [Required(ErrorMessage = ValidationMessages.Required)]
         public Guid LocationId { get; set; }
-        public IFormFile Image { get; set; }
+        [Required]
+        public IFormFile Image { get; set; } = null!;
 
 
     }

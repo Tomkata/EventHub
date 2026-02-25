@@ -9,6 +9,7 @@
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.Oranizer;
     using EventHub.Core.Exceptions.User;
+    using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Core.Models;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Common;
@@ -22,18 +23,21 @@
         private readonly ICategoryRepository _categoryRepository;
         private readonly ILocationRepository  _locationRepository;
         private readonly IMapper _mapper;
+        private readonly IUserProfileRepository _userProfileRepository;
 
         public EventService(IEventRepository eventRepository,
                             IEventParticipantsRepository participantsRepository,
                             ICategoryRepository categoryRepository,
                             ILocationRepository locationRepository,
-                            IMapper mapper)
+                            IMapper mapper,
+                            IUserProfileRepository userProfileRepository)
         {
             this._eventRepository = eventRepository;
             this._participantsRepository = participantsRepository;
             this._categoryRepository = categoryRepository;
             this._locationRepository = locationRepository;
             this._mapper = mapper;
+            this._userProfileRepository = userProfileRepository;
         }
 
         public async Task<DetailedEventDto> GetByIdAsync(Guid id)
@@ -63,6 +67,10 @@
 
             if (!await UserExistsAsync(requestingUserId))
                 throw new InvalidOrganizerException();
+
+            if (!await _userProfileRepository.ExistsAsync(requestingUserId))
+                throw new ProfileNotFoundException();
+            
 
             var eventEntity = _mapper.Map<Event>(dto);
 
