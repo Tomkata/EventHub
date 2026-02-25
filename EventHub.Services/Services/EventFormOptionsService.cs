@@ -19,13 +19,13 @@ namespace EventHub.Services.Services
 
         public async Task<EventFormOptionsDto> GetFormOptionsAsync()
         {
-            var categories = await _categoryService.GetCategoriesForDropdownAsync();
-            var locations = await _locationService.GetLocationsForDropdownAsync();
+                var categories = await _categoryService.GetCategoriesForDropdownAsync();
+                var locations = await _locationService.GetLocationsForDropdownAsync();
 
-            return new EventFormOptionsDto(
-                categories.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }),
-                locations.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name })
-            );
+                return new EventFormOptionsDto(
+                    categories.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }),
+                    locations.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name })
+                );
         }
     }
 }

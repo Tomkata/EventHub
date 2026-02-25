@@ -51,6 +51,7 @@ namespace EventHub.Web.Controllers
             int pageSize = 10)
         {
 
+
             var paged = await _eventService.SearchBy(
                search.Title,
                search.StartDate,
@@ -61,6 +62,7 @@ namespace EventHub.Web.Controllers
                pageSize
                 );
 
+            search = await PrepareSearchViewModel();
 
             HashSet<Guid> joinedIds = new();
 
@@ -75,7 +77,7 @@ namespace EventHub.Web.Controllers
               opt => opt.Items["JoinedIds"] = joinedIds
               );
 
-
+            
 
             var model = new EventsIndexViewModel   
             {
@@ -217,6 +219,7 @@ namespace EventHub.Web.Controllers
             }
         }
         
+        
         private async Task FillDropDowns(EventFormBaseViewModel model)
         {
             var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
@@ -357,7 +360,16 @@ namespace EventHub.Web.Controllers
             return model;
         }
 
-
+        private async Task<SearchEventByFilterViewModel> PrepareSearchViewModel()
+        {
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+            var model = new SearchEventByFilterViewModel
+            {
+                Categories = dropDowns.Categories,
+                Locations = dropDowns.Locations
+            };
+            return model;
+        }
 
     }
 

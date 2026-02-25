@@ -8,7 +8,6 @@ namespace EventHub.Web.ViewModels.Events
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Guid? LocationId { get; set; }
-        public int MyProperty { get; set; }
         public Guid? CategoryId { get; set; }
     }
 }
