@@ -62,7 +62,10 @@ namespace EventHub.Web.Controllers
                pageSize
                 );
 
-            search = await PrepareSearchViewModel();
+            var prepared = await PrepareSearchViewModel();
+
+            search.Locations = prepared.Locations;
+            search.Categories = prepared.Categories;
 
             HashSet<Guid> joinedIds = new();
 

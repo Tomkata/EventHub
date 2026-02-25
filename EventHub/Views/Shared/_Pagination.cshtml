@@ -1,6 +1,12 @@
 ﻿@using EventHub.Services.Common
 @model PaginationViewModel
 
+@{
+    var routeValues = ViewContext.HttpContext.Request.Query
+        .Where(q => q.Key != "__Invariant" && q.Key != "pageNumber")
+        .ToDictionary(k => k.Key, v => v.Value.ToString());
+}
+
 @if (Model.TotalPages > 1)
 {
     <nav class="d-flex justify-content-center mt-4">
@@ -8,7 +14,9 @@
 
             @if (Model.HasPreviousPage)
             {
-                <a href="?page=@(Model.CurrentPageNumber - 1)"
+                <a asp-action="Index"
+                       asp-all-route-data="routeValues"
+                       asp-route-page="@(Model.CurrentPageNumber - 1)"
                        class="page-btn">
                     <i class="bi bi-chevron-left"></i>
                 </a>
@@ -28,7 +36,12 @@
                 }
                 else if (i == 1 || i == Model.TotalPages || Math.Abs(i - Model.CurrentPageNumber) <= 1)
                 {
-                    <a href="?page=@i" class="page-btn">@i</a>
+                    <a asp-action="Index"
+                           asp-all-route-data="routeValues"
+                           asp-route-page="@i"
+                           class="page-btn">
+                        @i
+                    </a>
                 }
                 else if (Math.Abs(i - Model.CurrentPageNumber) == 2)
                 {
@@ -38,7 +51,9 @@
 
             @if (Model.HasNextPage)
             {
-                <a href="?page=@(Model.CurrentPageNumber + 1)"
+                <a asp-action="Index"
+                       asp-all-route-data="routeValues"
+                       asp-route-page="@(Model.CurrentPageNumber + 1)"
                        class="page-btn">
                     <i class="bi bi-chevron-right"></i>
                 </a>
