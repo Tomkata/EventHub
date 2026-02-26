@@ -58,7 +58,7 @@ namespace EventHub.Web.Controllers
                 await _organizerService.ApproveUserToOrganizerAsync(model.UserId);
                 return RedirectToAction(nameof(Requests));
             }
-            catch (InvalidApproveUser ex)
+            catch (OrganizerRequestNotFoundException ex)
             {
               TempData["Error"] = "Invalid user to approve!";
     return RedirectToAction(nameof(Requests));
@@ -120,17 +120,17 @@ namespace EventHub.Web.Controllers
                 await _organizerService.RejectUserToOrganizerAsync(model.UserId);
                 return RedirectToAction(nameof(Requests));
             }
-            catch (InvalidUserToReject ex)
+            catch (UserNotFoundException ex)
             {
-                ModelState.AddModelError("", "Invalid user to reject!");
+                ModelState.AddModelError("", "User doesnt exist!");
                 return View(nameof(Requests));
             }
-            catch (RejectApprovedRequest ex)
+            catch (OrganizerRequestAlreadyApprovedException ex)
             {
                 ModelState.AddModelError("", "Cannot reject user with approved status!");
                 return View(nameof(Requests));
             }
-            catch (InvalidRejectException ex)
+            catch (OrganizerRequestAlreadyRejectedException ex)
             {
                 ModelState.AddModelError("", "The user is already in rejected status!");
                 return View(nameof(Requests));

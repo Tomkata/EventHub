@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.Location
+﻿
+namespace EventHub.Core.Exceptions.Location
 {
-    public class InvalidLocationException : Exception
+using EventHub.Core.AppException;
+    public class InvalidLocationException : ValidationException
     {
         public InvalidLocationException()
             :base("Invalid Location!")

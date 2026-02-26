@@ -1,9 +1,9 @@
 ﻿
 namespace EventHub.Core.Exceptions.Oranizer.ForApprove
 {
-    public class InvalidApproveUser : Exception
+    public class OrganizerRequestNotFoundException : Exception
     {
-        public InvalidApproveUser()
+        public OrganizerRequestNotFoundException()
             :base("Invalid user to approve!")
         {
             

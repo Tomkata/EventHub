@@ -212,7 +212,7 @@ namespace EventHub.Web.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
-            catch (InvalidUserPermissionsException)
+            catch (ForbiddenOperationException)
             {
                 return Unauthorized();
             }
@@ -302,7 +302,7 @@ namespace EventHub.Web.Controllers
                 await _eventService.DeleteAsync(eventId, userId, isAdmin);
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidUserPermissionsException)
+            catch (ForbiddenOperationException)
             {
                 return Unauthorized();
             }

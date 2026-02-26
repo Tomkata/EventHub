@@ -99,7 +99,7 @@ namespace EventHub.Services.Services
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
             if (existingRequest == null)
-                throw new InvalidApproveUser();
+                throw new OrganizerRequestNotFoundException();
 
             if (existingRequest.Status == Status.Approved)
                 throw new UserAlreadyOrganizerException();
@@ -126,7 +126,7 @@ namespace EventHub.Services.Services
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
             if (existingRequest == null)
-                throw new InvalidDemoteUser();
+                throw new OrganizerRequestNotFoundException();
 
             if (existingRequest.Status == Status.Pending)
                 throw new DemotePendingRequestException();
@@ -171,13 +171,13 @@ namespace EventHub.Services.Services
             var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
 
             if (existingRequest == null)
-                throw new InvalidUserToReject();
+                throw new OrganizerRequestNotFoundException();
 
             if (existingRequest.Status == Status.Approved)
-                throw new RejectApprovedRequest();
-
+                throw new OrganizerRequestAlreadyApprovedException();
+                
             if(existingRequest.Status == Status.Rejected)
-                throw new InvalidRejectException();
+                throw new OrganizerRequestAlreadyRejectedException();
 
             else
                 existingRequest.Status = Status.Rejected;

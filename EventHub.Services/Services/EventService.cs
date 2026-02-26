@@ -45,7 +45,7 @@
             var dto = await _eventRepository.GetByIdReadOnlyAsync(id);
 
             if (dto == null)
-                throw new InvalidEventException();
+                throw new EventNotFoundException();
 
             return dto;
         }
@@ -66,7 +66,7 @@
                 throw new InvalidLocationException();
 
             if (!await UserExistsAsync(requestingUserId))
-                throw new InvalidOrganizerException();
+                throw new UserNotFoundException();
 
             if (!await _userProfileRepository.ExistsAsync(requestingUserId))
                 throw new ProfileNotFoundException();
@@ -88,7 +88,7 @@
             var eventEntity = await _eventRepository.GetByIdAsync(id);
 
             if (eventEntity == null)
-                throw new InvalidEventException();
+                throw new EventNotFoundException();
 
             if (!await CategoryExistsAsync(dto.CategoryId))
                 throw new InvalidCategoryException();
@@ -119,7 +119,7 @@
             var eventEntity = await _eventRepository.GetByIdAsync(eventId);
 
             if (eventEntity == null)
-                throw new InvalidEventException();
+                throw new EventNotFoundException();
 
             ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
 
@@ -147,7 +147,7 @@
             if (!isAdmin)
             {
                 if (organizerId != requestingUserId)
-                    throw new InvalidUserPermissionsException();
+                    throw new ForbiddenOperationException();
             }
         }
 
@@ -156,7 +156,7 @@
             var entity = await _eventRepository.GetByIdAsync(id);
 
             if (entity == null)
-                throw new InvalidEventException();
+                throw new EventNotFoundException();
 
             return _mapper.Map<EditEventDto>(entity);
         }

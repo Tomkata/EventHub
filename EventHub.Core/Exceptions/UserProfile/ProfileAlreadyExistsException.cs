@@ -1,11 +1,14 @@
-﻿namespace EventHub.Core.Exceptions.UserProfile
+﻿
+
+
+namespace EventHub.Core.Exceptions.UserProfile
 {
-    public class ProfileAlreadyExistsException : Exception
+using EventHub.Core.AppException;
+    public class ProfileAlreadyExistsException : ConflictException
     {
         public ProfileAlreadyExistsException()
-            :base("The profile already exists.")
+            :base("User already have a profile.")
         {
-            
         }
     }
 }

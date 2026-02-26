@@ -1,13 +1,12 @@
-﻿using System.Drawing;
-
+﻿
 namespace EventHub.Core.Exceptions.UserProfile
 {
-    public class ProfileRequiredException : Exception
+using EventHub.Core.AppException;
+    public class ProfileRequiredException : ConflictException
     {
         public ProfileRequiredException()
             :base("You need to complete your profile.")
         {
-            
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.UserProfile
+﻿
+namespace EventHub.Core.Exceptions.UserProfile
 {
-    public class UserNotAppliedAnyInterestsException : Exception
+using EventHub.Core.AppException;
+    public class UserNotAppliedAnyInterestsException : ValidationException
     {
         public UserNotAppliedAnyInterestsException()
             :base("the user must have at least one added interest.")
