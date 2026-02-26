@@ -21,14 +21,14 @@ namespace EventHub.Web.Controllers
         private readonly IMapper _mapper;
         private readonly ILocationService _locationService;
         private readonly IInterestsService _interestsService;
-        private readonly IEventParticipantsRepository _eventParticipantsRepository;
+        private readonly IParticipantService   _participantService;
         private readonly IUserProfileFormOptionsService _userProfileFormOptions;
         public UserProfileController(IUserProfileService userProfileService,
                                      IImageService imageService,
                                      IMapper mapper,
                                      IInterestsService interestsService,
                                      ILocationService locationService,
-                                     IEventParticipantsRepository eventParticipantsRepository,
+                                     IParticipantService participantService,
                                      IUserProfileFormOptionsService userProfileFormOptions)
         {
             this._userProfileService = userProfileService;
@@ -36,7 +36,7 @@ namespace EventHub.Web.Controllers
             this._mapper = mapper;
             this._interestsService = interestsService;
             this._locationService = locationService;
-            this._eventParticipantsRepository = eventParticipantsRepository;
+            this._participantService = participantService;
             this._userProfileFormOptions = userProfileFormOptions;
         }
 
@@ -221,7 +221,7 @@ namespace EventHub.Web.Controllers
                 return RedirectToAction(nameof(CreateProfile));
 
             var vm = _mapper.Map<DetailedUserProfileViewModel>(profileDto);
-            vm.JoinedEventsCount = await _eventParticipantsRepository.GetJoinedEventCountAsync(userId);
+            vm.JoinedEventsCount = await _participantService.GetJoinedEventCountAsync(userId);
 
             return View(vm);
         }
