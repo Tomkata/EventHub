@@ -15,17 +15,17 @@ namespace EventHub.Services.Services
     we will validate this, couse the bytes are gonna be different 
     */
 
-    
+
     public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment env;
 
         public ImageService(IWebHostEnvironment webHostEnvironment)
         {
-            this.env = webHostEnvironment;  
+            this.env = webHostEnvironment;
         }
 
-        public  Task DeleteImageAsync(string imagePath)
+        public Task DeleteImageAsync(string imagePath)
         {
             if (imagePath == null) throw new ImageEmptyException();
 
@@ -38,31 +38,26 @@ namespace EventHub.Services.Services
             return Task.CompletedTask;
         }
 
-        public async Task<string> StoreImageAsync(Stream stream,
-            string imageFile,
-            ImageFolder folder)
+        public async Task<ImageFormat> DetectFormat(Stream stream)
         {
-            if (stream == null || stream.Length == 0)
-                throw new ImageEmptyException();
-
-
             byte[] buffer = new byte[16];
 
             var isReaded = 0;
 
-            
-                isReaded =  await stream.ReadAsync(buffer,0,buffer.Length);
-
-            //if the readed bytes are less than 4, the format is invalid
-            if(isReaded < 4) 
-                throw new InvalidImageFormatException();
-
-            var format = FindImageFormat(buffer);
-
-            if (format  == ImageFormat.unknown)
-                throw new InvalidImageFormatException();
-
+            isReaded = await stream.ReadAsync(buffer, 0, buffer.Length);
             stream.Position = 0;
+
+            return FindImageFormat(buffer);
+        }
+
+
+
+        public async Task<string> StoreImageAsync(
+            Stream stream,
+            ImageFormat format,
+            ImageFolder folder)
+        {
+
 
             var guid = Guid.NewGuid();
             var fileName = $"{guid}.{format}";
@@ -72,7 +67,7 @@ namespace EventHub.Services.Services
             Directory.CreateDirectory(physicalFolder);
 
             var physicalPath = Path.Combine(physicalFolder, fileName);
-                 
+
             using var fileStream = new FileStream(physicalPath, FileMode.Create);
 
             await stream.CopyToAsync(fileStream);

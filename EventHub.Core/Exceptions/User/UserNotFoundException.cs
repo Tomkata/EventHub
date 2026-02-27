@@ -1,12 +1,13 @@
 ﻿
+using EventHub.Core.AppException;
+
 namespace EventHub.Core.Exceptions.User
 {
-    public class UserNotFoundException : Exception
+    public class UserNotFoundException : NotFoundException
     {
         public UserNotFoundException()
-            :base("You need to log in!")
+            : base("User doesnt exist!")
         {
-            
         }
     }
 }

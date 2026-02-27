@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Event.ForJoin
+﻿
+namespace EventHub.Core.Exceptions.Event.ForJoin
 {
-    public class UserDontHavePrfileException : Exception
+    using EventHub.Core.AppException;
+
+    public class UserDontHavePrfileException : ConflictException
     {
         public UserDontHavePrfileException()
             :base("Please, complete your profile to join events.")

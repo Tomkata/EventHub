@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.Oranizer.ForApply
+﻿
+namespace EventHub.Core.Exceptions.Oranizer.ForApply
 {
-    public class OrganizerRequestPendingException : Exception
+using EventHub.Core.AppException;
+    public class OrganizerRequestPendingException : ConflictException
     {
         public OrganizerRequestPendingException()
             :base("Organizer request is in pending!")

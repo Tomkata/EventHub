@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.Oranizer.ForApply
+﻿
+namespace EventHub.Core.Exceptions.Oranizer.ForApply
 {
-    public class OrganizerCooldownNotExpiredException : Exception
+using EventHub.Core.AppException;
+    public class OrganizerCooldownNotExpiredException : ConflictException
     {
         public OrganizerCooldownNotExpiredException()
             :base("Organizer cooldown is not expired!")

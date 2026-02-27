@@ -2,7 +2,7 @@
 
 namespace EventHub.Core.AppException
 {
-    public class ConflictException :Exception
+    public class ConflictException : DomainException
     {
         public ConflictException(){}
         public ConflictException(string message):base(message){}

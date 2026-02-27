@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace EventHub.Core.AppException
 {
-    internal class ForbiddenException
+    public class ForbiddenException : DomainException
     {
+        public ForbiddenException() { }
+        public ForbiddenException(string message) : base(message) { }
+        public ForbiddenException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

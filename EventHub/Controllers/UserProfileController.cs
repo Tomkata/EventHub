@@ -4,6 +4,7 @@ namespace EventHub.Web.Controllers
 {
     using AutoMapper;
     using EventHub.Core.DTOs.UserProfile;
+    using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
     using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Repositories.Interfaces;
@@ -21,7 +22,7 @@ namespace EventHub.Web.Controllers
         private readonly IMapper _mapper;
         private readonly ILocationService _locationService;
         private readonly IInterestsService _interestsService;
-        private readonly IParticipantService   _participantService;
+        private readonly IParticipantService _participantService;
         private readonly IUserProfileFormOptionsService _userProfileFormOptions;
         public UserProfileController(IUserProfileService userProfileService,
                                      IImageService imageService,
@@ -56,50 +57,50 @@ namespace EventHub.Web.Controllers
         {
             string? imageUrl = null;
 
-            try
+            if (!ModelState.IsValid)
             {
-                var userId = GetUserId();
+                await PopulateDropdowns(model);
+                return View(model);
+            }
 
+            var userId = GetUserId();
+            var dto = _mapper.Map<CreateUserProfileDto>(model);
+
+             if ( model.Image == null || model.Image.Length <= 0)
+            {
+                ModelState.AddModelError("Image", "Invalid image.");
+            }
+            else
+            {
                 using var stream = model.Image.OpenReadStream();
 
-                imageUrl = await _imageService.StoreImageAsync(
-                    stream,
-                    model.Image.FileName,
-                    ImageFolder.Profiles);
+                var imageFormat = await _imageService.DetectFormat(stream);
 
-                var dto = _mapper.Map<CreateUserProfileDto>(model);
-                dto.ImagePath = imageUrl;
+                if (imageFormat == ImageFormat.unknown)
+                {
+                    ModelState.AddModelError("Image", "Invalid image format.");
+                }
+                else
+                {
+                    imageUrl = await _imageService
+                          .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles);
 
-                await _userProfileService.CreateAsync(userId, dto);
-
-                TempData["SuccessMessage"] = "Profile created successfully!";
-
-
-                return RedirectToAction(actionName: "Index", controllerName: "Home");
+                    dto.ImagePath = imageUrl;
+                }
             }
-            catch (Exception e)
-                 when (e is ProfileAlreadyExistsException ||
-                       e is UserNotAppliedAnyInterestsException ||
-                       e is InvalidInterestException ||
-                       e is ProfileRequiredException)
+            if (!ModelState.IsValid)
             {
-                if (imageUrl != null)
-                    await _imageService.DeleteImageAsync(imageUrl);
-
-                ModelState.AddModelError(string.Empty, e.Message);
                 await PopulateDropdowns(model);
                 return View(model);
-            }
-            catch (Exception)
-            {
-                if (imageUrl != null)
-                    await _imageService.DeleteImageAsync(imageUrl);
+            }   
 
-                ModelState.AddModelError("", "Something went wrong. Please try again.");
-                await PopulateDropdowns(model);
-                return View(model);
-            }
+            await _userProfileService.CreateAsync(userId, dto);
+
+            TempData["SuccessMessage"] = "Profile created successfully!";
+
+            return RedirectToAction(actionName: "Index", controllerName: "Home");
         }
+
 
         [HttpGet]
         [Authorize]
@@ -123,28 +124,44 @@ namespace EventHub.Web.Controllers
             if (!ModelState.IsValid)
             {
                 await PopulateDropdowns(model);
-                ModelState.AddModelError("", "Please fill in the form.");
                 return View(model);
             }
             string? newImagePath = null;
-            try
-            {
 
-                if (model.NewImage != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var dto = _mapper.Map<EditUserProfileDto>(model);
+
+            if (model.NewImage != null)
+            {
+                if (model.NewImage.Length <= 0)
+                {
+                    ModelState.AddModelError("Image", "Invalid image.");
+                }
+                else
                 {
                     using var stream = model.NewImage.OpenReadStream();
 
-                    newImagePath = await _imageService.StoreImageAsync(
-                        stream,
-                        model.NewImage.FileName,
-                        ImageFolder.Profiles);
+                    var imageFormat = await _imageService.DetectFormat(stream);
+
+                    if (imageFormat == ImageFormat.unknown)
+                    {
+                        ModelState.AddModelError("Image", "Invalid image format.");
+                    }
+                    else
+                    {
+                        newImagePath = await _imageService
+                            .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles);
+
+                        dto.ProfileImagePath = newImagePath;
+                    }
                 }
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var dto = _mapper.Map<EditUserProfileDto>(model);
-
-                if (newImagePath != null)
-                    dto.ProfileImagePath = newImagePath;
+                if (!ModelState.IsValid)
+                {
+                    await PopulateDropdowns(model);
+                    return View(model);
+                }
+            }
 
                 await _userProfileService.UpdateAsync(userId, dto);
 
@@ -154,17 +171,6 @@ namespace EventHub.Web.Controllers
                 TempData["SuccessMessage"] = "Profile updated successfully.";
                 return RedirectToAction(nameof(Details));
             }
-            catch (Exception ex)
-            {
-
-                if (newImagePath != null)
-                    await _imageService.DeleteImageAsync(newImagePath);
-
-                ModelState.AddModelError("", ex.Message);
-                await PopulateDropdowns(model);
-                return View(model);
-            }
-        }
 
         private async Task<CreateUserProfileViewModel> PrepareCreateViewModel()
         {
@@ -246,7 +252,7 @@ namespace EventHub.Web.Controllers
             if (publicUserProfile == null)
             {
                 TempData["Error"] = "User doesn't exist.";
-                return RedirectToAction(controllerName:"Events",actionName:"Index");
+                return RedirectToAction(controllerName: "Events", actionName: "Index");
             }
 
             var model = _mapper.Map<PublicUserProfileViewModel>(publicUserProfile);

@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.Oranizer.ForApply
+﻿
+namespace EventHub.Core.Exceptions.Oranizer.ForApply
 {
-    public class UserAlreadyOrganizerException : Exception
+using EventHub.Core.AppException;
+    public class UserAlreadyOrganizerException : ConflictException
     {
         public UserAlreadyOrganizerException()
             :base("User is already an organizer!")

@@ -6,14 +6,14 @@ namespace EventHub.Services.Services
     using EventHub.Core.DTOs;
     using EventHub.Services.Interfaces;
 
-    public class SerachFormOptionsService : ISerachFormOptionsService
+    public class SearachFormOptionsService : ISearachFormOptionsService
     {
 
 
         private readonly ICategoryService _categoryService;
         private readonly ILocationService _locationService;
 
-        public SerachFormOptionsService(ICategoryService categoryService, ILocationService locationService)
+        public SearachFormOptionsService(ICategoryService categoryService, ILocationService locationService)
         {
             this._categoryService = categoryService;
             this._locationService = locationService;

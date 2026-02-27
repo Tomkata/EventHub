@@ -5,7 +5,7 @@ namespace EventHub.Services.Interfaces
 {
     using EventHub.Core.DTOs;
 
-    public interface ISerachFormOptionsService
+    public interface ISearachFormOptionsService
     {
         Task<EventFormOptionsDto> GetFormOptionsAsync();
     }

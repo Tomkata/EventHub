@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Event.ForJoin
+﻿
+namespace EventHub.Core.Exceptions.Event.ForJoin
 {
-    public class EventFilledException : Exception
+    using EventHub.Core.AppException;
+
+    public class EventFilledException : ConflictException
     {
         public EventFilledException()
             :base("This event is full.")

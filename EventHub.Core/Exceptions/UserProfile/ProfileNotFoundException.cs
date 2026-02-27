@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.UserProfile
+﻿
+namespace EventHub.Core.Exceptions.UserProfile
 {
-    public class ProfileNotFoundException : Exception
+using EventHub.Core.AppException;
+    public class ProfileNotFoundException : NotFoundException
     {
         public ProfileNotFoundException()
             :base("The profile doesn`t exist.")

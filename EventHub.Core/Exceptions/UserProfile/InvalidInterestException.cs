@@ -1,6 +1,8 @@
-﻿namespace EventHub.Core.Exceptions.UserProfile
+﻿
+namespace EventHub.Core.Exceptions.UserProfile
 {
-    public class InvalidInterestException : Exception
+using EventHub.Core.AppException;
+    public class InvalidInterestException : ValidationException
     {
         public InvalidInterestException()
             :base("Invalid interest provided.")

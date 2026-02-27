@@ -1,6 +1,8 @@
 ﻿namespace EventHub.Core.Exceptions.Image
 {
-    public class InvalidImageFormatException : Exception
+    using EventHub.Core.AppException;
+
+    public class InvalidImageFormatException : ValidationException
     {
         public InvalidImageFormatException()
             :base("The image format is invalid!")

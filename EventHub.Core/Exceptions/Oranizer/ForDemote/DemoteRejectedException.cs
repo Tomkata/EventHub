@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Oranizer.ForDemote
+﻿
+
+namespace EventHub.Core.Exceptions.Oranizer.ForDemote
 {
-    public class DemoteRejectedException : Exception
+using EventHub.Core.AppException;
+    public class DemoteRejectedException : ConflictException
     {
         public DemoteRejectedException()
             :base("Cannot demote user with rejected status!")

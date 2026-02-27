@@ -1,11 +1,12 @@
-﻿namespace EventHub.Core.Exceptions.Oranizer.ForApprove
+﻿
+namespace EventHub.Core.Exceptions.Oranizer.ForApprove
 {
-    public class ApproveRejectedUserException : Exception
+using EventHub.Core.AppException;
+    public class ApproveRejectedUserException : ConflictException
     {
         public ApproveRejectedUserException()
             :base("Cannot approve rejected user!")
-        {
-            
+        { 
         }
     }
 }

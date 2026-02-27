@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Event.ForLeft
+﻿
+
+namespace EventHub.Core.Exceptions.Event.ForLeft
 {
-    public class UserNotParticipantException : Exception
+    using EventHub.Core.AppException;
+    public class UserNotParticipantException : ConflictException
     {
         public UserNotParticipantException()
             :base("User is not participant in this event!")

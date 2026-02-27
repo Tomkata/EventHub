@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Category
+﻿
+namespace EventHub.Core.Exceptions.Category
 {
-    public class InvalidCategoryException : Exception
+    using AppException;
+
+    public class InvalidCategoryException : ValidationException
     {
         public InvalidCategoryException()
             :base("Invalid category!")

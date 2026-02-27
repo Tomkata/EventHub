@@ -1,11 +1,13 @@
-﻿namespace EventHub.Core.Exceptions.Image
+﻿
+namespace EventHub.Core.Exceptions.Image
 {
-    public class ImageEmptyException : Exception
+    using EventHub.Core.AppException;
+
+    public class ImageEmptyException : ValidationException
     {
         public ImageEmptyException()
             :base("The image file is empty!")
         {
-            
         }
     }
 }

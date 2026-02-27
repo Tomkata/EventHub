@@ -5,6 +5,7 @@ namespace EventHub.Web.Controllers
     using AutoMapper;
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
     using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Event.ForLeft;
@@ -34,7 +35,7 @@ namespace EventHub.Web.Controllers
 
         public EventsController(IEventService eventService,
                                 IImageService imageService,
-                                IEventFormOptionsService eventFormOptionsService, 
+                                IEventFormOptionsService eventFormOptionsService,
                                 IParticipantService participantService,
                                 IMapper mapper)
         {
@@ -45,7 +46,7 @@ namespace EventHub.Web.Controllers
             this._mapper = mapper;
         }
 
-        
+
         public async Task<IActionResult> Index(SearchEventByFilterViewModel search,
             int page = 1,
             int pageSize = 10)
@@ -80,9 +81,9 @@ namespace EventHub.Web.Controllers
               opt => opt.Items["JoinedIds"] = joinedIds
               );
 
-            
 
-            var model = new EventsIndexViewModel   
+
+            var model = new EventsIndexViewModel
             {
                 Search = search,
                 Paged = new PagedResult<EventListViewModel>
@@ -113,53 +114,54 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model)
         {
-            try
+
+            if ((!ModelState.IsValid) && IsEmptyForm(model))
             {
-                if ((!ModelState.IsValid) && IsEmptyForm(model))
-                {
-                    ModelState.Clear();
-                    ModelState.AddModelError("", "Please fill in the form.");
-                    model = await PrepareCreateViewModel();
-                    return View(model);
-                }
-
-
-                if (!ModelState.IsValid)
-                {
-                    model = await PrepareCreateViewModel();
-                    return View(model);
-                }
-
-                using var stream = model.Image.OpenReadStream();
-
-                var imageUrl = await _imageService.StoreImageAsync(stream,model.Image.FileName, ImageFolder.Events);
-
-                var requestingUserId = GetUserId();
-
-                var @event = _mapper.Map<CreateEventDto>(model);
-                @event.ImagePath = imageUrl;
-
-
-                await _eventService.CreateAsync(@event, requestingUserId);
-
-                TempData["SuccessMessage"] = "Event created successfully!";
-
-                return RedirectToAction(nameof(Index));
+                ModelState.Clear();
+                ModelState.AddModelError("", "Please fill in the form.");
+                model = await PrepareCreateViewModel();
+                return View(model);
             }
-            catch (ProfileNotFoundException profileException)
+
+
+            if (!ModelState.IsValid)
             {
-                TempData["Error"] = profileException.Message;
-                return RedirectToAction(actionName: "CreateProfile", controllerName: "UserProfile");
+                model = await PrepareCreateViewModel();
+                return View(model);
             }
-            catch (ImageEmptyException imageException)
+
+
+            if (model.Image == null || model.Image.Length == 0)
+                ModelState.AddModelError("Image", "Image is required.");
+
+            using var stream = model.Image.OpenReadStream();
+
+            var imageFormat = await _imageService.DetectFormat(stream);
+
+            if (imageFormat == ImageFormat.unknown)
+                ModelState.AddModelError("Image", "Invalid image format.");
+
+            if (!ModelState.IsValid)
             {
-                return await HandleException(model, imageException);
+                await FillDropDowns(model);
+                return View(model);
             }
-            catch (InvalidImageFormatException imageException)
-            {
-                return await HandleException(model, imageException);
-            }
+
+            var imageUrl = await _imageService.StoreImageAsync(stream, imageFormat, ImageFolder.Events);
+
+            var requestingUserId = GetUserId();
+
+            var @event = _mapper.Map<CreateEventDto>(model);
+            @event.ImagePath = imageUrl;
+
+
+            await _eventService.CreateAsync(@event, requestingUserId);
+
+            TempData["SuccessMessage"] = "Event created successfully!";
+
+            return RedirectToAction(nameof(Index));
         }
+
 
 
         [HttpGet]
@@ -172,8 +174,8 @@ namespace EventHub.Web.Controllers
             if (model == null)
                 return NotFound();
 
-  await FillDropDowns(model);
-          
+            await FillDropDowns(model);
+
 
 
             return View(model);
@@ -190,39 +192,50 @@ namespace EventHub.Web.Controllers
                 ModelState.AddModelError("", "Please fill in the form.");
                 return View(model);
             }
-            try
+            var eventToUpdate = _mapper.Map<EditEventDto>(model);
+
+            if (model.NewImage != null)
             {
-                var eventToUpdate = _mapper.Map<EditEventDto>(model);
-
-                if (model.NewImage != null)
+                if (model.NewImage.Length <= 0)
                 {
-
+                    ModelState.AddModelError("Image", "Invalid image.");
+                }
+                else
+                {
                     using var stream = model.NewImage.OpenReadStream();
 
-                    var imageUrl = await _imageService.StoreImageAsync(stream, model.NewImage.FileName, ImageFolder.Events);
-                    eventToUpdate.ImagePath = imageUrl;
+                    var imageFormat = await _imageService.DetectFormat(stream);
+
+                    if (imageFormat == ImageFormat.unknown)
+                    {
+                        ModelState.AddModelError("Image", "Invalid image format.");
+                    }
+                    else
+                    {
+                        var imageUrl = await _imageService
+                            .StoreImageAsync(stream, imageFormat, ImageFolder.Events);
+
+                        eventToUpdate.ImagePath = imageUrl;
+                    }
                 }
 
-
-                var userId = GetUserId();
-                var isAdmin = IsAdmin();
-
-                await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin);
-
-                return RedirectToAction(nameof(Index));
-
+                if (!ModelState.IsValid)
+                {
+                    await FillDropDowns(model);
+                    return View(model);
+                }
             }
-            catch (ForbiddenOperationException)
-            {
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                return await HandleException(model, ex);
-            }
+
+            var userId = GetUserId();
+            var isAdmin = IsAdmin();
+
+            await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin);
+
+            return RedirectToAction(nameof(Index));
         }
-        
-        
+
+
+
         private async Task FillDropDowns(EventFormBaseViewModel model)
         {
             var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
@@ -250,13 +263,8 @@ namespace EventHub.Web.Controllers
             catch (UserDontHavePrfileException ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction(actionName:"CreateProfile",controllerName: "UserProfile");
+                return RedirectToAction(actionName: "CreateProfile", controllerName: "UserProfile");
 
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Index), new { eventId = eventId });
             }
         }
 
@@ -293,20 +301,12 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid eventId)
         {
-            try
-            {
-                var userId = GetUserId();
-                var isAdmin = IsAdmin();
+            var userId = GetUserId();
+            var isAdmin = IsAdmin();
 
 
-                await _eventService.DeleteAsync(eventId, userId, isAdmin);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ForbiddenOperationException)
-            {
-                return Unauthorized();
-            }
-
+            await _eventService.DeleteAsync(eventId, userId, isAdmin);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -354,7 +354,7 @@ namespace EventHub.Web.Controllers
             return model;
         }
 
-        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)    
+        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)
         {
             var eventData = await _eventService.GetForEditAsync(Id);
 

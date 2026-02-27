@@ -1,6 +1,9 @@
-﻿namespace EventHub.Core.Exceptions.Event.ForJoin
+﻿
+namespace EventHub.Core.Exceptions.Event.ForJoin
 {
-    public class OrganizerJoinOwnEventException : Exception
+    using EventHub.Core.AppException;
+
+    public class OrganizerJoinOwnEventException : ForbiddenException
     {
         public OrganizerJoinOwnEventException()
             :base("Organizers cannot join their own events.")

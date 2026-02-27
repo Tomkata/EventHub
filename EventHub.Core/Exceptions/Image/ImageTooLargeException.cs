@@ -1,6 +1,8 @@
 ﻿namespace EventHub.Core.Exceptions.Image
 {
-    public class ImageTooLargeException : Exception
+    using EventHub.Core.AppException;
+
+    public class ImageTooLargeException : ValidationException
     {
         public ImageTooLargeException()
             :base("The image size is too large!")
