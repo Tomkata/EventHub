@@ -251,21 +251,9 @@ namespace EventHub.Web.Controllers
         {
             var userId = GetUserId();
 
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new UnauthorizedAccessException();
-
-            try
-            {
                 await _participantService.JoinEventAsync(userId, eventId);
                 TempData["SuccessMessage"] = "You have successfully joined the event.";
                 return RedirectToAction(nameof(Index));
-            }
-            catch (UserDontHavePrfileException ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(actionName: "CreateProfile", controllerName: "UserProfile");
-
-            }
         }
 
         [HttpPost]
