@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventHub.Services.Common;
 using EventHub.Services.Interfaces;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
@@ -20,19 +21,26 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> MyJoinedEvents()
+        public async Task<IActionResult> MyJoinedEvents(int page = 1,
+            int pageSize = 10)
         {
             var userId = GetUserId();
 
-            var dtos = await _participantService.GetJoinedEvents(userId);
+            var eventList = await _participantService.GetJoinedEvents(userId, page,pageSize);
 
-            var models = _mapper.Map<List<EventListViewModel>>(dtos, opt =>
+            var mapped = _mapper.Map<List<EventListViewModel>>(eventList.Data,
+                opt => opt.Items["IsParticipantView"] = true
+            );
 
-            opt.Items["IsParticipantView"] = true
-            );      
-          
+            var model = new PagedResult<EventListViewModel>
+            {
+                Data = mapped,
+                CurrentPageNumber = eventList.CurrentPageNumber,
+                PageSize = eventList.PageSize,
+                TotalRecords = eventList.TotalRecords
+            };  
 
-            return View(models);
+            return View(model);
         }
     }
 }

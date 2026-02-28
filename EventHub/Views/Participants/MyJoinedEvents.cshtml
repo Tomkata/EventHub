@@ -1,5 +1,6 @@
-﻿@using EventHub.Web.ViewModels.Events
-@model IEnumerable<EventListViewModel>
+﻿@using EventHub.Services.Common
+@using EventHub.Web.ViewModels.Events
+@model PagedResult<EventListViewModel>
 
 @{
     ViewData["Title"] = "My Events";

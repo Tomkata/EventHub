@@ -23,13 +23,16 @@
         </div>
     </div>
 </section>
+
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger rounded-3 text-center">
         <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
     </div>
 }
+
 <section class="form-section py-5">
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -39,8 +42,12 @@
                           class="modern-form"
                           enctype="multipart/form-data">
 
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert"></div>
+                       
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div asp-validation-summary="All" class="text-danger alert alert-danger"></div>
 
+                        }
                         <!-- First Name & Last Name -->
                         <div class="row g-3">
                             <div class="col-md-6">

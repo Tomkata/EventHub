@@ -12,6 +12,7 @@ namespace EventHub.Services.Services
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
@@ -116,11 +117,11 @@ namespace EventHub.Services.Services
         public async Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId)
        => await _eventParticipantsRepository.GetJoinedEventIdsByUserAsync(userId);
 
-        public async Task<List<EventDto>> GetJoinedEvents(string userId)
+        public async Task<PagedResult<EventDto>> GetJoinedEvents(string userId,int pageNumber,int pageSize)
         {
             return await _eventParticipantsRepository.GetJoinedEventsByUserId(userId)
                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+                .ToPagedResultAsync(pageNumber,pageSize);
         }
 
         public async Task<int> GetJoinedEventCountAsync(string userId)

@@ -55,5 +55,9 @@ namespace EventHub.Repositories.Repositories
         {
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<int> GetInterestsCountAsync(HashSet<Guid> ids)
+        => await _dbContext
+            .Interests.CountAsync(x=>ids.Contains(x.Id));
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using EventHub.Core.DTOs;
+using EventHub.Services.Common;
 
 namespace EventHub.Services.Interfaces
 {
@@ -11,7 +12,7 @@ namespace EventHub.Services.Interfaces
 
         Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId);
 
-        Task<List<EventDto>> GetJoinedEvents(string userId);
+        Task<PagedResult<EventDto>> GetJoinedEvents(string userId, int pageNumber, int pageSize);
 
         Task<int> GetJoinedEventCountAsync(string userId);
     }

@@ -2,6 +2,7 @@
 namespace EventHub.Services.Services
 {
     using AutoMapper;
+    using EventHub.Core.DTOs.Interest;
     using EventHub.Core.DTOs.UserProfile;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.UserProfile;
@@ -36,11 +37,17 @@ namespace EventHub.Services.Services
             if (await ExistsAsync(userId))
                 throw new ProfileAlreadyExistsException();
 
-            var interests = await ValidInterests(dto.InterestIds);
+
 
             var profile = _mapper.Map<UserProfile>(dto);
             profile.UserId = userId;
-                
+
+            var interests = await _userProfile.GetInterestsByIdsAsync(dto.InterestIds);
+
+            //if someone bypasses the controller check (via API..),       
+            if (interests.Count != dto.InterestIds.Count)
+                throw new InvalidInterestException();
+
             profile.UserProfileInterests = interests
                 .Select(x => new UserProfileInterest
                 {
@@ -53,17 +60,14 @@ namespace EventHub.Services.Services
             await _userProfile.SaveChangesAsync();
         }
 
-        private async Task<List<Interest>> ValidInterests(HashSet<Guid> interestDto)
+       
+        public async Task<bool> IsValidInterests(HashSet<Guid> interestDto)
         {
-            if (interestDto.Count == 0)
-                throw new UserNotAppliedAnyInterestsException();
+            var interestCount = await _userProfile.GetInterestsCountAsync(interestDto);
+            if (interestCount != interestDto.Count)
+                return false;
 
-            var interests = await _userProfile.GetInterestsByIdsAsync(interestDto);
-
-            if (interests.Count != interestDto.Count)
-                throw new InvalidInterestException();
-
-            return interests;
+            return true;
         }
 
         public async Task EnsureProfileExistsAsync(string userId)
@@ -116,7 +120,8 @@ namespace EventHub.Services.Services
 
 
 
-            var interests = await ValidInterests(dto.SelectedInterestIds);
+            var interests = await _userProfile.GetInterestsByIdsAsync(dto.SelectedInterestIds);
+
 
             profile.FirstName = dto.FirstName;
             profile.LastName = dto.LastName;
@@ -167,5 +172,7 @@ namespace EventHub.Services.Services
 
         public async Task<bool> HasProfileAsync(string userId)
         => await _userProfile.ExistsAsync(userId);
+
+        
     }
 }

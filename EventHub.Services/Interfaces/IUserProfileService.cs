@@ -1,6 +1,7 @@
 ﻿
 
 using EventHub.Core.DTOs.UserProfile;
+using EventHub.Core.Models;
 
 namespace EventHub.Services.Interfaces
 {
@@ -20,6 +21,9 @@ namespace EventHub.Services.Interfaces
 
         Task<bool> HasProfileAsync(string userId);
         Task<HashSet<Guid>> GetSelectedInterestIdsAsync(IEnumerable<string> interestNames);
+
+        Task<bool> IsValidInterests(HashSet<Guid> interestDto);
+
 
     }
 }

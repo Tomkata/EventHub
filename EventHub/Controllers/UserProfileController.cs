@@ -63,7 +63,14 @@ namespace EventHub.Web.Controllers
             var userId = GetUserId();
             var dto = _mapper.Map<CreateUserProfileDto>(model);
 
-             if ( model.Image == null || model.Image.Length <= 0)
+            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds)))
+            {
+                ModelState.AddModelError("Interests", "Invalid interests.");
+                await PopulateDropdowns(model);
+                return View(model);
+            }
+
+            if ( model.Image == null || model.Image.Length <= 0)
             {
                 ModelState.AddModelError("Image", "Invalid image.");
             }
@@ -123,6 +130,14 @@ namespace EventHub.Web.Controllers
                 await PopulateDropdowns(model);
                 return View(model);
             }
+
+            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds)))
+            {
+                ModelState.AddModelError(string.Empty, "Invalid interests.");
+                await PopulateDropdowns(model);
+                return View(model);
+            }
+
             string? newImagePath = null;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
