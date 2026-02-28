@@ -3,6 +3,7 @@
     using EventHub.Core.AppException;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.AspNetCore.Mvc.Routing;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using Microsoft.Extensions.DependencyInjection;
     using static System.Net.WebRequestMethods;
@@ -22,7 +23,12 @@
             var tempData = tempDataFactory.GetTempData(http);
             tempData["Error"] = ex.Message;
 
-            if (!string.IsNullOrEmpty(returnUrl))
+            // Check if a URL that points to your site, not to another domain. 
+            //Redirect Vulnerability
+            var urlHelperFactory = http.RequestServices.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(context);
+            
+            if (!string.IsNullOrEmpty(returnUrl) && urlHelper.IsLocalUrl(returnUrl))
             {
                 context.Result = new RedirectResult(returnUrl);
             }
