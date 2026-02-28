@@ -6,12 +6,14 @@ namespace EventHub
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
     using EventHub.Infrastructure.Identity;
+    using EventHub.Infrastructure.Interceptors;
     using EventHub.Services;
     using EventHub.Services.Mapping;
     using EventHub.Web.Filter;
     using EventHub.Web.Filters;
     using EventHub.Web.Middleware;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.CodeAnalysis.Elfie.Diagnostics;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Console;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
@@ -23,12 +25,22 @@ namespace EventHub
 
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddSingleton<SlowQueryInterceptor>();
+
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            {
+                options.UseSqlServer(connectionString);
+
+                var interceptor = serviceProvider.GetRequiredService<SlowQueryInterceptor>();
+                options.AddInterceptors(interceptor);
+            });
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
             builder.Services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
