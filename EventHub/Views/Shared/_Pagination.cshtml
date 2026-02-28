@@ -5,6 +5,9 @@
     var routeValues = ViewContext.HttpContext.Request.Query
         .Where(q => q.Key != "__Invariant" && q.Key != "pageNumber")
         .ToDictionary(k => k.Key, v => v.Value.ToString());
+
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 
 @if (Model.TotalPages > 1)
@@ -14,7 +17,8 @@
 
             @if (Model.HasPreviousPage)
             {
-                <a asp-action="Index"
+                <a asp-action="@ViewContext.RouteData.Values["action"]"
+                       asp-controller="@ViewContext.RouteData.Values["controller"]"
                        asp-all-route-data="routeValues"
                        asp-route-page="@(Model.CurrentPageNumber - 1)"
                        class="page-btn">
@@ -36,7 +40,8 @@
                 }
                 else if (i == 1 || i == Model.TotalPages || Math.Abs(i - Model.CurrentPageNumber) <= 1)
                 {
-                    <a asp-action="Index"
+                    <a asp-action="@currentAction"
+                           asp-controller="@currentController"
                            asp-all-route-data="routeValues"
                            asp-route-page="@i"
                            class="page-btn">

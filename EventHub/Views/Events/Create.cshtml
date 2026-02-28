@@ -7,8 +7,12 @@
 }
 @{
     ViewData["Title"] = "Create Event";
+    var errMessage = TempData["Error"] as string ?? string.Empty;
 }
-
+@if (!string.IsNullOrEmpty(errMessage))
+{
+    <p class="h4 alert alert-danger">@errMessage</p>
+}
 <section class="form-header-section">
     <div class="container">
         <div class="row">

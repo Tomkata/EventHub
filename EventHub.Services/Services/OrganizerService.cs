@@ -74,7 +74,7 @@ namespace EventHub.Services.Services
             var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException();
             var roles = await _userManager.GetRolesAsync(user);
             if (roles.Contains(Roles.Admin))
-                throw new AdminCannnotJoinEventException();
+                throw new AdminCannotApplyException();
 
             var profile = await _userProfileRepository.GetByUserIdAsync(userId);
 

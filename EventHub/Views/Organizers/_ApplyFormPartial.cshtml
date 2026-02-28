@@ -8,7 +8,8 @@
     </p>
 </div>
 
-<form asp-action="Apply" asp-controller="Organizers" method="post">
+<form asp-action="Apply" asp-controller="Organizers" method="post"
+      asp-route-returnUrl="@Url.Action("Apply","Organizers")">
 
     
 

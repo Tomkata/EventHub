@@ -35,6 +35,7 @@ namespace EventHub.Web.Controllers
                   opt => opt.Items["IsAdminView"] = true
               );
 
+
             var model = new PagedResult<EventListViewModel>
             {
                 Data = eventList,

@@ -3,18 +3,20 @@
 
 namespace EventHub
 {
-    using Microsoft.EntityFrameworkCore;
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
     using EventHub.Infrastructure.Identity;
     using EventHub.Services;
-    using Microsoft.AspNetCore.Identity;
-    using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
     using EventHub.Services.Mapping;
+    using EventHub.Web.Filter;
+    using EventHub.Web.Middleware;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program
     {
-        public static async Task Main(string[] args)    
+        public static async Task Main(string[] args)
         {
 
             var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +25,7 @@ namespace EventHub
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-                
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>()
@@ -66,7 +68,12 @@ namespace EventHub
             builder.Services.AddAutoMapper(typeof(Program).Assembly,
                 typeof(ServiceMappingProfile).Assembly);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<DomainExceptionFilter>();
+            });
+
+
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
@@ -88,17 +95,18 @@ namespace EventHub
             }
 
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline..
             if (app.Environment.IsDevelopment())
-                {
-                    app.UseMigrationsEndPoint();
-                }
-                else
-                {
-                    app.UseExceptionHandler("/Home/Error");
-                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                    app.UseHsts();
-                }
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+            Console.WriteLine(app.Environment.EnvironmentName);
 
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -108,6 +116,7 @@ namespace EventHub
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
 
             app.MapControllerRoute(
                 name: "default",

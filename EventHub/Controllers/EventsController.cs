@@ -7,11 +7,6 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
-    using EventHub.Core.Exceptions.Event.ForJoin;
-    using EventHub.Core.Exceptions.Event.ForLeft;
-    using EventHub.Core.Exceptions.Image;
-    using EventHub.Core.Exceptions.User;
-    using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Infrastructure;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
@@ -20,8 +15,6 @@ namespace EventHub.Web.Controllers
     using Humanizer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Runtime.InteropServices;
-    using System.Security.Claims;
 
     public class EventsController : BaseController
     {
@@ -129,6 +122,7 @@ namespace EventHub.Web.Controllers
                 model = await PrepareCreateViewModel();
                 return View(model);
             }
+
 
 
             if (model.Image == null || model.Image.Length == 0)
@@ -247,7 +241,7 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Join(Guid eventId)
+        public async Task<IActionResult> Join(Guid eventId,string? returnUrl)
         {
             var userId = GetUserId();
 
@@ -262,20 +256,10 @@ namespace EventHub.Web.Controllers
         public async Task<IActionResult> Left(Guid eventId, string? returnUrl = null)
         {
             var userId = GetUserId();
-            try
-            {
+          
                 await _participantService.LeftEventAsync(userId, eventId);
                 TempData["SuccessMessage"] = "You have successfully left the event.";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex switch
-                {
-                    UserNotParticipantException => "You are not a participant in this event.",
-                    EventNotFoundException => "The event could not be found.",
-                    _ => "An unexpected error occurred."
-                };
-            }
+          
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return LocalRedirect(returnUrl);
@@ -307,14 +291,7 @@ namespace EventHub.Web.Controllers
         }
 
 
-        private async Task<IActionResult> HandleException(EventFormBaseViewModel model, Exception ex)
-        {
-            await FillDropDowns(model);
-
-            ModelState.AddModelError("", $"{ex.Message}");
-
-            return View(model);
-        }
+      
 
         private bool IsEmptyForm(CreateEventViewModel model)
         {

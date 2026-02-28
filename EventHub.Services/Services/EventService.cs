@@ -135,11 +135,14 @@
         private async Task<bool> CategoryExistsAsync(Guid Id)=>
              await _categoryRepository.GetByIdAsync(Id) != null ? true : false;
 
-        public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId)
+      public async Task<PagedResult<EventDto>> GetEventsByOrganizerIdAsync(
+           string organizerId,
+           int pageNumber,
+           int pageSize)
         {
             return await _eventRepository.GetByOrganizerId(organizerId)
                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+                .ToPagedResultAsync(pageNumber,pageSize);
         }
 
         private void ValidateUserCanModifyEvent(bool isAdmin,string organizerId, string requestingUserId)

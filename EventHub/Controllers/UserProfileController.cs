@@ -6,14 +6,11 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.DTOs.UserProfile;
     using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
-    using EventHub.Core.Exceptions.UserProfile;
-    using EventHub.Repositories.Interfaces;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.UserProfile;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Validation;
     using System.Security.Claims;
     public class UserProfileController : BaseController
     {
@@ -217,9 +214,6 @@ namespace EventHub.Web.Controllers
         public async Task<IActionResult> Details()
         {
             var userId = GetUserId();
-
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
 
             var profileDto = await _userProfileService.GetDetailAsync(userId);
 

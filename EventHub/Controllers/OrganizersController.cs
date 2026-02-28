@@ -24,7 +24,7 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Apply()
+        public async Task<IActionResult> Apply(string? returnUrl)
         {
             var userId = GetUserId();
 
@@ -54,7 +54,7 @@ namespace EventHub.Web.Controllers
 
             TempData["SuccessMessage"] = "Your organizer application has been submitted successfully!";
             return RedirectToAction(nameof(Apply));
-
+            
         }
 
     }

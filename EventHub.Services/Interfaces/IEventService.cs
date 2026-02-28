@@ -19,7 +19,10 @@ namespace EventHub.Services.Interfaces
 
         Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber, int pageSize);
 
-        Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(string organizerId);
+        Task<PagedResult<EventDto>> GetEventsByOrganizerIdAsync(
+            string organizerId,
+            int pageNumber,
+            int pageSize);
 
         Task<EditEventDto> GetForEditAsync(Guid Id);
 

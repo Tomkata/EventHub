@@ -85,7 +85,7 @@
                                        asp-route-eventId="@eventData.Id"
                                        class="btn btn-primary mb-3">Edit</a>
                                 }   
-
+                                
                                 @if (eventData.CanEdit)
                                 {
                                     <form asp-controller="Events"
@@ -114,7 +114,9 @@
                                     {
                                         if (eventData.IsParticipant)
                                         {
-                                            <form asp-action="Left" asp-controller="Events" method="post">
+                                            <form asp-action="Left" asp-controller="Events" method="post"
+                                                asp-route-returnUrl="@Url.Action("Index","Events")">
+
                                                 <input type="hidden" name="eventId" value="@eventData.Id" />
                                                 <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                                 <button class="btn btn-danger w-100 m-2" type="submit">Leave</button>
@@ -122,7 +124,8 @@
                                         }
                                         else
                                         {
-                                            <form asp-action="Join" asp-controller="Events" method="post">
+                                            <form asp-action="Join" asp-controller="Events" method="post"
+                                                  asp-route-returnUrl="@Url.Action("Index","Events")">
                                                 <input type="hidden" name="eventId" value="@eventData.Id" />
                                                 <button class="btn btn-success w-100 m-2" type="submit">
                                                     Join

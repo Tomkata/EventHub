@@ -33,7 +33,7 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <label asp-for="LocationId" class="form-label fw-semibold">City</label>
                 <select asp-for="LocationId" class="form-select">
-                    <option value="">-- Select Location --</option>
+                    <option value="">-- Select City --</option>
                     @foreach (var location in Model.Locations)
                     {
                         <option value="@location.Id">@location.Name</option>

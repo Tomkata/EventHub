@@ -4,6 +4,7 @@ namespace EventHub.Web.Controllers
     using AutoMapper;
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
@@ -29,17 +30,25 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.Organizer)]
-        public async Task<IActionResult> MyEvents()
+        public async Task<IActionResult> MyEvents(int page = 1, int pageSize=10)
         {
             var userId = GetUserId();
-            var dtos = await _eventService.GetEventsByOrganizerIdAsync(userId);
+            var eventList = await _eventService.GetEventsByOrganizerIdAsync(userId,page,pageSize);
 
-            var models = _mapper.Map<List<EventListViewModel>>(dtos, opt =>
+            var mapped = _mapper.Map<List<EventListViewModel>>(
+                eventList.Data,
+                opt =>   opt.Items["IsOrganizerView"] = true
+            );
+
+            var model = new PagedResult<EventListViewModel>
             {
-                opt.Items["IsOrganizerView"] = true;
-            });
+                Data = mapped,
+                CurrentPageNumber = eventList.CurrentPageNumber,
+                PageSize = eventList.PageSize,
+                TotalRecords = eventList.TotalRecords
+            };
 
-            return View(models);
+            return View(model);
         }
 
 
