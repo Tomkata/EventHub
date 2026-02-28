@@ -9,9 +9,11 @@ namespace EventHub
     using EventHub.Services;
     using EventHub.Services.Mapping;
     using EventHub.Web.Filter;
+    using EventHub.Web.Filters;
     using EventHub.Web.Middleware;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging.Console;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program
@@ -32,6 +34,8 @@ namespace EventHub
                 .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+
+            
 
             var identitySection = builder.Configuration.GetSection("IdentitySettings");
             builder.Services.Configure<IdentitySettings>(identitySection);
@@ -71,6 +75,7 @@ namespace EventHub
             builder.Services.AddControllersWithViews(options =>
             {
                 options.Filters.Add<DomainExceptionFilter>();
+                options.Filters.Add<PerformanceMonitoringFilter>();
             });
 
 
