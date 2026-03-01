@@ -18,6 +18,7 @@ namespace EventHub.Repositories.Interfaces
 
         Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id);
 
+        Task<bool> TryJoinAsync(Guid eventId, string userId);
         IQueryable<Event?> Query();
 
         Task SaveChangesAsync();

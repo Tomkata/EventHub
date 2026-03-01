@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
     using System.Diagnostics;
     // This filter is used to monitor the performance of the application
     //Can easily detect slow or heavy requests
+    
+    //TODO: make async later
     public class PerformanceMonitoringFilter : IActionFilter
     {
         private readonly ILogger<PerformanceMonitoringFilter> _logger;

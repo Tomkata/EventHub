@@ -3,13 +3,11 @@ namespace EventHub.Repositories.Repositories
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
-    using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Models;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     public class EventRepository : IEventRepository
     {
@@ -78,17 +76,13 @@ namespace EventHub.Repositories.Repositories
 
 
         public IQueryable<Event> GetAll()
-        {
-            return _dbContext.Events.AsNoTracking();
-        }
+            => _dbContext.Events.AsNoTracking();
 
 
         public IQueryable<Event> GetByOrganizerId(string id)
-        {
-            return _dbContext.Events
+            => _dbContext.Events
                    .AsNoTracking()
                    .Where(x => x.OrganizerId == id);
-        }
 
         public async Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id)
         {
@@ -117,5 +111,24 @@ namespace EventHub.Repositories.Repositories
         => _dbContext.Events
             .AsNoTracking()
             .AsQueryable();
+
+        public async Task<bool> TryJoinAsync(Guid eventId, string userId)
+        {
+            var affectedRows = await _dbContext.Database
+     .ExecuteSqlInterpolatedAsync($@"
+        INSERT INTO EventParticipants (EventId, UserId)
+        SELECT {eventId}, {userId}
+        WHERE (
+            SELECT COUNT(*)
+            FROM EventParticipants WITH (UPDLOCK, HOLDLOCK)
+            WHERE EventId = {eventId}
+        ) < (
+            SELECT MaxParticipants
+            FROM Events
+            WHERE Id = {eventId}
+        );");
+
+            return affectedRows == 1;
+        }
     }
 }
