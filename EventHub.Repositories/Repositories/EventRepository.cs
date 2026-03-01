@@ -19,19 +19,19 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public async Task<Event?> GetByIdAsync(Guid id)
+        public async Task<Event?> GetByIdAsync(Guid id,CancellationToken cancellation)
         {
             var eventEntity = await _dbContext.Events
                    .Include(x => x.Category)
                    .Include(x => x.Location)
                    .Include(x => x.EventParticipants)
                    .AsSplitQuery()
-                   .FirstOrDefaultAsync(x => x.Id == id);
+                   .FirstOrDefaultAsync(x => x.Id == id, cancellation);
 
             return eventEntity;
         }
 
-        public async Task<DetailedEventDto?> GetByIdReadOnlyAsync(Guid id)
+        public async Task<DetailedEventDto?> GetByIdReadOnlyAsync(Guid id,CancellationToken cancellation)
         {
             var dto = await _dbContext.Events
                 .Where(x => x.Id == id)
@@ -58,14 +58,14 @@ namespace EventHub.Repositories.Repositories
                     })
                     .ToList()
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
 
             return dto;
         }
 
-        public async Task AddAsync(Event entity)
+        public async Task AddAsync(Event entity,CancellationToken cancellation)
         {
-            await _dbContext.Events.AddAsync(entity);
+            await _dbContext.Events.AddAsync(entity, cancellation);
         }
 
         public async Task RemoveAsync(Event entity)
@@ -84,7 +84,7 @@ namespace EventHub.Repositories.Repositories
                    .AsNoTracking()
                    .Where(x => x.OrganizerId == id);
 
-        public async Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id)
+        public async Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id,CancellationToken cancellation)
         {
             var eventDto = await _dbContext.Events
                 .AsNoTracking()
@@ -97,14 +97,14 @@ namespace EventHub.Repositories.Repositories
                  ParticipantsCount = x.EventParticipants.Count(),
                  OrganizerId = x.OrganizerId
              })
-             .FirstOrDefaultAsync();
+             .FirstOrDefaultAsync(cancellation);
 
             return eventDto;
         }
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken  cancellationToken)
         {
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public IQueryable<Event?> Query()
@@ -112,7 +112,7 @@ namespace EventHub.Repositories.Repositories
             .AsNoTracking()
             .AsQueryable();
 
-        public async Task<bool> TryJoinAsync(Guid eventId, string userId)
+        public async Task<bool> TryJoinAsync(Guid eventId, string userId,CancellationToken cancellation)
         {
             var affectedRows = await _dbContext.Database
      .ExecuteSqlInterpolatedAsync($@"
@@ -126,7 +126,7 @@ namespace EventHub.Repositories.Repositories
             SELECT MaxParticipants
             FROM Events
             WHERE Id = {eventId}
-        );");
+        );", cancellation);
 
             return affectedRows == 1;
         }

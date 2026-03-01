@@ -7,22 +7,44 @@ namespace EventHub.Services.Interfaces
 {
     public interface IUserProfileService
     {
-        Task EnsureProfileExistsAsync(string userId);
-        Task CreateAsync(string userid,CreateUserProfileDto dto);
-        Task<bool> ExistsAsync(string userId);
+        Task EnsureProfileExistsAsync(
+            string userId,
+            CancellationToken cancellationToken);
+        Task CreateAsync(
+            string userid,
+            CreateUserProfileDto dto,
+            CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task<UserNavInfoDto> GetUserNavInfoAsync(string userId);
+        Task<UserNavInfoDto> GetUserNavInfoAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task<DetailUserProfileDto?> GetDetailAsync(string userId);
+        Task<DetailUserProfileDto?> GetDetailAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task<PublicUserProfileDto?> GetPublicDetailAsync(string userId);
+        Task<PublicUserProfileDto?> GetPublicDetailAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task UpdateAsync(string userId, EditUserProfileDto dto);
+        Task UpdateAsync(
+            string userId, 
+            EditUserProfileDto dto,
+            CancellationToken cancellation);
 
-        Task<bool> HasProfileAsync(string userId);
-        Task<HashSet<Guid>> GetSelectedInterestIdsAsync(IEnumerable<string> interestNames);
+        Task<bool> HasProfileAsync(
+            string userId,
+            CancellationToken cancellationToken);
+        Task<HashSet<Guid>> GetSelectedInterestIdsAsync(
+            IEnumerable<string> interestNames,
+            CancellationToken cancellationToken);
 
-        Task<bool> IsValidInterests(HashSet<Guid> interestDto);
+        Task<bool> IsValidInterests(
+            HashSet<Guid> interestDto,
+            CancellationToken cancellationToken);
 
 
     }

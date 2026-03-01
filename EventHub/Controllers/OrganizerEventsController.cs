@@ -30,10 +30,10 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.Organizer)]
-        public async Task<IActionResult> MyEvents(int page = 1, int pageSize=10)
+        public async Task<IActionResult> MyEvents(CancellationToken cancellation ,int page = 1, int pageSize=10)
         {
             var userId = GetUserId();
-            var eventList = await _eventService.GetEventsByOrganizerIdAsync(userId,page,pageSize);
+            var eventList = await _eventService.GetEventsByOrganizerIdAsync(userId,page,pageSize, cancellation);
 
             var mapped = _mapper.Map<List<EventListViewModel>>(
                 eventList.Data,

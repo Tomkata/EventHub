@@ -40,9 +40,9 @@ namespace EventHub.Web.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> CreateProfile()
+        public async Task<IActionResult> CreateProfile(CancellationToken cancellation)
         {
-            var model = await PrepareCreateViewModel();
+            var model = await PrepareCreateViewModel(cancellation);
 
             return View(model);
         }
@@ -50,23 +50,23 @@ namespace EventHub.Web.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateProfile(CreateUserProfileViewModel model)
+        public async Task<IActionResult> CreateProfile(CreateUserProfileViewModel model,CancellationToken cancellation)
         {
             string? imageUrl = null;
 
             if (!ModelState.IsValid)
             {
-                await PopulateDropdowns(model);
+                await PopulateDropdowns(model, cancellation);
                 return View(model);
             }
 
             var userId = GetUserId();
             var dto = _mapper.Map<CreateUserProfileDto>(model);
 
-            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds)))
+            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds,cancellation)))
             {
                 ModelState.AddModelError("Interests", "Invalid interests.");
-                await PopulateDropdowns(model);
+                await PopulateDropdowns(model,cancellation);
                 return View(model);
             }
 
@@ -78,7 +78,7 @@ namespace EventHub.Web.Controllers
             {
                 using var stream = model.Image.OpenReadStream();
 
-                var imageFormat = await _imageService.DetectFormat(stream);
+                var imageFormat = await _imageService.DetectFormat(stream,cancellation);
 
                 if (imageFormat == ImageFormat.unknown)
                 {
@@ -87,18 +87,18 @@ namespace EventHub.Web.Controllers
                 else
                 {
                     imageUrl = await _imageService
-                          .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles);
+                          .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles,cancellation);
 
                     dto.ImagePath = imageUrl;
                 }
             }
             if (!ModelState.IsValid)
             {
-                await PopulateDropdowns(model);
+                await PopulateDropdowns(model, cancellation);
                 return View(model);
             }   
 
-            await _userProfileService.CreateAsync(userId, dto);
+            await _userProfileService.CreateAsync(userId, dto, cancellation);
 
             TempData["SuccessMessage"] = "Profile created successfully!";
 
@@ -108,10 +108,10 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Update(string userId)
+        public async Task<IActionResult> Update(string userId,CancellationToken cancellation)
         {
 
-            var model = await PrepareEditViewModel();
+            var model = await PrepareEditViewModel(cancellation);
 
             if (model == null)
                 return NotFound();
@@ -123,18 +123,18 @@ namespace EventHub.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Update(EditUserProfileViewModel model)
+        public async Task<IActionResult> Update(EditUserProfileViewModel model,CancellationToken cancellation)
         {
             if (!ModelState.IsValid)
             {
-                await PopulateDropdowns(model);
+                await PopulateDropdowns(model, cancellation);
                 return View(model);
             }
 
-            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds)))
+            if (model.SelectedInterestIds.Count == 0 || (!await _userProfileService.IsValidInterests(model.SelectedInterestIds, cancellation)))
             {
                 ModelState.AddModelError(string.Empty, "Invalid interests.");
-                await PopulateDropdowns(model);
+                await PopulateDropdowns(model, cancellation);
                 return View(model);
             }
 
@@ -153,7 +153,7 @@ namespace EventHub.Web.Controllers
                 {
                     using var stream = model.NewImage.OpenReadStream();
 
-                    var imageFormat = await _imageService.DetectFormat(stream);
+                    var imageFormat = await _imageService.DetectFormat(stream, cancellation);
 
                     if (imageFormat == ImageFormat.unknown)
                     {
@@ -162,7 +162,7 @@ namespace EventHub.Web.Controllers
                     else
                     {
                         newImagePath = await _imageService
-                            .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles);
+                            .StoreImageAsync(stream, imageFormat, ImageFolder.Profiles, cancellation);
 
                         dto.ProfileImagePath = newImagePath;
                     }
@@ -170,12 +170,12 @@ namespace EventHub.Web.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    await PopulateDropdowns(model);
+                    await PopulateDropdowns(model, cancellation);
                     return View(model);
                 }
             }
 
-                await _userProfileService.UpdateAsync(userId, dto);
+                await _userProfileService.UpdateAsync(userId, dto, cancellation);
 
                 if (newImagePath != null && model.ExistingImagePath != null)
                     await _imageService.DeleteImageAsync(model.ExistingImagePath);
@@ -184,9 +184,9 @@ namespace EventHub.Web.Controllers
                 return RedirectToAction(nameof(Details));
             }
 
-        private async Task<CreateUserProfileViewModel> PrepareCreateViewModel()
+        private async Task<CreateUserProfileViewModel> PrepareCreateViewModel(CancellationToken cancellation)
         {
-            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync();
+            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync(cancellation);
             var model = new CreateUserProfileViewModel
             {
                 Interests = dropDown.Interests,
@@ -195,17 +195,17 @@ namespace EventHub.Web.Controllers
 
             return model;
         }
-        private async Task<EditUserProfileViewModel?> PrepareEditViewModel()
+        private async Task<EditUserProfileViewModel?> PrepareEditViewModel(CancellationToken cancellation)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var profileDto = await _userProfileService.GetDetailAsync(userId);
+            var profileDto = await _userProfileService.GetDetailAsync(userId, cancellation);
 
             if (profileDto == null)
                 return null;
 
-            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync();
+            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync(cancellation);
 
-            var selectedIds = await _userProfileService.GetSelectedInterestIdsAsync(profileDto.Interests);
+            var selectedIds = await _userProfileService.GetSelectedInterestIdsAsync(profileDto.Interests,cancellation);
 
             var model = new EditUserProfileViewModel
             {
@@ -226,24 +226,24 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Details()
+        public async Task<IActionResult> Details(CancellationToken cancellation)
         {
             var userId = GetUserId();
 
-            var profileDto = await _userProfileService.GetDetailAsync(userId);
+            var profileDto = await _userProfileService.GetDetailAsync(userId, cancellation);
 
             if (profileDto == null)
                 return RedirectToAction(nameof(CreateProfile));
 
             var vm = _mapper.Map<DetailedUserProfileViewModel>(profileDto);
-            vm.JoinedEventsCount = await _participantService.GetJoinedEventCountAsync(userId);
+            vm.JoinedEventsCount = await _participantService.GetJoinedEventCountAsync(userId, cancellation);
 
             return View(vm);
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Public(string userId)
+        public async Task<IActionResult> Public(string userId,CancellationToken cancellation)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 return BadRequest();
@@ -252,11 +252,11 @@ namespace EventHub.Web.Controllers
 
             if (userId == currUserId) return RedirectToAction(nameof(Details));
 
-            if (!await _userProfileService.HasProfileAsync(currUserId))
+            if (!await _userProfileService.HasProfileAsync(currUserId,cancellation))
                 return RedirectToAction(nameof(CreateProfile));
 
 
-            var publicUserProfile = await _userProfileService.GetPublicDetailAsync(userId);
+            var publicUserProfile = await _userProfileService.GetPublicDetailAsync(userId, cancellation);
 
             if (publicUserProfile == null)
             {
@@ -269,9 +269,9 @@ namespace EventHub.Web.Controllers
             return View(model);
         }
 
-        private async Task PopulateDropdowns(UserProfileFormBaseViewModel model)
+        private async Task PopulateDropdowns(UserProfileFormBaseViewModel model,CancellationToken cancellation)
         {
-            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync();
+            var dropDown = await _userProfileFormOptions.GetFormOptionsAsync(cancellation);
             model.Interests = dropDown.Interests;
             model.Locations = dropDown.Locations;
         }

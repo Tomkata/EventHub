@@ -9,7 +9,8 @@ namespace EventHub.Services.Common
         public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
             this IQueryable<T> query,                                    
             int pageNumber,                                                   
-            int pageSize)
+            int pageSize,
+            CancellationToken cancellationToken)
         {
             pageNumber = Math.Max(1, pageNumber);
             pageSize = Math.Clamp(pageSize, 1, 100);

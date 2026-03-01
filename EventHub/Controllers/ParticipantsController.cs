@@ -21,12 +21,14 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> MyJoinedEvents(int page = 1,
+        public async Task<IActionResult> MyJoinedEvents(
+            CancellationToken cancellation,
+            int page = 1,
             int pageSize = 10)
         {
             var userId = GetUserId();
 
-            var eventList = await _participantService.GetJoinedEvents(userId, page,pageSize);
+            var eventList = await _participantService.GetJoinedEvents(userId, page,pageSize, cancellation);
 
             var mapped = _mapper.Map<List<EventListViewModel>>(eventList.Data,
                 opt => opt.Items["IsParticipantView"] = true

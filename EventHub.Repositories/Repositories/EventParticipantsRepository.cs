@@ -17,7 +17,7 @@ namespace EventHub.Repositories.Repositories
            this._dbContext = dbContext;
         }
 
-        public async Task<UserBasicInfo?> UserExistsAsync(string organizerId)
+        public async Task<UserBasicInfo?> UserExistsAsync(string organizerId,CancellationToken cancellation)
         {
             var organizer = await _dbContext.Users
                 .AsNoTracking()
@@ -26,12 +26,12 @@ namespace EventHub.Repositories.Repositories
                     Id = x.Id,
                     UserName = x.UserName!
                 })
-                .FirstOrDefaultAsync(x => x.Id == organizerId);
+                .FirstOrDefaultAsync(x => x.Id == organizerId, cancellation);
 
             return organizer;
         }
 
-        public async Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid id)
+        public async Task<IEnumerable<UserBasicInfo>> GetParticipantsAsync(Guid id,CancellationToken cancellation)
         {
 
             var participants = await _dbContext.EventParticipants
@@ -47,24 +47,24 @@ namespace EventHub.Repositories.Repositories
                      UserName = u.UserName
                  }
              )
-             .ToListAsync();
+             .ToListAsync(cancellation);
 
             return participants;
         }
 
-        public async Task<int> GetParticipantsCountAsync(Guid eventId)
+        public async Task<int> GetParticipantsCountAsync(Guid eventId,CancellationToken cancellation)
             => await _dbContext.EventParticipants
                 .AsNoTracking()
                .Where(ep => ep.EventId == eventId)
-               .CountAsync();
+               .CountAsync(cancellation);
 
 
-        public async Task<bool> ExistsAsync(string userId, Guid eventId)
+        public async Task<bool> ExistsAsync(string userId, Guid eventId,CancellationToken cancellation)
         => await _dbContext.EventParticipants
             .AsNoTracking()
-            .AnyAsync(x => x.UserId == userId && x.EventId == eventId);
+            .AnyAsync(x => x.UserId == userId && x.EventId == eventId, cancellation);
 
-        public async Task AddParticipantToEventAsync(string userId, Guid eventId)
+        public async Task AddParticipantToEventAsync(string userId, Guid eventId,CancellationToken cancellation)
         {
             var eventParticipant = new EventParticipant
             {
@@ -72,30 +72,30 @@ namespace EventHub.Repositories.Repositories
                 UserId = userId
             };
 
-            await _dbContext.EventParticipants.AddAsync(eventParticipant);
+            await _dbContext.EventParticipants.AddAsync(eventParticipant, cancellation);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellation)
         {
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellation);
         }
 
-        public async Task RemoveParticipantFromEventAsync(string userId, Guid eventId)
+        public async Task RemoveParticipantFromEventAsync(string userId, Guid eventId, CancellationToken cancellation)
         {
             var entity =await _dbContext.EventParticipants
-                .FirstOrDefaultAsync(x=>x.UserId == userId && eventId == x.EventId);
+                .FirstOrDefaultAsync(x=>x.UserId == userId && eventId == x.EventId, cancellation);
 
             if(entity != null)
              _dbContext.EventParticipants.Remove(entity);
         }
 
-        public async Task<HashSet<Guid>> GetJoinedEventIdsByUserAsync(string userId)
+        public async Task<HashSet<Guid>> GetJoinedEventIdsByUserAsync(string userId,CancellationToken cancellation)
        =>
             await _dbContext.EventParticipants
              .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .Select(x => x.EventId)
-                .ToHashSetAsync();
+                .ToHashSetAsync(cancellation);
 
      
 
@@ -112,8 +112,8 @@ namespace EventHub.Repositories.Repositories
 
         }
 
-        public async Task<int> GetJoinedEventCountAsync(string userId)
-        => await _dbContext.EventParticipants.CountAsync(x => x.UserId == userId);
+        public async Task<int> GetJoinedEventCountAsync(string userId,CancellationToken cancellation)
+        => await _dbContext.EventParticipants.CountAsync(x => x.UserId == userId, cancellation);
 
         
     }

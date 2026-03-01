@@ -17,10 +17,10 @@ namespace EventHub.Services.Services
             this._locationService = locationService;
         }
 
-        public async Task<EventFormOptionsDto> GetFormOptionsAsync()
+        public async Task<EventFormOptionsDto> GetFormOptionsAsync(CancellationToken cancellation)
         {
-                var categories = await _categoryService.GetCategoriesForDropdownAsync();
-                var locations = await _locationService.GetLocationsForDropdownAsync();
+                var categories = await _categoryService.GetCategoriesForDropdownAsync(cancellation);
+                var locations = await _locationService.GetLocationsForDropdownAsync(cancellation);
 
                 return new EventFormOptionsDto(
                     categories.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }),

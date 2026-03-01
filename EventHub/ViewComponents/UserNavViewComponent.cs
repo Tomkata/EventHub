@@ -11,7 +11,7 @@
 
         public UserNavViewComponent(IUserProfileService  userProfile) => this._userProfile = userProfile;
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(CancellationToken cancellation)
         {
             if (!UserClaimsPrincipal.Identity?.IsAuthenticated ?? true)
                 return View("Guest");
@@ -22,7 +22,7 @@
             if (string.IsNullOrWhiteSpace(userId))
                 return View("Guest");
 
-            var profileInfo = await _userProfile.GetUserNavInfoAsync(userId);
+            var profileInfo = await _userProfile.GetUserNavInfoAsync(userId, cancellation);
 
             if (profileInfo == null)
                 return View("NoProfile");

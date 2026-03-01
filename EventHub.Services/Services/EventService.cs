@@ -14,14 +14,13 @@
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
-    using Microsoft.EntityFrameworkCore;
 
     public class EventService : IEventService
     {
         private readonly IEventRepository _eventRepository;
         private readonly IEventParticipantsRepository _participantsRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly ILocationRepository  _locationRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IMapper _mapper;
         private readonly IUserProfileRepository _userProfileRepository;
 
@@ -40,9 +39,9 @@
             this._userProfileRepository = userProfileRepository;
         }
 
-        public async Task<DetailedEventDto> GetByIdAsync(Guid id)
+        public async Task<DetailedEventDto> GetByIdAsync(Guid id,CancellationToken cancellation)
         {
-            var dto = await _eventRepository.GetByIdReadOnlyAsync(id);
+            var dto = await _eventRepository.GetByIdReadOnlyAsync(id,cancellation);
 
             if (dto == null)
                 throw new EventNotFoundException();
@@ -50,54 +49,63 @@
             return dto;
         }
 
-        public async Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber,int pageSize)
+        public async Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber, int pageSize,CancellationToken  cancellation)
         {
             return await _eventRepository
                  .GetAll()
                  .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                 .ToPagedResultAsync(pageNumber, pageSize);
+                 .OrderBy(x => x.StartDate)
+                 .ToPagedResultAsync(pageNumber, pageSize, cancellation);
         }
 
-        public async Task CreateAsync(CreateEventDto dto,string requestingUserId)
+        public async Task CreateAsync(
+            CreateEventDto dto,
+            string requestingUserId, 
+            CancellationToken cancellation)
         {
-            if (!await CategoryExistsAsync(dto.CategoryId))
+            if (!await CategoryExistsAsync(dto.CategoryId, cancellation))
                 throw new InvalidCategoryException();
-            if (!await LocationExistsAsync(dto.LocationId))
+            if (!await LocationExistsAsync(dto.LocationId, cancellation))
                 throw new InvalidLocationException();
 
-            if (!await UserExistsAsync(requestingUserId))
+            if (!await UserExistsAsync(requestingUserId, cancellation))
                 throw new UserNotFoundException();
 
-            if (!await _userProfileRepository.ExistsAsync(requestingUserId))
+            if (!await _userProfileRepository.ExistsAsync(requestingUserId, cancellation))
                 throw new ProfileNotFoundException();
-            
+
 
             var eventEntity = _mapper.Map<Event>(dto);
 
             eventEntity.OrganizerId = requestingUserId;
 
-            await _eventRepository.AddAsync(eventEntity);
-            await _eventRepository.SaveChangesAsync();
+            await _eventRepository.AddAsync(eventEntity, cancellation);
+            await _eventRepository.SaveChangesAsync(cancellation);
         }
 
-        private async Task<bool> UserExistsAsync(string Id)=>
-            await _participantsRepository.UserExistsAsync(Id) == null ? false : true;
+        private async Task<bool> UserExistsAsync(string Id, CancellationToken cancellation) =>
+            await _participantsRepository.UserExistsAsync(Id, cancellation) == null ? false : true;
 
-        public async Task UpdateAsync(Guid id, EditEventDto dto,string requestingUserId, bool isAdmin)
+        public async Task UpdateAsync(
+            Guid id,
+            EditEventDto dto, 
+            string requestingUserId,
+            bool isAdmin,
+            CancellationToken cancellation)
         {
-            var eventEntity = await _eventRepository.GetByIdAsync(id);
+            var eventEntity = await _eventRepository.GetByIdAsync(id, cancellation);
 
             if (eventEntity == null)
                 throw new EventNotFoundException();
 
-            if (!await CategoryExistsAsync(dto.CategoryId))
+            if (!await CategoryExistsAsync(dto.CategoryId, cancellation))
                 throw new InvalidCategoryException();
 
-            if (!await LocationExistsAsync(dto.LocationId))
+            if (!await LocationExistsAsync(dto.LocationId, cancellation))
                 throw new InvalidLocationException();
 
-         ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
-            
+            ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
+
             eventEntity.Title = dto.Title;
             eventEntity.LocationId = dto.LocationId;
             eventEntity.CategoryId = dto.CategoryId;
@@ -111,12 +119,12 @@
             if (dto.ImagePath != null)
                 eventEntity.ImagePath = dto.ImagePath;
 
-            await _eventRepository.SaveChangesAsync();
+            await _eventRepository.SaveChangesAsync(cancellation);
         }
 
-        public async Task DeleteAsync(Guid eventId,string requestingUserId, bool isAdmin)
+        public async Task DeleteAsync(Guid eventId, string requestingUserId, bool isAdmin,CancellationToken  cancellation)
         {
-            var eventEntity = await _eventRepository.GetByIdAsync(eventId);
+            var eventEntity = await _eventRepository.GetByIdAsync(eventId, cancellation);
 
             if (eventEntity == null)
                 throw new EventNotFoundException();
@@ -126,26 +134,28 @@
 
 
             await _eventRepository.RemoveAsync(eventEntity);
-            await _eventRepository.SaveChangesAsync();
+            await _eventRepository.SaveChangesAsync(cancellation);
         }
 
-        private async Task<bool> LocationExistsAsync(Guid Id) =>
-            await _locationRepository.GetByIdAsync(Id) != null ? true : false;
+        private async Task<bool> LocationExistsAsync(Guid Id,CancellationToken cancellation) =>
+            await _locationRepository.GetByIdAsync(Id, cancellation) != null ? true : false;
 
-        private async Task<bool> CategoryExistsAsync(Guid Id)=>
-             await _categoryRepository.GetByIdAsync(Id) != null ? true : false;
+        private async Task<bool> CategoryExistsAsync(Guid Id,CancellationToken cancellation) =>
+             await _categoryRepository.GetByIdAsync(Id, cancellation) != null ? true : false;
 
-      public async Task<PagedResult<EventDto>> GetEventsByOrganizerIdAsync(
-           string organizerId,
-           int pageNumber,
-           int pageSize)
+        public async Task<PagedResult<EventDto>> GetEventsByOrganizerIdAsync(
+             string organizerId,
+             int pageNumber,
+             int pageSize,
+             CancellationToken cancellationToken)
         {
             return await _eventRepository.GetByOrganizerId(organizerId)
                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                .ToPagedResultAsync(pageNumber,pageSize);
+                .OrderBy(x=>x.StartDate)
+                .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         }
 
-        private void ValidateUserCanModifyEvent(bool isAdmin,string organizerId, string requestingUserId)
+        private void ValidateUserCanModifyEvent(bool isAdmin, string organizerId, string requestingUserId)
         {
             if (!isAdmin)
             {
@@ -154,9 +164,9 @@
             }
         }
 
-        public async Task<EditEventDto> GetForEditAsync(Guid id)
+        public async Task<EditEventDto> GetForEditAsync(Guid id,CancellationToken cancellation)
         {
-            var entity = await _eventRepository.GetByIdAsync(id);
+            var entity = await _eventRepository.GetByIdAsync(id, cancellation);
 
             if (entity == null)
                 throw new EventNotFoundException();
@@ -165,12 +175,13 @@
         }
 
         public async Task<PagedResult<EventDto>> SearchBy(string? Tite,
-            DateTime? StartDate, 
+            DateTime? StartDate,
             DateTime? EndDate,
-            Guid? LocationId, 
+            Guid? LocationId,
             Guid? CategoryId,
             int pageNumber,
-            int pageSize)
+            int pageSize,
+            CancellationToken cancellationToken)
         {
             var query = _eventRepository.Query();
             query = ApplyFilters(Tite, StartDate, EndDate, LocationId, CategoryId, query);
@@ -188,7 +199,8 @@
                     ParticipantsCount = e.EventParticipants.Count(),
                     MaxParticipants = e.MaxParticipants
                 })
-                .ToPagedResultAsync(pageNumber,pageSize);
+                .OrderBy(x => x.StartDate)
+                .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         }
 
         private static IQueryable<Event> ApplyFilters(string? Tite, DateTime? StartDate, DateTime? EndDate, Guid? LocationId, Guid? CategoryId, IQueryable<Event?> query)

@@ -27,9 +27,9 @@ namespace EventHub.Web.Controllers
 
         [Authorize(Roles = Roles.Admin)]
         [HttpGet]
-        public async Task<IActionResult> Requests(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Requests(CancellationToken cancellation ,int page = 1, int pageSize = 10)
         {
-            var requestsDtos = await _organizerService.GetAllPendingRequestsAsync(page, pageSize);
+            var requestsDtos = await _organizerService.GetAllPendingRequestsAsync(page, pageSize, cancellation);
 
             var mappedData = _mapper.Map<List<OrganizerRequestViewModel>>(requestsDtos.Data);
 
@@ -46,18 +46,18 @@ namespace EventHub.Web.Controllers
 
         [Authorize(Roles = Roles.Admin)]
         [HttpPost]
-        public async Task<IActionResult> ApproveRequest(OrganizerRequestViewModel model)
+        public async Task<IActionResult> ApproveRequest(OrganizerRequestViewModel model,CancellationToken cancellation)
         {
-            await _organizerService.ApproveUserToOrganizerAsync(model.UserId);
+            await _organizerService.ApproveUserToOrganizerAsync(model.UserId, cancellation);
             return RedirectToAction(nameof(Requests));
         }
 
 
         [HttpGet]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Index(Status? status = null, int pageSize = 10, int pageNumber = 1)
+        public async Task<IActionResult> Index(CancellationToken cancellation,Status? status = null, int pageSize = 10, int pageNumber = 1)
         {
-            var allRequestsDto = await _organizerService.GetAllRequestsAsync(pageNumber, pageSize, status);
+            var allRequestsDto = await _organizerService.GetAllRequestsAsync(pageNumber, pageSize, cancellation,status);
 
             var mappedData = _mapper.Map<List<AllRequestsViewModel>>(allRequestsDto.Data);
 
@@ -75,17 +75,17 @@ namespace EventHub.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> DemoteOrganizer(string userId)
+        public async Task<IActionResult> DemoteOrganizer(string userId,CancellationToken cancellationToken)
         {
-            await _organizerService.DemoteOrganizerToUserAsync(userId);
+            await _organizerService.DemoteOrganizerToUserAsync(userId, cancellationToken);
             return RedirectToAction(nameof(Index));
         }
 
         [Authorize(Roles = Roles.Admin)]
         [HttpPost]
-        public async Task<IActionResult> RejectRequest(OrganizerRequestViewModel model)
+        public async Task<IActionResult> RejectRequest(OrganizerRequestViewModel model,CancellationToken cancellationToken)
         {
-            await _organizerService.RejectUserToOrganizerAsync(model.UserId);
+            await _organizerService.RejectUserToOrganizerAsync(model.UserId, cancellationToken);
             return RedirectToAction(nameof(Requests));
         }
     }

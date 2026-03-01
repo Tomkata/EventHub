@@ -7,21 +7,21 @@ namespace EventHub.Repositories.Interfaces
     
     public interface IEventRepository
     {
-        public Task<Event?> GetByIdAsync(Guid id);
-        public Task<DetailedEventDto?> GetByIdReadOnlyAsync(Guid id);
+        public Task<Event?> GetByIdAsync(Guid id, CancellationToken cancellation);
+        public Task<DetailedEventDto?> GetByIdReadOnlyAsync(Guid id, CancellationToken cancellation);
         public IQueryable<Event> GetAll();
-        public Task AddAsync(Event entity);
+        public Task AddAsync(Event entity, CancellationToken cancellation);
 
         public Task RemoveAsync(Event entity);
 
         IQueryable<Event> GetByOrganizerId(string id);
 
-        Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id);
+        Task<EventJoinInfo?> GetEventJoinInfoAsync(Guid id, CancellationToken cancellation);
 
-        Task<bool> TryJoinAsync(Guid eventId, string userId);
+        Task<bool> TryJoinAsync(Guid eventId, string userId, CancellationToken cancellation);
         IQueryable<Event?> Query();
 
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken cancellationToken);
 
     }
 }

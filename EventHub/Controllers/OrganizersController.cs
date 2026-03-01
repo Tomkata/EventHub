@@ -24,11 +24,11 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Apply(string? returnUrl)
+        public async Task<IActionResult> Apply(CancellationToken cancellation,string? returnUrl)
         {
             var userId = GetUserId();
 
-            var organizerState = await _organizerService.GetOrganizerStateAsync(userId!);
+            var organizerState = await _organizerService.GetOrganizerStateAsync(userId!, cancellation);
             var model = new ApplyOrganizerForm();
             model.OrganizerState = organizerState;
 
@@ -38,19 +38,19 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Apply(ApplyOrganizerForm model)
+        public async Task<IActionResult> Apply(ApplyOrganizerForm model,CancellationToken cancellation)
         {
             var userId = GetUserId();
             model.UserId = userId;
 
             if (!ModelState.IsValid)
             {
-                model.OrganizerState = await _organizerService.GetOrganizerStateAsync(userId);
+                model.OrganizerState = await _organizerService.GetOrganizerStateAsync(userId, cancellation);
                 return View(model);
             }
             var dto = _mapper.Map<OrganizerRequestFormDto>(model);
 
-            await _organizerService.ApplyForOrganizerAsync(dto, userId);
+            await _organizerService.ApplyForOrganizerAsync(dto, userId, cancellation);
 
             TempData["SuccessMessage"] = "Your organizer application has been submitted successfully!";
             return RedirectToAction(nameof(Apply));

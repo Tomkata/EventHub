@@ -21,9 +21,9 @@ namespace EventHub.Services.Services
             this._repository = repository;
             this._mapper = mapper;
         }
-        public async Task<List<DropdownOptionModel>> GetInterestsForDropDownAsync()
+        public async Task<List<DropdownOptionModel>> GetInterestsForDropDownAsync(CancellationToken cancellation)
     => await _repository.GetAll()
         .ProjectTo<DropdownOptionModel>(_mapper.ConfigurationProvider)
-        .ToListAsync();
+        .ToListAsync(cancellation);
     }
 }

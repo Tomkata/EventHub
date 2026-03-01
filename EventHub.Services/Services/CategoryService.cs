@@ -20,11 +20,11 @@ namespace EventHub.Services.Services
             this._mapper = mapper;
         }
 
-        public async Task<List<CategoryDto>> GetCategoriesForDropdownAsync()
+        public async Task<List<CategoryDto>> GetCategoriesForDropdownAsync(CancellationToken cancellation)
         {
             return await _categoryRepository.GetCategories()
                 .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+                .ToListAsync(cancellation);
         }
     }
 }

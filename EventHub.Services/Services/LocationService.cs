@@ -22,9 +22,9 @@ namespace EventHub.Services.Services
             this._mapper = mapper;
         }
 
-        public async Task<List<DropdownOptionModel>> GetLocationsForDropdownAsync()
+        public async Task<List<DropdownOptionModel>> GetLocationsForDropdownAsync(CancellationToken cancellation)
     => await _locationRepository.GetLocations()
         .ProjectTo<DropdownOptionModel>(_mapper.ConfigurationProvider)
-        .ToListAsync();
+        .ToListAsync(cancellation);
     }
 }

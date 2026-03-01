@@ -47,13 +47,11 @@ namespace EventHub.Services.Services
             this._applicationDb = applicationDb;
         }
 
-        // TODO (Advanced):
-        // This capacity check is NOT concurrency-safe.
-        // In high-load scenarios multiple users can pass this validation and cause overbooking!!! 
-        //In the next course - I need to fix this!
-        public async Task JoinEventAsync(string userId, Guid eventId)
+
+
+        public async Task JoinEventAsync(string userId, Guid eventId,CancellationToken cancellation)
         {
-            var @event = await _eventRepository.GetEventJoinInfoAsync(eventId);
+            var @event = await _eventRepository.GetEventJoinInfoAsync(eventId, cancellation);
                 
             if (@event == null)
                 throw new EventNotFoundException();
@@ -74,7 +72,7 @@ namespace EventHub.Services.Services
                     throw new OrganizerJoinOwnEventException();
             }
 
-            var userProfile = await _userProfile.GetByUserIdAsync(userId);
+            var userProfile = await _userProfile.GetByUserIdAsync(userId,cancellation);
             if (userProfile == null)
                 throw new UserDontHavePrfileException();
 
@@ -87,7 +85,7 @@ namespace EventHub.Services.Services
                            await _applicationDb.Database.BeginTransactionAsync();
             try
             {
-                if (!await _eventRepository.TryJoinAsync(eventId, userId))
+                if (!await _eventRepository.TryJoinAsync(eventId, userId, cancellation))
                     throw new EventFilledException();
 
                 await transaction.CommitAsync();
@@ -106,40 +104,45 @@ namespace EventHub.Services.Services
         private bool IsOrganizerJoinOwnEvent(string userId, string organizerId)
         => userId == organizerId;
 
-        public async Task LeftEventAsync(string userId, Guid eventId)
+        public async Task LeftEventAsync(string userId, Guid eventId, CancellationToken cancellation)
         {
-            await GetEventOrThrowAsync(eventId);
+            await GetEventOrThrowAsync(eventId, cancellation);
 
-            var isParticipant = await _eventParticipantsRepository.ExistsAsync(userId, eventId);
+            var isParticipant = await _eventParticipantsRepository.ExistsAsync(userId, eventId, cancellation);
 
             if (!isParticipant)
                 throw new UserNotParticipantException();
 
-            await _eventParticipantsRepository.RemoveParticipantFromEventAsync(userId,eventId);
-            await _eventParticipantsRepository.SaveChangesAsync();
+            await _eventParticipantsRepository.RemoveParticipantFromEventAsync(userId,eventId, cancellation);
+            await _eventParticipantsRepository.SaveChangesAsync(cancellation);
             
         }
 
-        private async Task GetEventOrThrowAsync(Guid eventId)
+        private async Task GetEventOrThrowAsync(Guid eventId, CancellationToken cancellation)
         {
-            var @event = await _eventRepository.GetEventJoinInfoAsync(eventId);
+            var @event = await _eventRepository.GetEventJoinInfoAsync(eventId, cancellation);
 
             if (@event == null)
                 throw new EventNotFoundException();
         }
 
-        public async Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId)
-       => await _eventParticipantsRepository.GetJoinedEventIdsByUserAsync(userId);
+        public async Task<HashSet<Guid>> GetJoinedEventIdsAsync(string userId, CancellationToken cancellation)
+       => await _eventParticipantsRepository.GetJoinedEventIdsByUserAsync(userId, cancellation);
 
-        public async Task<PagedResult<EventDto>> GetJoinedEvents(string userId,int pageNumber,int pageSize)
+        public async Task<PagedResult<EventDto>> GetJoinedEvents(
+            string userId,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation)
         {
             return await _eventParticipantsRepository.GetJoinedEventsByUserId(userId)
                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                .ToPagedResultAsync(pageNumber,pageSize);
+                .OrderBy(x=>x.StartDate)
+                .ToPagedResultAsync(pageNumber,pageSize, cancellation);
         }
 
-        public async Task<int> GetJoinedEventCountAsync(string userId)
-        => await _eventParticipantsRepository.GetJoinedEventCountAsync(userId);
+        public async Task<int> GetJoinedEventCountAsync(string userId, CancellationToken cancellation)
+        => await _eventParticipantsRepository.GetJoinedEventCountAsync(userId, cancellation);
 
         private static bool IsUniqueConstraintViolation(DbUpdateException ex)
         {

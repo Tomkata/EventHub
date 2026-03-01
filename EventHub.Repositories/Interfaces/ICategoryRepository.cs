@@ -5,7 +5,7 @@ namespace EventHub.Repositories.Interfaces
 
     public interface ICategoryRepository
     {
-        public Task<Category?> GetByIdAsync(Guid id);
+        public Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellation);
 
         public IQueryable<Category> GetCategories();
     }

@@ -24,10 +24,10 @@ namespace EventHub.Web.Controllers
         }
 
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AllEvents(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> AllEvents(CancellationToken cancellationToken, int page = 1, int pageSize = 10)
         {
 
-            var events = await _eventService.GetEventsAsync(page, pageSize);
+            var events = await _eventService.GetEventsAsync(page, pageSize, cancellationToken);
 
 
             var eventList = _mapper.Map<List<EventListViewModel>>(

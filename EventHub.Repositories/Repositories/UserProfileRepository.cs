@@ -16,9 +16,9 @@ namespace EventHub.Repositories.Repositories
         }
 
 
-        public async Task AddAsync(UserProfile profile)
+        public async Task AddAsync(UserProfile profile,CancellationToken cancellation)
         {
-            await _dbContext.UserProfiles.AddAsync(profile);
+            await _dbContext.UserProfiles.AddAsync(profile, cancellation);
         }
 
         public void Delete(UserProfile profile)
@@ -26,38 +26,38 @@ namespace EventHub.Repositories.Repositories
             _dbContext.UserProfiles.Remove(profile);
         }
 
-        public async Task<bool> ExistsAsync(string userId)
+        public async Task<bool> ExistsAsync(string userId,CancellationToken cancellation)
        => await _dbContext.UserProfiles
             .AsNoTracking()
-            .AnyAsync(x => x.UserId == userId);
+            .AnyAsync(x => x.UserId == userId, cancellation);
 
         public IQueryable<UserProfile> GetAll()
         => _dbContext.UserProfiles.AsQueryable();
 
-        public async Task<List<Interest>> GetInterestsByIdsAsync(HashSet<Guid> ids)
+        public async Task<List<Interest>> GetInterestsByIdsAsync(HashSet<Guid> ids,CancellationToken cancellation)
         => await _dbContext.Interests
                 .Where(x => ids.Contains(x.Id))
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
-        public Task<UserProfile?> GetByUserIdAsync(string userId)
+        public Task<UserProfile?> GetByUserIdAsync(string userId,CancellationToken cancellation)
        => _dbContext.UserProfiles
             .Include(x=>x.UserProfileInterests)
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellation);
 
-        public Task<UserProfile?> GetByUserIdAsyncReadOnly(string userId)
+        public Task<UserProfile?> GetByUserIdAsyncReadOnly(string userId, CancellationToken cancellation)
           => _dbContext.UserProfiles
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellation);
 
      
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellation)
         {
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellation);
         }
 
-        public async Task<int> GetInterestsCountAsync(HashSet<Guid> ids)
+        public async Task<int> GetInterestsCountAsync(HashSet<Guid> ids,CancellationToken cancellation)
         => await _dbContext
-            .Interests.CountAsync(x=>ids.Contains(x.Id));
+            .Interests.CountAsync(x=>ids.Contains(x.Id), cancellation);
     }
 }

@@ -6,6 +6,6 @@ namespace EventHub.Services.Interfaces
 
     public interface IInterestsService
     {
-        public Task<List<DropdownOptionModel>> GetInterestsForDropDownAsync();
+        public Task<List<DropdownOptionModel>> GetInterestsForDropDownAsync(CancellationToken cancellationToken);
     }
 }

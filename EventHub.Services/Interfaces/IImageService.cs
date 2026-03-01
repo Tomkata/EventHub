@@ -9,12 +9,16 @@ namespace EventHub.Services.Interfaces
         public Task<string> StoreImageAsync(
             Stream stream,
             ImageFormat format,
-            ImageFolder folder);
+            ImageFolder folder,
+            CancellationToken cancellationToken);
 
 
-        public Task<ImageFormat> DetectFormat(Stream stream); 
+        public Task<ImageFormat> DetectFormat(
+            Stream stream, 
+            CancellationToken cancellationToken); 
 
             
-        public Task DeleteImageAsync(string imagePath);
+        public Task DeleteImageAsync(
+            string imagePath);
     }
 }

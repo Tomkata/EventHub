@@ -40,9 +40,9 @@ namespace EventHub.Services.Services
             this._userProfileRepository = userProfileRepository;
         }
 
-        public async Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId)
+        public async Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId,CancellationToken cancellation)
         {
-            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId, cancellation);
 
             if (existingRequest != null)
             {
@@ -65,7 +65,7 @@ namespace EventHub.Services.Services
                     existingRequest.Email = formDto.Email;
                     existingRequest.Note = formDto.Note;
                     existingRequest.Status = Status.Pending;
-                    await _requestRepository.SaveChangesAsync();
+                    await _requestRepository.SaveChangesAsync(cancellation);
                     return;
                 }
 
@@ -76,7 +76,7 @@ namespace EventHub.Services.Services
             if (roles.Contains(Roles.Admin))
                 throw new AdminCannotApplyException();
 
-            var profile = await _userProfileRepository.GetByUserIdAsync(userId);
+            var profile = await _userProfileRepository.GetByUserIdAsync(userId, cancellation);
 
             if (profile == null)
                 throw new CreateProfileApplyException();
@@ -90,13 +90,13 @@ namespace EventHub.Services.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _requestRepository.AddAsync(requester);
-            await _requestRepository.SaveChangesAsync();
+            await _requestRepository.AddAsync(requester, cancellation);
+            await _requestRepository.SaveChangesAsync(cancellation);
         }
 
-        public async Task ApproveUserToOrganizerAsync(string userId)
+        public async Task ApproveUserToOrganizerAsync(string userId,CancellationToken cancellation)
         {
-            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId, cancellation);
 
             if (existingRequest == null)
                 throw new OrganizerRequestNotFoundException();
@@ -115,15 +115,15 @@ namespace EventHub.Services.Services
 
             existingRequest.Status = Status.Approved;
 
-            await _requestRepository.SaveChangesAsync();
+            await _requestRepository.SaveChangesAsync(cancellation);
 
         }
 
       
         //TODO: Add in advanced module this business logic(It is ready to be used)
-        public async Task DemoteOrganizerToUserAsync(string userId)
+        public async Task DemoteOrganizerToUserAsync(string userId, CancellationToken cancellation)
         {
-            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId, cancellation);
 
             if (existingRequest == null)
                 throw new OrganizerRequestNotFoundException();
@@ -140,25 +140,33 @@ namespace EventHub.Services.Services
 
             existingRequest.Status = Status.Rejected;
             existingRequest.LastRejectedAt = DateTime.UtcNow;
-            await _requestRepository.SaveChangesAsync();
+            await _requestRepository.SaveChangesAsync(cancellation);
         }
 
-        public async Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(
+            int pageNumber, 
+            int pageSize,
+            CancellationToken cancellation)
             => await _requestRepository.GetPendingRequests()
                 .ProjectTo<PendingRequestForOrganizerDto>(_mapper.ConfigurationProvider)
-                .ToPagedResultAsync(pageNumber,pageSize);
+            .OrderBy(x=>x.CreatedAt)
+                .ToPagedResultAsync(pageNumber,pageSize, cancellation);
 
         public async Task<PagedResult<OrganizerRequestDto>> GetAllRequestsAsync(
-            int pageNumber, int pageSize, Status? status = null)
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation,
+            Status? status = null)
             =>
                 await _requestRepository.GetAll()
                 .Where(x => !status.HasValue || x.Status == status)
                 .ProjectTo<OrganizerRequestDto>(_mapper.ConfigurationProvider)
-                .ToPagedResultAsync(pageNumber, pageSize);
+            .OrderBy(x => x.CreatedAt)
+                .ToPagedResultAsync(pageNumber, pageSize, cancellation);
 
-        public async Task<Status> GetOrganizerStateAsync(string userId)
+        public async Task<Status> GetOrganizerStateAsync(string userId, CancellationToken cancellation)
         {
-            var user = await _requestRepository.GetByUserIdAsync(userId);
+            var user = await _requestRepository.GetByUserIdAsync(userId, cancellation);
 
             if (user == null)
                 return Status.None;
@@ -166,9 +174,9 @@ namespace EventHub.Services.Services
             return user.Status;
         }
 
-        public async Task RejectUserToOrganizerAsync(string userId)
+        public async Task RejectUserToOrganizerAsync(string userId, CancellationToken cancellation)
         {
-            var existingRequest = await _requestRepository.GetByUserIdAsync(userId);
+            var existingRequest = await _requestRepository.GetByUserIdAsync(userId, cancellation);
 
             if (existingRequest == null)
                 throw new OrganizerRequestNotFoundException();
@@ -185,7 +193,7 @@ namespace EventHub.Services.Services
             existingRequest.LastRejectedAt = DateTime.UtcNow;
 
 
-            await _requestRepository.SaveChangesAsync();
+            await _requestRepository.SaveChangesAsync(cancellation);
         }
     }
 }

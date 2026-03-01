@@ -6,7 +6,7 @@ namespace EventHub.Services.Interfaces
 {
     public interface IUserProfileFormOptionsService
     {
-        public Task<UserProfileOptionDto> GetFormOptionsAsync();
+        public Task<UserProfileOptionDto> GetFormOptionsAsync(CancellationToken cancellationToken);
 
     }
 }

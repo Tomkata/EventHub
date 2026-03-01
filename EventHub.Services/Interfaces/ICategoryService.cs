@@ -5,6 +5,6 @@ namespace EventHub.Services.Interfaces
 
     public interface ICategoryService
     {
-        public Task<List<CategoryDto>> GetCategoriesForDropdownAsync(); 
+        public Task<List<CategoryDto>> GetCategoriesForDropdownAsync(CancellationToken cancellation); 
     }
 }

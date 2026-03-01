@@ -17,16 +17,16 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public async Task AddAsync(OrganizerRequest organizer)
-            => await _dbContext.OrganizerRequests.AddAsync(organizer);
+        public async Task AddAsync(OrganizerRequest organizer,CancellationToken cancellation)
+            => await _dbContext.OrganizerRequests.AddAsync(organizer, cancellation);
 
         public IQueryable<OrganizerRequest> GetAll()
        => _dbContext.OrganizerRequests
             .AsNoTracking();
 
-        public async Task<OrganizerRequest?> GetByUserIdAsync(string userId)
+        public async Task<OrganizerRequest?> GetByUserIdAsync(string userId,CancellationToken cancellation)
             => await _dbContext.OrganizerRequests
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+                .FirstOrDefaultAsync(x => x.UserId == userId, cancellation);
 
 
         public IQueryable<OrganizerRequest> GetPendingRequests()
@@ -35,9 +35,9 @@ namespace EventHub.Repositories.Repositories
             .Where(x => x.Status == Status.Pending)
             .OrderBy(x => x.CreatedAt);
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellation)
         {
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellation);
         }
     }
 }

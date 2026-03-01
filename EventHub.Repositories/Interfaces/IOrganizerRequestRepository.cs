@@ -5,10 +5,10 @@ namespace EventHub.Repositories.Interfaces
 
     public interface IOrganizerRequestRepository
     {
-        Task AddAsync(OrganizerRequest organizer);
+        Task AddAsync(OrganizerRequest organizer, CancellationToken cancellation);
 
-        Task<OrganizerRequest?> GetByUserIdAsync(string userId);
-        Task SaveChangesAsync();
+        Task<OrganizerRequest?> GetByUserIdAsync(string userId, CancellationToken cancellation);
+        Task SaveChangesAsync(CancellationToken cancellation);
 
         IQueryable<OrganizerRequest> GetPendingRequests();
 

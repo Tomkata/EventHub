@@ -12,7 +12,6 @@ namespace EventHub.Web.Controllers
     using EventHub.Services.Interfaces;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.Events;
-    using Humanizer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +39,9 @@ namespace EventHub.Web.Controllers
         }
 
 
-        public async Task<IActionResult> Index(SearchEventByFilterViewModel search,
+        public async Task<IActionResult> Index(
+            CancellationToken cancellationToken,
+            SearchEventByFilterViewModel search,
             int page = 1,
             int pageSize = 10)
         {
@@ -53,10 +54,11 @@ namespace EventHub.Web.Controllers
                search.LocationId,
                search.CategoryId,
                page,
-               pageSize
+               pageSize,
+               cancellationToken
                 );
 
-            var prepared = await PrepareSearchViewModel();
+            var prepared = await PrepareSearchViewModel(cancellationToken);
 
             search.Locations = prepared.Locations;
             search.Categories = prepared.Categories;
@@ -66,7 +68,7 @@ namespace EventHub.Web.Controllers
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = GetUserId();
-                joinedIds = await _participantService.GetJoinedEventIdsAsync(userId);
+                joinedIds = await _participantService.GetJoinedEventIdsAsync(userId,cancellationToken);
             }
 
             var eventList = _mapper.Map<List<EventListViewModel>>(
@@ -94,9 +96,9 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(CancellationToken cancellation)
         {
-            CreateEventViewModel model = await PrepareCreateViewModel();
+            CreateEventViewModel model = await PrepareCreateViewModel(cancellation);
 
             return View(model);
         }
@@ -105,21 +107,21 @@ namespace EventHub.Web.Controllers
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateEventViewModel model)
+        public async Task<IActionResult> Create(CreateEventViewModel model,CancellationToken cancellation)
         {
 
             if ((!ModelState.IsValid) && IsEmptyForm(model))
             {
                 ModelState.Clear();
                 ModelState.AddModelError("", "Please fill in the form.");
-                model = await PrepareCreateViewModel();
+                model = await PrepareCreateViewModel(cancellation);
                 return View(model);
             }
 
 
             if (!ModelState.IsValid)
             {
-                model = await PrepareCreateViewModel();
+                model = await PrepareCreateViewModel(cancellation);
                 return View(model);
             }
 
@@ -130,18 +132,18 @@ namespace EventHub.Web.Controllers
 
             using var stream = model.Image.OpenReadStream();
 
-            var imageFormat = await _imageService.DetectFormat(stream);
+            var imageFormat = await _imageService.DetectFormat(stream,cancellation);
 
             if (imageFormat == ImageFormat.unknown)
                 ModelState.AddModelError("Image", "Invalid image format.");
 
             if (!ModelState.IsValid)
             {
-                await FillDropDowns(model);
+                await FillDropDowns(model, cancellation);
                 return View(model);
             }
 
-            var imageUrl = await _imageService.StoreImageAsync(stream, imageFormat, ImageFolder.Events);
+            var imageUrl = await _imageService.StoreImageAsync(stream, imageFormat, ImageFolder.Events,cancellation);
 
             var requestingUserId = GetUserId();
 
@@ -149,7 +151,7 @@ namespace EventHub.Web.Controllers
             @event.ImagePath = imageUrl;
 
 
-            await _eventService.CreateAsync(@event, requestingUserId);
+            await _eventService.CreateAsync(@event, requestingUserId, cancellation);
 
             TempData["SuccessMessage"] = "Event created successfully!";
 
@@ -160,15 +162,15 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
-        public async Task<IActionResult> Update(Guid eventId)
+        public async Task<IActionResult> Update(Guid eventId,CancellationToken cancellation)
         {
 
-            var model = await PrepareEditViewModel(eventId);
+            var model = await PrepareEditViewModel(eventId, cancellation);
 
             if (model == null)
                 return NotFound();
 
-            await FillDropDowns(model);
+            await FillDropDowns(model, cancellation);
 
 
 
@@ -177,11 +179,11 @@ namespace EventHub.Web.Controllers
 
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [HttpPost]
-        public async Task<IActionResult> Update(EditEventViewModel model)
+        public async Task<IActionResult> Update(EditEventViewModel model,CancellationToken cancellation)
         {
             if (!ModelState.IsValid)
             {
-                await FillDropDowns(model);
+                await FillDropDowns(model, cancellation);
 
                 ModelState.AddModelError("", "Please fill in the form.");
                 return View(model);
@@ -198,7 +200,7 @@ namespace EventHub.Web.Controllers
                 {
                     using var stream = model.NewImage.OpenReadStream();
 
-                    var imageFormat = await _imageService.DetectFormat(stream);
+                    var imageFormat = await _imageService.DetectFormat(stream,cancellation);
 
                     if (imageFormat == ImageFormat.unknown)
                     {
@@ -207,7 +209,7 @@ namespace EventHub.Web.Controllers
                     else
                     {
                         var imageUrl = await _imageService
-                            .StoreImageAsync(stream, imageFormat, ImageFolder.Events);
+                            .StoreImageAsync(stream, imageFormat, ImageFolder.Events,cancellation);
 
                         eventToUpdate.ImagePath = imageUrl;
                     }
@@ -215,7 +217,7 @@ namespace EventHub.Web.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    await FillDropDowns(model);
+                    await FillDropDowns(model, cancellation);
                     return View(model);
                 }
             }
@@ -223,16 +225,16 @@ namespace EventHub.Web.Controllers
             var userId = GetUserId();
             var isAdmin = IsAdmin();
 
-            await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin);
+            await _eventService.UpdateAsync(model.Id, eventToUpdate, userId, isAdmin, cancellation);
 
             return RedirectToAction(nameof(Index));
         }
 
 
 
-        private async Task FillDropDowns(EventFormBaseViewModel model)
+        private async Task FillDropDowns(EventFormBaseViewModel model, CancellationToken cancellation)
         {
-            var dropDown = await _eventFormOptionsService.GetFormOptionsAsync();
+            var dropDown = await _eventFormOptionsService.GetFormOptionsAsync(cancellation);
 
             model.Categories = dropDown.Categories;
             model.Locations = dropDown.Locations;
@@ -241,11 +243,11 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Join(Guid eventId,string? returnUrl)
+        public async Task<IActionResult> Join(Guid eventId,string? returnUrl, CancellationToken cancellation)
         {
             var userId = GetUserId();
 
-                await _participantService.JoinEventAsync(userId, eventId);
+                await _participantService.JoinEventAsync(userId, eventId, cancellation);
                 TempData["SuccessMessage"] = "You have successfully joined the event.";
                 return RedirectToAction(nameof(Index));
         }
@@ -253,11 +255,11 @@ namespace EventHub.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Left(Guid eventId, string? returnUrl = null)
+        public async Task<IActionResult> Left(Guid eventId, CancellationToken cancellation,string? returnUrl = null)
         {
             var userId = GetUserId();
           
-                await _participantService.LeftEventAsync(userId, eventId);
+                await _participantService.LeftEventAsync(userId, eventId, cancellation);
                 TempData["SuccessMessage"] = "You have successfully left the event.";
           
 
@@ -271,21 +273,21 @@ namespace EventHub.Web.Controllers
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Delete(Guid eventId)
+        public async Task<IActionResult> Delete(Guid eventId,CancellationToken  cancellation)
         {
             var userId = GetUserId();
             var isAdmin = IsAdmin();
 
 
-            await _eventService.DeleteAsync(eventId, userId, isAdmin);
+            await _eventService.DeleteAsync(eventId, userId, isAdmin, cancellation);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid eventId)
+        public async Task<IActionResult> Details(Guid eventId,CancellationToken cancellation)
         {
 
-            var eventDto = await _eventService.GetByIdAsync(eventId);
+            var eventDto = await _eventService.GetByIdAsync(eventId, cancellation);
             var model = _mapper.Map<DetailedEventViewModel>(eventDto);
             return View(model);
         }
@@ -308,9 +310,9 @@ namespace EventHub.Web.Controllers
             return false;
         }
 
-        private async Task<CreateEventViewModel> PrepareCreateViewModel()
+        private async Task<CreateEventViewModel> PrepareCreateViewModel(CancellationToken cancellation)
         {
-            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync(cancellation);
             var model = new CreateEventViewModel
             {
                 Categories = dropDowns.Categories,
@@ -319,18 +321,18 @@ namespace EventHub.Web.Controllers
             return model;
         }
 
-        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id)
+        private async Task<EditEventViewModel> PrepareEditViewModel(Guid Id, CancellationToken cancellation)
         {
-            var eventData = await _eventService.GetForEditAsync(Id);
+            var eventData = await _eventService.GetForEditAsync(Id,cancellation);
 
             var model = _mapper.Map<EditEventViewModel>(eventData);
 
             return model;
         }
 
-        private async Task<SearchEventByFilterViewModel> PrepareSearchViewModel()
+        private async Task<SearchEventByFilterViewModel> PrepareSearchViewModel(CancellationToken cancellation)
         {
-            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync();
+            var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync(cancellation);
             var model = new SearchEventByFilterViewModel
             {
                 Categories = dropDowns.Categories,

@@ -8,19 +8,36 @@ namespace EventHub.Services.Interfaces
 
     public interface IOrganizerService
     {
-        Task ApplyForOrganizerAsync(OrganizerRequestFormDto formDto, string userId);
+        Task ApplyForOrganizerAsync(
+            OrganizerRequestFormDto formDto,
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task ApproveUserToOrganizerAsync(string userId);
+        Task ApproveUserToOrganizerAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task DemoteOrganizerToUserAsync(string userId);
+        Task DemoteOrganizerToUserAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task RejectUserToOrganizerAsync(string userId);
+        Task RejectUserToOrganizerAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task<Status> GetOrganizerStateAsync(string userId);
+        Task<Status> GetOrganizerStateAsync(
+            string userId,
+            CancellationToken cancellationToken);
 
-        Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(int pageNumber, int pageSize);
+        Task<PagedResult<PendingRequestForOrganizerDto>> GetAllPendingRequestsAsync(
+            int pageNumber, 
+            int pageSize,
+            CancellationToken cancellation);
 
-        Task<PagedResult<OrganizerRequestDto>> GetAllRequestsAsync(int pageNumber,int pageSize, Status? status = null);
+        Task<PagedResult<OrganizerRequestDto>> GetAllRequestsAsync(int pageNumber,
+            int pageSize,
+            CancellationToken cancellation,
+            Status? status = null);
 
     }
 }

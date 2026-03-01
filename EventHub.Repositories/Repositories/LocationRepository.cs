@@ -15,10 +15,10 @@ namespace EventHub.Repositories.Repositories
             this._dbContext = dbContext;
         }
 
-        public async Task<Location?> GetByIdAsync(Guid Id) =>
+        public async Task<Location?> GetByIdAsync(Guid Id,CancellationToken cancellation) =>
             await _dbContext.Locations
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == Id);
+            .FirstOrDefaultAsync(x => x.Id == Id, cancellation);
 
         public IQueryable<Location> GetLocations()
        =>  _dbContext.Locations

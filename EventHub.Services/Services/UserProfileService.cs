@@ -32,17 +32,17 @@ namespace EventHub.Services.Services
             this._locationRepository = locationRepository;
             this._interestRepository = interestRepository;
         }
-        public async Task CreateAsync(string userId, CreateUserProfileDto dto)
+        public async Task CreateAsync(string userId, CreateUserProfileDto dto, CancellationToken cancellationToken)
         {
-            if (await ExistsAsync(userId))
+            if (await ExistsAsync(userId,cancellationToken))
                 throw new ProfileAlreadyExistsException();
 
-
+            
 
             var profile = _mapper.Map<UserProfile>(dto);
             profile.UserId = userId;
 
-            var interests = await _userProfile.GetInterestsByIdsAsync(dto.InterestIds);
+            var interests = await _userProfile.GetInterestsByIdsAsync(dto.InterestIds, cancellationToken);
 
             //if someone bypasses the controller check (via API..),       
             if (interests.Count != dto.InterestIds.Count)
@@ -56,30 +56,30 @@ namespace EventHub.Services.Services
                 })
                 .ToList();
 
-            await _userProfile.AddAsync(profile);
-            await _userProfile.SaveChangesAsync();
+            await _userProfile.AddAsync(profile, cancellationToken);
+            await _userProfile.SaveChangesAsync(cancellationToken);
         }
 
        
-        public async Task<bool> IsValidInterests(HashSet<Guid> interestDto)
+        public async Task<bool> IsValidInterests(HashSet<Guid> interestDto,CancellationToken cancellation)
         {
-            var interestCount = await _userProfile.GetInterestsCountAsync(interestDto);
+            var interestCount = await _userProfile.GetInterestsCountAsync(interestDto, cancellation);
             if (interestCount != interestDto.Count)
                 return false;
 
             return true;
         }
 
-        public async Task EnsureProfileExistsAsync(string userId)
+        public async Task EnsureProfileExistsAsync(string userId, CancellationToken cancellation)
         {
-            if (!await _userProfile.ExistsAsync(userId))
+            if (!await _userProfile.ExistsAsync(userId, cancellation))
                 throw new ProfileRequiredException();
         }
 
-        public async Task<bool> ExistsAsync(string userId)
-        => await _userProfile.ExistsAsync(userId);
+        public async Task<bool> ExistsAsync(string userId,CancellationToken cancellation)
+        => await _userProfile.ExistsAsync(userId, cancellation);
 
-        public async Task<DetailUserProfileDto?> GetDetailAsync(string userId)
+        public async Task<DetailUserProfileDto?> GetDetailAsync(string userId,CancellationToken cancellation)
             => await _userProfile.GetAll()
                 .Where(x => x.UserId == userId)
                 .Select(x => new DetailUserProfileDto
@@ -94,9 +94,9 @@ namespace EventHub.Services.Services
                          x.UserProfileInterests.Select(x => x.Interest.InterestName)
                          .ToList()
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
 
-        public async Task<UserNavInfoDto?> GetUserNavInfoAsync(string userId)
+        public async Task<UserNavInfoDto?> GetUserNavInfoAsync(string userId,CancellationToken cancellation)
         {
             return await _userProfile.GetAll()
                 .Where(p => p.UserId == userId)
@@ -105,22 +105,22 @@ namespace EventHub.Services.Services
                     DisplayName = p.FirstName,
                     ImageUrl = p.ProfileImagePath
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
         }
 
-        public async Task UpdateAsync(string userId,EditUserProfileDto dto)
+        public async Task UpdateAsync(string userId,EditUserProfileDto dto,CancellationToken cancellation)
         {
-            var profile = await _userProfile.GetByUserIdAsync(userId);
+            var profile = await _userProfile.GetByUserIdAsync(userId, cancellation);
 
             if (profile == null)
                 throw new ProfileNotFoundException();
 
-            if(!await LocationExistsAsync(dto.LocationId))
+            if(!await LocationExistsAsync(dto.LocationId, cancellation))
         throw new InvalidLocationException();
 
 
 
-            var interests = await _userProfile.GetInterestsByIdsAsync(dto.SelectedInterestIds);
+            var interests = await _userProfile.GetInterestsByIdsAsync(dto.SelectedInterestIds, cancellation);
 
 
             profile.FirstName = dto.FirstName;
@@ -139,13 +139,13 @@ namespace EventHub.Services.Services
             if (dto.ProfileImagePath != null)
                 profile.ProfileImagePath = dto.ProfileImagePath;
 
-            await _userProfile.SaveChangesAsync();
+            await _userProfile.SaveChangesAsync(cancellation);
         }
 
-        private async Task<bool> LocationExistsAsync(Guid Id) =>
-            await _locationRepository.GetByIdAsync(Id) != null ? true : false;
+        private async Task<bool> LocationExistsAsync(Guid Id,CancellationToken cancellation) =>
+            await _locationRepository.GetByIdAsync(Id, cancellation) != null ? true : false;
 
-        public async Task<HashSet<Guid>> GetSelectedInterestIdsAsync(IEnumerable<string> interestNames)
+        public async Task<HashSet<Guid>> GetSelectedInterestIdsAsync(IEnumerable<string> interestNames,CancellationToken cancellation)
         {
             var allInterests = _interestRepository.GetAll();
 
@@ -155,7 +155,7 @@ namespace EventHub.Services.Services
                 .ToHashSet();
         }
 
-        public async Task<PublicUserProfileDto?> GetPublicDetailAsync(string userId)
+        public async Task<PublicUserProfileDto?> GetPublicDetailAsync(string userId,CancellationToken cancellation)
        => await _userProfile.GetAll()
             .Where(x => x.UserId == userId)
             .Select(x => new PublicUserProfileDto
@@ -170,8 +170,8 @@ namespace EventHub.Services.Services
             })
             .FirstOrDefaultAsync();
 
-        public async Task<bool> HasProfileAsync(string userId)
-        => await _userProfile.ExistsAsync(userId);
+        public async Task<bool> HasProfileAsync(string userId, CancellationToken cancellation)
+        => await _userProfile.ExistsAsync(userId, cancellation);
 
         
     }

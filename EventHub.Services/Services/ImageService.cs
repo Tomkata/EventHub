@@ -38,13 +38,13 @@ namespace EventHub.Services.Services
             return Task.CompletedTask;
         }
 
-        public async Task<ImageFormat> DetectFormat(Stream stream)
+        public async Task<ImageFormat> DetectFormat(Stream stream,CancellationToken cancellation)
         {
             byte[] buffer = new byte[16];
 
             var isReaded = 0;
 
-            isReaded = await stream.ReadAsync(buffer, 0, buffer.Length);
+            isReaded = await stream.ReadAsync(buffer, 0, buffer.Length, cancellation);
             stream.Position = 0;
 
             return FindImageFormat(buffer);
@@ -55,7 +55,8 @@ namespace EventHub.Services.Services
         public async Task<string> StoreImageAsync(
             Stream stream,
             ImageFormat format,
-            ImageFolder folder)
+            ImageFolder folder,
+            CancellationToken cancellation)
         {
 
 
@@ -70,7 +71,7 @@ namespace EventHub.Services.Services
 
             using var fileStream = new FileStream(physicalPath, FileMode.Create);
 
-            await stream.CopyToAsync(fileStream);
+            await stream.CopyToAsync(fileStream, cancellation);
 
             var imageUrl = $"images/{folder.ToString().ToLower()}/{fileName}";
             return imageUrl;
