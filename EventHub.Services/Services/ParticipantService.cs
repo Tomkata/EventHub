@@ -10,12 +10,15 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
+    using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata;
 
     public class ParticipantService : IParticipantService
     {
@@ -27,18 +30,21 @@ namespace EventHub.Services.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserProfileRepository _userProfile;
+        private readonly ApplicationDbContext _applicationDb;
 
         public ParticipantService(IEventParticipantsRepository eventParticipantsRepository,
                                   IEventRepository eventRepository,
                                   UserManager<ApplicationUser> userManager,
                                   IMapper mapper,
-                                  IUserProfileRepository userProfile) 
+                                  IUserProfileRepository userProfile,
+                                  ApplicationDbContext applicationDb) 
         {
             this._eventParticipantsRepository = eventParticipantsRepository;
             this._eventRepository = eventRepository;
             this._userManager = userManager;
             this._mapper = mapper;
             this._userProfile = userProfile;
+            this._applicationDb = applicationDb;
         }
 
         // TODO (Advanced):
@@ -77,16 +83,24 @@ namespace EventHub.Services.Services
                 throw new EventExpiredException();
 
 
-            if (@event.MaxParticipantsCount <= @event.ParticipantsCount)
-                throw new EventFilledException();
+            await using var transaction =
+                           await _applicationDb.Database.BeginTransactionAsync();
+            try
+            {
+                if (!await _eventRepository.TryJoinAsync(eventId, userId))
+                    throw new EventFilledException();
 
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
 
-            if (await _eventParticipantsRepository.ExistsAsync(userId, eventId))
-                throw new UserAlreadyJoinedException();
+                if (IsUniqueConstraintViolation(ex))
+                    throw new UserAlreadyJoinedException();
 
-
-            await _eventParticipantsRepository.AddParticipantToEventAsync(userId,eventId);
-            await _eventParticipantsRepository.SaveChangesAsync();
+                throw;
+            }
         }
 
         private bool IsOrganizerJoinOwnEvent(string userId, string organizerId)
@@ -127,5 +141,14 @@ namespace EventHub.Services.Services
         public async Task<int> GetJoinedEventCountAsync(string userId)
         => await _eventParticipantsRepository.GetJoinedEventCountAsync(userId);
 
+        private static bool IsUniqueConstraintViolation(DbUpdateException ex)
+        {
+            if (ex.InnerException is SqlException sqlEx)
+            {
+                return sqlEx.Message.Contains("IX_EventParticipants_EventId_UserId");
+            }
+
+            return false;
+        }
     }
 }

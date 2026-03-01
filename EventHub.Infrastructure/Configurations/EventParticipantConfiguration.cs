@@ -14,8 +14,8 @@ namespace EventHub.Infrastructure.Configurations
             builder.
                 HasKey(x => new { x.EventId, x.UserId });
 
-            //builder.HasIndex(x => new { x.EventId, x.UserId })
-            //    .IsUnique();
+            builder.HasIndex(x => new { x.EventId, x.UserId })
+                .IsUnique();
 
             builder
                 .HasOne(x=>x.Event)    
