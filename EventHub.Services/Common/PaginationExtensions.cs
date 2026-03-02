@@ -23,7 +23,7 @@ namespace EventHub.Services.Common
             var data = await query
                 .Skip(skip)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
 
             return new PagedResult<T>

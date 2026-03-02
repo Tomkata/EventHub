@@ -7,10 +7,10 @@
     using EventHub.Core.Exceptions.Category;
     using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Exceptions.Location;
-    using EventHub.Core.Exceptions.Oranizer;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Core.Models;
+    using EventHub.Infrastructure.QueryExtensions;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
@@ -39,9 +39,9 @@
             this._userProfileRepository = userProfileRepository;
         }
 
-        public async Task<DetailedEventDto> GetByIdAsync(Guid id,CancellationToken cancellation)
+        public async Task<DetailedEventDto> GetByIdAsync(Guid id, CancellationToken cancellation)
         {
-            var dto = await _eventRepository.GetByIdReadOnlyAsync(id,cancellation);
+            var dto = await _eventRepository.GetByIdReadOnlyAsync(id, cancellation);
 
             if (dto == null)
                 throw new EventNotFoundException();
@@ -49,7 +49,7 @@
             return dto;
         }
 
-        public async Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber, int pageSize,CancellationToken  cancellation)
+        public async Task<PagedResult<EventDto>> GetEventsAsync(int pageNumber, int pageSize, CancellationToken cancellation)
         {
             return await _eventRepository
                  .GetAll()
@@ -60,7 +60,7 @@
 
         public async Task CreateAsync(
             CreateEventDto dto,
-            string requestingUserId, 
+            string requestingUserId,
             CancellationToken cancellation)
         {
             if (!await CategoryExistsAsync(dto.CategoryId, cancellation))
@@ -88,7 +88,7 @@
 
         public async Task UpdateAsync(
             Guid id,
-            EditEventDto dto, 
+            EditEventDto dto,
             string requestingUserId,
             bool isAdmin,
             CancellationToken cancellation)
@@ -122,7 +122,7 @@
             await _eventRepository.SaveChangesAsync(cancellation);
         }
 
-        public async Task DeleteAsync(Guid eventId, string requestingUserId, bool isAdmin,CancellationToken  cancellation)
+        public async Task DeleteAsync(Guid eventId, string requestingUserId, bool isAdmin, CancellationToken cancellation)
         {
             var eventEntity = await _eventRepository.GetByIdAsync(eventId, cancellation);
 
@@ -133,14 +133,14 @@
 
 
 
-            await _eventRepository.RemoveAsync(eventEntity);
+             _eventRepository.Remove(eventEntity);
             await _eventRepository.SaveChangesAsync(cancellation);
         }
 
-        private async Task<bool> LocationExistsAsync(Guid Id,CancellationToken cancellation) =>
+        private async Task<bool> LocationExistsAsync(Guid Id, CancellationToken cancellation) =>
             await _locationRepository.GetByIdAsync(Id, cancellation) != null ? true : false;
 
-        private async Task<bool> CategoryExistsAsync(Guid Id,CancellationToken cancellation) =>
+        private async Task<bool> CategoryExistsAsync(Guid Id, CancellationToken cancellation) =>
              await _categoryRepository.GetByIdAsync(Id, cancellation) != null ? true : false;
 
         public async Task<PagedResult<EventDto>> GetEventsByOrganizerIdAsync(
@@ -151,7 +151,7 @@
         {
             return await _eventRepository.GetByOrganizerId(organizerId)
                 .ProjectTo<EventDto>(_mapper.ConfigurationProvider)
-                .OrderBy(x=>x.StartDate)
+                .OrderBy(x => x.StartDate)
                 .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         }
 
@@ -164,7 +164,7 @@
             }
         }
 
-        public async Task<EditEventDto> GetForEditAsync(Guid id,CancellationToken cancellation)
+        public async Task<EditEventDto> GetForEditAsync(Guid id, CancellationToken cancellation)
         {
             var entity = await _eventRepository.GetByIdAsync(id, cancellation);
 
@@ -174,17 +174,21 @@
             return _mapper.Map<EditEventDto>(entity);
         }
 
-        public async Task<PagedResult<EventDto>> SearchBy(string? Tite,
-            DateTime? StartDate,
-            DateTime? EndDate,
-            Guid? LocationId,
-            Guid? CategoryId,
+        public async Task<PagedResult<EventDto>> SearchBy(string? title,
+            DateTime? startDate,
+            DateTime? endDate,
+            Guid? locationId,
+            Guid? categoryId,
             int pageNumber,
             int pageSize,
             CancellationToken cancellationToken)
         {
-            var query = _eventRepository.Query();
-            query = ApplyFilters(Tite, StartDate, EndDate, LocationId, CategoryId, query);
+            var query = _eventRepository
+                .Query()
+                .FilterByTitle(title)
+                .FilterByDate(startDate, endDate)
+                .FilterByCategory(categoryId)
+                .FilterByLocation(locationId);
 
             return await query
                 .Select(e => new EventDto
@@ -201,26 +205,6 @@
                 })
                 .OrderBy(x => x.StartDate)
                 .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
-        }
-
-        private static IQueryable<Event> ApplyFilters(string? Tite, DateTime? StartDate, DateTime? EndDate, Guid? LocationId, Guid? CategoryId, IQueryable<Event?> query)
-        {
-            if (!string.IsNullOrEmpty(Tite))
-                query = query.Where(x => x.Title.Contains(Tite.Trim()));
-
-            if (StartDate.HasValue)
-                query = query.Where(x => x.StartDate >= StartDate.Value);
-
-            if (EndDate.HasValue)
-                query = query.Where(x => x.EndDate <= EndDate.Value);
-
-            if (LocationId.HasValue)
-                query = query.Where(x => x.LocationId == LocationId.Value);
-
-            if (CategoryId.HasValue)
-                query = query.Where(x => x.CategoryId == CategoryId.Value);
-
-            return query;
         }
     }
 }

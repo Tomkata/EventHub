@@ -12,7 +12,7 @@ namespace EventHub.Repositories.Interfaces
         public IQueryable<Event> GetAll();
         public Task AddAsync(Event entity, CancellationToken cancellation);
 
-        public Task RemoveAsync(Event entity);
+        public void Remove(Event entity);
 
         IQueryable<Event> GetByOrganizerId(string id);
 

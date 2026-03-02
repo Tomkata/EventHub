@@ -68,7 +68,7 @@ namespace EventHub.Repositories.Repositories
             await _dbContext.Events.AddAsync(entity, cancellation);
         }
 
-        public async Task RemoveAsync(Event entity)
+        public void Remove(Event entity)
         {
             _dbContext.Events.Remove(entity);
         }
