@@ -4,6 +4,7 @@ using EventHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302155156_AddIndexies")]
+    partial class AddIndexies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,26 +239,6 @@ namespace EventHub.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("OrganizerRequests");
-                });
-
-            modelBuilder.Entity("EventHub.Core.Models.UserFollow", b =>
-                {
-                    b.Property<string>("FollowerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FollowingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("FollowerId", "FollowingId");
-
-                    b.HasIndex("FollowerId");
-
-                    b.HasIndex("FollowingId");
-
-                    b.ToTable("UserFollows");
                 });
 
             modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
@@ -574,25 +557,6 @@ namespace EventHub.Infrastructure.Migrations
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("EventHub.Core.Models.UserFollow", b =>
-                {
-                    b.HasOne("EventHub.Core.Models.UserProfile", "Follower")
-                        .WithMany("Following")
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EventHub.Core.Models.UserProfile", "Following")
-                        .WithMany("Followers")
-                        .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Follower");
-
-                    b.Navigation("Following");
-                });
-
             modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
                 {
                     b.HasOne("EventHub.Core.Models.Location", "Location")
@@ -700,10 +664,6 @@ namespace EventHub.Infrastructure.Migrations
 
             modelBuilder.Entity("EventHub.Core.Models.UserProfile", b =>
                 {
-                    b.Navigation("Followers");
-
-                    b.Navigation("Following");
-
                     b.Navigation("UserProfileInterests");
                 });
 #pragma warning restore 612, 618

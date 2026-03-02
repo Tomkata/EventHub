@@ -31,7 +31,13 @@ namespace EventHub.Core.Models
             
         public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<UserProfileInterest> UserProfileInterests { get; set; }
+        public ICollection<UserProfileInterest> UserProfileInterests { get; set; }
     = new List<UserProfileInterest>();
+
+        public  ICollection<UserFollow> Followers { get; set; }
+            = new List<UserFollow>();
+
+        public ICollection<UserFollow> Following { get; set; }
+           = new List<UserFollow>();
     }
 }

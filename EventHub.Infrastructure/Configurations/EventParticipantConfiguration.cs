@@ -3,7 +3,6 @@
 namespace EventHub.Infrastructure.Configurations
 {
     using EventHub.Core.Models;
-    using EventHub.Infrastructure.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     public class EventParticipantConfiguration : IEntityTypeConfiguration<EventParticipant>
@@ -12,10 +11,9 @@ namespace EventHub.Infrastructure.Configurations
         {
 
             builder.
-                HasKey(x => new { x.EventId, x.UserId });
+                HasKey(x => new { x.EventId, x.UserId });   
 
-            builder.HasIndex(x => new { x.EventId, x.UserId })
-                .IsUnique();
+            builder.HasIndex(x => x.UserId);
 
             builder
                 .HasOne(x=>x.Event)    

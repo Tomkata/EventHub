@@ -333,7 +333,7 @@ namespace EventHub.Web.Controllers
         private async Task<SearchEventByFilterViewModel> PrepareSearchViewModel(CancellationToken cancellation)
         {
             var dropDowns = await _eventFormOptionsService.GetFormOptionsAsync(cancellation);
-            var model = new SearchEventByFilterViewModel
+            var model = new SearchEventByFilterViewModel    
             {
                 Categories = dropDowns.Categories,
                 Locations = dropDowns.Locations

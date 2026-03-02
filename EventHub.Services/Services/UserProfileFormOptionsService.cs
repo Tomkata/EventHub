@@ -32,8 +32,7 @@ namespace EventHub.Services.Services
             var interests = await _interestsService.GetInterestsForDropDownAsync(cancellationToken);
             var locations = await _locationService.GetLocationsForDropdownAsync(cancellationToken);
 
-            return
-                new UserProfileOptionDto(
+            return new UserProfileOptionDto(
                     locations.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }),
                     interests.Select(x => new DropdownOptionModel { Id = x.Id, Name = x.Name }
                     ));

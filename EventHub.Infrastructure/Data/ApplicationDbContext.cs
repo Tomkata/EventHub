@@ -23,7 +23,8 @@ namespace EventHub.Infrastructure.Data
         public virtual DbSet<OrganizerRequest> OrganizerRequests { get; set; }
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
         public virtual DbSet<Interest>  Interests { get; set; }
-        public virtual DbSet<UserProfileInterest>  UserProfileInterests { get; set; }
+        public virtual DbSet<UserProfileInterest> UserProfileInterests { get; set; }
+        public virtual DbSet<UserFollow>  UserFollows { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,7 +40,7 @@ namespace EventHub.Infrastructure.Data
             builder.ApplyConfiguration(new OrganizerRequestConfiguration());
             builder.ApplyConfiguration(new UserProfileInterestConfiguration());
             builder.ApplyConfiguration(new UserProfileConfiguration());
-
+            builder.ApplyConfiguration(new UserFollowConfiguration());
 
             base.OnModelCreating(builder);
         }

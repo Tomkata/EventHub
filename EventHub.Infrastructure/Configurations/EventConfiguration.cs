@@ -36,6 +36,7 @@ namespace EventHub.Infrastructure.Configurations
                   .OnDelete(DeleteBehavior.Restrict);
 
 
+            builder.HasIndex(x => x.StartDate);
            
 
         }

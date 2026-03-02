@@ -12,11 +12,12 @@ namespace EventHub.Infrastructure.Configurations
         {
             builder.HasKey(x => x.UserId);
 
-            builder.HasOne<ApplicationUser>()
+            builder.HasOne<ApplicationUser>()   
                 .WithOne()
                 .HasForeignKey<UserProfile>(x=>x.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
 
         }
     }
