@@ -14,7 +14,6 @@ namespace EventHub.Web.Controllers
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Caching.Memory;
 
     public class EventsController : BaseController
     {
