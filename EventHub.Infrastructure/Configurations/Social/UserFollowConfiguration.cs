@@ -1,10 +1,6 @@
-﻿
-
-
-
-namespace EventHub.Infrastructure.Configurations
+﻿namespace EventHub.Infrastructure.Configurations.Social
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Social;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     public class UserFollowConfiguration : IEntityTypeConfiguration<UserFollow>

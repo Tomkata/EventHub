@@ -35,6 +35,8 @@
     <ProjectReference Include="..\EventHub.Services\EventHub.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Controllers\Social\" />
+    <Folder Include="ViewModels\Social\" />
     <Folder Include="ViewModels\Users\" />
     <Folder Include="wwwroot\images\events\" />
   </ItemGroup>

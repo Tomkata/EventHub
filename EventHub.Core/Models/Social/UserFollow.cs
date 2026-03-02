@@ -1,5 +1,4 @@
-﻿
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Social
 {
     public class UserFollow
     {
