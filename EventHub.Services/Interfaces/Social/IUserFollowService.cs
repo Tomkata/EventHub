@@ -17,11 +17,13 @@ namespace EventHub.Services.Interfaces.Social
             CancellationToken cancellation
             );
 
-        public Task<PagedResult<SocialUserPreviewDto>> GetFollowingAsync(
+        public Task<PagedResult<SocialUserPreviewDto>> GetFollingsAsync(
             string userId,
             int pageNumber,
             int pageSize,
             CancellationToken cancellation);
+
+        public Task<bool> IsFollowingAsync(string followerId, string followingId, CancellationToken cancellation);
 
     }
 }

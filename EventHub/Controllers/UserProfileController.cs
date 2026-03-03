@@ -7,6 +7,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
     using EventHub.Services.Interfaces;
+    using EventHub.Services.Interfaces.Social;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.UserProfile;
     using Microsoft.AspNetCore.Authorization;
@@ -21,13 +22,15 @@ namespace EventHub.Web.Controllers
         private readonly IInterestsService _interestsService;
         private readonly IParticipantService _participantService;
         private readonly IUserProfileFormOptionsService _userProfileFormOptions;
+        private IUserFollowService _userFollowService;
         public UserProfileController(IUserProfileService userProfileService,
                                      IImageService imageService,
                                      IMapper mapper,
                                      IInterestsService interestsService,
                                      ILocationService locationService,
                                      IParticipantService participantService,
-                                     IUserProfileFormOptionsService userProfileFormOptions)
+                                     IUserProfileFormOptionsService userProfileFormOptions,
+                                     IUserFollowService userFollowService)
         {
             this._userProfileService = userProfileService;
             this._imageService = imageService;
@@ -36,6 +39,7 @@ namespace EventHub.Web.Controllers
             this._locationService = locationService;
             this._participantService = participantService;
             this._userProfileFormOptions = userProfileFormOptions;
+            this._userFollowService = userFollowService;
         }
 
         [Authorize]
@@ -49,6 +53,7 @@ namespace EventHub.Web.Controllers
 
 
         [Authorize]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateProfile(CreateUserProfileViewModel model,CancellationToken cancellation)
         {
@@ -122,6 +127,7 @@ namespace EventHub.Web.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Update(EditUserProfileViewModel model,CancellationToken cancellation)
         {
@@ -241,6 +247,49 @@ namespace EventHub.Web.Controllers
             return View(vm);
         }
 
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Follow(
+            string userId,
+            CancellationToken cancellationToken,
+            string? returnUrl)
+        {
+            var currUserId = GetUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            if (!await _userProfileService.ExistsAsync(currUserId, cancellationToken))
+                return RedirectToAction(nameof(CreateProfile));
+
+            if (!await _userProfileService.ExistsAsync(userId, cancellationToken))
+                return NotFound();
+
+            await _userFollowService.Follow(currUserId,userId,cancellationToken);
+            TempData["Success"] = "You are now following this user.";
+            return RedirectToAction(nameof(Public), new { userId = userId });
+
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Unfollow(
+            string userId,
+            CancellationToken cancellationToken,
+             string? returnUrl)
+        {
+            var currUserId = GetUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            await _userFollowService.Unfollow(currUserId, userId, cancellationToken);
+            return RedirectToAction(nameof(Public), new { userId = userId });
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Public(string userId,CancellationToken cancellation)
@@ -265,6 +314,9 @@ namespace EventHub.Web.Controllers
             }
 
             var model = _mapper.Map<PublicUserProfileViewModel>(publicUserProfile);
+            model.UserId = userId;
+            model.IsFollowing = await _userFollowService.IsFollowingAsync(currUserId,userId,cancellation);
+            model.IsOwnProfile = currUserId == userId;
 
             return View(model);
         }

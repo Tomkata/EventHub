@@ -36,6 +36,11 @@ namespace EventHub.Services.Services.Social
             if (followerId == followingId)
                 throw new CannotFollowYourselfException();
 
+
+            if (await _userFollowRepository.ExistAsync(followerId, followingId, cancellation))
+                return; //Ignore (idempotent)
+
+
             try
             {
                 var userFollow = new UserFollow()
@@ -69,7 +74,7 @@ namespace EventHub.Services.Services.Social
                 .RemoveAsync(followerId, followingId, cancellation);
         }
 
-        public async Task<PagedResult<SocialUserPreviewDto>> GetFollowingAsync(
+        public async Task<PagedResult<SocialUserPreviewDto>> GetFollingsAsync(
             string userId,
             int pageNumber,
             int pageSize,
@@ -94,6 +99,10 @@ namespace EventHub.Services.Services.Social
             .Select(x => x.Follower)
             .ProjectTo<SocialUserPreviewDto>(_mapper.ConfigurationProvider)
             .ToPagedResultAsync(pageNumber, pageSize, cancellation);
+
+
+        public async Task<bool> IsFollowingAsync(string followerId, string followingId, CancellationToken cancellation)
+    => await _userFollowRepository.ExistAsync(followerId, followingId, cancellation);
 
         private static bool IsUniqueViolation(DbUpdateException ex)
         {
