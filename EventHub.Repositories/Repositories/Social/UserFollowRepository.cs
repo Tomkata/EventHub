@@ -16,28 +16,38 @@ namespace EventHub.Repositories.Repositories.Social
             this._applicationDb = applicationDb;
         }
             
-        public async Task AddUserFollowAsync(UserFollow userFollow)
+        public async Task AddUserFollowAsync(UserFollow userFollow,CancellationToken cancellation)
         {
-            await _applicationDb.UserFollows.AddAsync(userFollow);
+            await _applicationDb.UserFollows.AddAsync(userFollow, cancellation);
         }
 
-        public async Task<bool> ExistAsync(string followerId, string followingId)
+        public async Task<bool> ExistAsync(string followerId, string followingId,CancellationToken cancellation)
         => await _applicationDb.UserFollows
             .AsNoTracking()
-            .AnyAsync(x => x.FollowerId == followerId && x.FollowingId == followingId);
+            .AnyAsync(x => x.FollowerId == followerId && x.FollowingId == followingId, cancellation);
 
         public IQueryable<UserFollow> GetAll()
         => _applicationDb.UserFollows
             .AsNoTracking();
 
-        public void RemoveUserFollowAsync(UserFollow userFollow)
+        public async Task<UserFollow?> GetAsync(string followerId, string followingId, CancellationToken cancellation)
+        => await _applicationDb.UserFollows
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.FollowerId == followerId &&
+            x.FollowingId == followingId,cancellation);
+
+        public async Task RemoveAsync(string followerId, string followingId, 
+            CancellationToken cancellationToken)
         {
-            _applicationDb.UserFollows.Remove(userFollow);
+            await _applicationDb.UserFollows
+                .Where(x => x.FollowerId == followerId && 
+                            x.FollowingId == followingId)
+                .ExecuteDeleteAsync(cancellationToken);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellation)
         {
-            await _applicationDb.SaveChangesAsync();
+            await _applicationDb.SaveChangesAsync(cancellation);
         }
     }
 }

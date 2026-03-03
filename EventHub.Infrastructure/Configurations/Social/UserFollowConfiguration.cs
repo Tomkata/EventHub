@@ -12,6 +12,9 @@
             builder.HasIndex(x => x.FollowerId);
             builder.HasIndex(x => x.FollowingId);
 
+            builder.HasIndex(x => new { x.FollowingId, x.CreatedAt });
+            builder.HasIndex(x => new { x.FollowerId, x.CreatedAt });
+
             builder.HasOne(x => x.Follower)
                 .WithMany(p => p.Following)
                 .HasForeignKey(x => x.FollowerId)

@@ -1,16 +1,19 @@
 ﻿
-using AutoMapper;
-using EventHub.Core.DTOs.Social;
-using EventHub.Core.Exceptions.Social;
-using EventHub.Core.Models.Social;
-using EventHub.Repositories.Interfaces;
-using EventHub.Repositories.Interfaces.Social;
-using EventHub.Services.Interfaces.Social;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace EventHub.Services.Services.Social
 {
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
+    using EventHub.Core.DTOs.Social;
+    using EventHub.Core.Exceptions.Social;
+    using EventHub.Core.Models.Social;
+    using EventHub.Repositories.Interfaces;
+    using EventHub.Repositories.Interfaces.Social;
+    using EventHub.Services.Common;
+    using EventHub.Services.Interfaces.Social;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
+
     public class UserFollowService : IUserFollowService
     {
         private readonly IUserFollowRepository _userFollowRepository;
@@ -33,17 +36,6 @@ namespace EventHub.Services.Services.Social
             if (followerId == followingId)
                 throw new CannotFollowYourselfException();
 
-            var followerHasProfile = await _userProfileRepository.ExistsAsync(followerId, cancellation);
-            var followingHasProfile = await _userProfileRepository.ExistsAsync(followingId, cancellation);
-
-            if (!followerHasProfile || !followingHasProfile)
-                throw new FollowingProfileNotCompleted(); 
-
-
-            if (await _userFollowRepository.ExistAsync(followerId, followingId, cancellation))
-                return; //Ignore (idempotent)
-
-
             try
             {
                 var userFollow = new UserFollow()
@@ -62,24 +54,46 @@ namespace EventHub.Services.Services.Social
                 // For idempotent Follow this is SUCCESS.
                 return;
             }
-         
         }
 
-        public Task Unfollow(string followerId, string followingId,
-           CancellationToken cancellation)
+
+        public async Task Unfollow(string followerId,
+                            string followingId,
+                            CancellationToken cancellation)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(followerId) ||
+                string.IsNullOrWhiteSpace(followingId))
+                throw new ArgumentException("Invalid user id.");
+
+            await _userFollowRepository
+                .RemoveAsync(followerId, followingId, cancellation);
         }
 
-        public Task<SocialUserPreviewDto> GetFollingsAsync(string userId, CancellationToken cancellation)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<PagedResult<SocialUserPreviewDto>> GetFollowingAsync(
+            string userId,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation
+            )
+        => await _userFollowRepository.GetAll()
+            .Where(x=>x.FollowerId ==userId)
+            .OrderBy(x => x.CreatedAt)
+            .Select(x => x.Following)
+            .ProjectTo<SocialUserPreviewDto>(_mapper.ConfigurationProvider)
+            .ToPagedResultAsync(pageNumber,pageSize,cancellation);
 
-        public Task<SocialUserPreviewDto> GetFollowersAsync(string userId, CancellationToken cancellation)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<PagedResult<SocialUserPreviewDto>> GetFollowersAsync(
+            string userId,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation
+            )
+      => await _userFollowRepository.GetAll()
+            .Where(x => x.FollowingId == userId)
+            .OrderBy(x => x.CreatedAt)
+            .Select(x => x.Follower)
+            .ProjectTo<SocialUserPreviewDto>(_mapper.ConfigurationProvider)
+            .ToPagedResultAsync(pageNumber, pageSize, cancellation);
 
         private static bool IsUniqueViolation(DbUpdateException ex)
         {

@@ -8,6 +8,5 @@ namespace EventHub.Core.DTOs.Social
         public string ProfileImagePath { get; set; } = null!;
 
         public string Location { get; set; } = null!;
-        public bool IsFollowedByCurrentUser { get; set; }
-    }
+    }       
 }

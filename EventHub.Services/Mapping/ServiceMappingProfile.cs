@@ -6,6 +6,7 @@ using EventHub.Core.DTOs.Event;
 using EventHub.Core.DTOs.Interest;
 using EventHub.Core.DTOs.Location;
 using EventHub.Core.DTOs.Organizer;
+using EventHub.Core.DTOs.Social;
 using EventHub.Core.DTOs.UserProfile;
 using EventHub.Core.Models;
 
@@ -49,8 +50,10 @@ namespace EventHub.Services.Mapping
             CreateMap<OrganizerRequest, PendingRequestForOrganizerDto>();
 
             CreateMap<CreateUserProfileDto, UserProfile>()
-                .ForMember(dest => dest.ProfileImagePath, opt => opt.MapFrom(x => x.ImagePath))
-                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.PhoneNumber));
+                .ForMember(dest => dest.ProfileImagePath, 
+                opt => opt.MapFrom(x => x.ImagePath))
+                 .ForMember(dest => dest.Phone, 
+                 opt => opt.MapFrom(x => x.PhoneNumber));
 
             CreateMap<Location, DropdownOptionModel>()
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.City));
@@ -61,6 +64,15 @@ namespace EventHub.Services.Mapping
 
             CreateMap<OrganizerRequest, OrganizerRequestDto>();
 
+            CreateMap<UserProfile, SocialUserPreviewDto>()
+             .ForMember(dest => dest.UserId,
+                 opt => opt.MapFrom(src => src.UserId))
+             .ForMember(dest => dest.DisplayName,
+                 opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+             .ForMember(dest => dest.Location,
+                 opt => opt.MapFrom(src => src.Location.City))
+             .ForMember(dest => dest.ProfileImagePath,
+                 opt => opt.MapFrom(src => src.ProfileImagePath));
 
         }
     }

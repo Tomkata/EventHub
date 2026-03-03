@@ -1,15 +1,27 @@
 ﻿
 using EventHub.Core.DTOs.Social;
+using EventHub.Core.Models.Social;
+using EventHub.Services.Common;
 
 namespace EventHub.Services.Interfaces.Social
 {
     public interface IUserFollowService
     {
-        public Task Follow(string followerId, string followingId);
-        public Task Unfollow(string followerId, string followingId);
+        public Task Follow(string followerId, string followingId,CancellationToken cancellation);
+        public Task Unfollow(string followerId, string followingId, CancellationToken cancellation);
 
-        public Task<SocialUserPreviewDto> GetFollowersAsync(string userId);
-        public Task<SocialUserPreviewDto> GetFollingsAsync(string userId);
+        public Task<PagedResult<SocialUserPreviewDto>> GetFollowersAsync(
+            string userId, 
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation
+            );
+
+        public Task<PagedResult<SocialUserPreviewDto>> GetFollowingAsync(
+            string userId,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellation);
 
     }
 }

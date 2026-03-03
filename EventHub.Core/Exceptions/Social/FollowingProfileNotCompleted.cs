@@ -1,9 +1,9 @@
 ﻿
 
-using EventHub.Core.AppException;
 
 namespace EventHub.Core.Exceptions.Social
 {
+using EventHub.Core.AppException;
     public class FollowingProfileNotCompleted : NotFoundException
     {
         public FollowingProfileNotCompleted() 

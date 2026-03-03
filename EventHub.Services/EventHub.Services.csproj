@@ -19,9 +19,4 @@
 	  <ProjectReference Include="..\EventHub.Repositories\EventHub.Repositories.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Interfaces\Social\" />
-	  <Folder Include="Services\Social\" />
-	</ItemGroup>
-
 </Project>

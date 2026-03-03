@@ -238,7 +238,7 @@ namespace EventHub.Infrastructure.Migrations
                     b.ToTable("OrganizerRequests");
                 });
 
-            modelBuilder.Entity("EventHub.Core.Models.UserFollow", b =>
+            modelBuilder.Entity("EventHub.Core.Models.Social.UserFollow", b =>
                 {
                     b.Property<string>("FollowerId")
                         .HasColumnType("nvarchar(450)");
@@ -254,6 +254,10 @@ namespace EventHub.Infrastructure.Migrations
                     b.HasIndex("FollowerId");
 
                     b.HasIndex("FollowingId");
+
+                    b.HasIndex("FollowerId", "CreatedAt");
+
+                    b.HasIndex("FollowingId", "CreatedAt");
 
                     b.ToTable("UserFollows");
                 });
@@ -574,7 +578,7 @@ namespace EventHub.Infrastructure.Migrations
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("EventHub.Core.Models.UserFollow", b =>
+            modelBuilder.Entity("EventHub.Core.Models.Social.UserFollow", b =>
                 {
                     b.HasOne("EventHub.Core.Models.UserProfile", "Follower")
                         .WithMany("Following")
