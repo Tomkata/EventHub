@@ -1,0 +1,77 @@
+﻿@using EventHub.Services.Common
+@using EventHub.Web.ViewModels.Social
+@using EventHub.Web.ViewModels.Common
+@model PagedResult<SocialUserPreviewViewModel>
+
+@if (!Model.Data.Any())
+{
+    <div class="text-center py-5">
+        <div class="mb-3" style="font-size: 4rem;">👥</div>
+        <h4 class="fw-bold text-muted">Nobody here yet</h4>
+        <p class="text-muted">This list is currently empty.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var user in Model.Data)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 social-card">
+                    <div class="card-body p-4 d-flex align-items-center gap-3">
+
+                        @if (!string.IsNullOrEmpty(user.ProfileImagePath))
+                        {
+                            <img src="/@user.ProfileImagePath"
+                                 class="rounded-circle border border-2 flex-shrink-0"
+                                 style="width: 60px; height: 60px; object-fit: cover; border-color: #6366f1 !important;" />
+                        }
+                        else
+                        {
+                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                 style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #8b5cf6); font-size: 1.5rem;">
+                                👤
+                            </div>
+                        }
+
+                        <div class="flex-grow-1 min-w-0">
+                            <h6 class="fw-bold mb-0 text-truncate">@user.DisplayName</h6>
+                            @if (!string.IsNullOrEmpty(user.Location))
+                            {
+                                <p class="text-muted small mb-2 text-truncate">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>@user.Location
+                                </p>
+                            }
+                            <a asp-controller="UserProfile"
+                               asp-action="Public"
+                               asp-route-userId="@user.UserId"
+                                  asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
+                               class="btn btn-sm px-3 py-1 fw-semibold"
+                               style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 8px; font-size: 0.8rem;">
+                                View Profile>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @await Html.PartialAsync("_Pagination", new PaginationViewModel
+    {
+        CurrentPageNumber = Model.CurrentPageNumber,
+        TotalRecords = Model.TotalRecords,
+        TotalPages = Model.TotalPages
+    })
+}
+
+<style>
+    .social-card {
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .social-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15) !important;
+    }
+</style>

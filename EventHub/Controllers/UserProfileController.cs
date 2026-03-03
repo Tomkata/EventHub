@@ -3,12 +3,15 @@
 namespace EventHub.Web.Controllers
 {
     using AutoMapper;
+    using EventHub.Core.DTOs.Social;
     using EventHub.Core.DTOs.UserProfile;
     using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
+    using EventHub.Services.Common;
     using EventHub.Services.Interfaces;
     using EventHub.Services.Interfaces.Social;
     using EventHub.Web.ViewModels.Common;
+    using EventHub.Web.ViewModels.Social;
     using EventHub.Web.ViewModels.UserProfile;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -292,7 +295,66 @@ namespace EventHub.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Public(string userId,CancellationToken cancellation)
+        public async Task<IActionResult> MyFollowers(
+            CancellationToken cancellation,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            if (!await _userProfileService.ExistsAsync(userId,cancellation))
+                return RedirectToAction(nameof(CreateProfile));
+
+            var dtos = await _userFollowService.GetFollowersAsync(userId,pageNumber,pageSize,cancellation);
+
+            var followersModel = _mapper.Map<List<SocialUserPreviewViewModel>>(dtos.Data);
+
+            var paged = new PagedResult<SocialUserPreviewViewModel>
+            {
+                Data = followersModel,
+                PageSize = pageSize,
+                CurrentPageNumber = pageNumber,
+                TotalRecords = followersModel.Count
+            };
+
+            return View(paged);
+        }
+
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> MyFollowing(
+            CancellationToken cancellation,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            if (!await _userProfileService.ExistsAsync(userId, cancellation))
+                return RedirectToAction(nameof(CreateProfile));
+
+            var dtos = await _userFollowService.GetFollingsAsync(userId, pageNumber, pageSize, cancellation);
+
+            var followersModel = _mapper.Map<List<SocialUserPreviewViewModel>>(dtos.Data);
+
+            var paged = new PagedResult<SocialUserPreviewViewModel>
+            {
+                Data = followersModel,
+                PageSize = pageSize,
+                CurrentPageNumber = pageNumber,
+                TotalRecords = followersModel.Count
+            };
+
+            return View(paged);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Public(string userId, string? returnUrl, CancellationToken cancellation)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 return BadRequest();
@@ -317,6 +379,7 @@ namespace EventHub.Web.Controllers
             model.UserId = userId;
             model.IsFollowing = await _userFollowService.IsFollowingAsync(currUserId,userId,cancellation);
             model.IsOwnProfile = currUserId == userId;
+            model.ReturnUrl = returnUrl;
 
             return View(model);
         }

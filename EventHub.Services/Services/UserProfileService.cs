@@ -90,6 +90,10 @@ namespace EventHub.Services.Services
                     Location = x.Location.City,
                     PhoneNumber = x.Phone,
                     ProfileImagePath = x.ProfileImagePath,
+                    
+                    FollowersCount = x.Followers.Count(),
+                    FollowingCount = x.Following.Count(),
+
                     Interests =
                          x.UserProfileInterests.Select(x => x.Interest.InterestName)
                          .ToList()

@@ -90,6 +90,7 @@ namespace EventHub.Web.Controllers
                 }
             };
 
+
             return View(model);
 
         }

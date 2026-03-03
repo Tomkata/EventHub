@@ -1,0 +1,26 @@
+﻿@using EventHub.Services.Common
+@using EventHub.Web.ViewModels.Social
+@using EventHub.Web.ViewModels.Common
+@model PagedResult<SocialUserPreviewViewModel>
+
+@{
+    ViewData["Title"] = "My Followers";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-people-fill me-2 text-primary"></i>My Followers
+            </h2>
+            <p class="text-muted mb-0">
+                @Model.TotalRecords follower@(Model.TotalRecords == 1 ? "" : "s")
+            </p>
+        </div>
+        <a asp-controller="UserProfile" asp-action="Details" class="btn btn-outline-secondary rounded-3 px-4">
+            <i class="bi bi-arrow-left me-1"></i> Back to Profile
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_SocialUserList", Model)
+</div>

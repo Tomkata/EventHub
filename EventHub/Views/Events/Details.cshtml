@@ -119,6 +119,7 @@
                                             <a asp-controller="UserProfile"
                                                    asp-action="Public"
                                                    asp-route-userId="@participant.UserId"
+                                                   asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
                                                    class="attendee-name">
                                                 @participant.DisplayName
                                             </a>

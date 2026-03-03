@@ -6,9 +6,11 @@ namespace EventHub.Web.Mappings
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.DTOs.Organizer;
+    using EventHub.Core.DTOs.Social;
     using EventHub.Core.DTOs.UserProfile;
     using EventHub.Web.ViewModels.Events;
     using EventHub.Web.ViewModels.Organizers;
+    using EventHub.Web.ViewModels.Social;
     using EventHub.Web.ViewModels.UserProfile;
 
     public class MappingProfile : Profile
@@ -99,6 +101,8 @@ namespace EventHub.Web.Mappings
             CreateMap<OrganizerRequestDto, AllRequestsViewModel>();
 
             CreateMap<PublicUserProfileDto, PublicUserProfileViewModel>();
+
+            CreateMap<SocialUserPreviewDto, SocialUserPreviewViewModel>();
         }
     }
 }
