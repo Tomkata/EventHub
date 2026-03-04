@@ -1,7 +1,7 @@
 ﻿
 namespace EventHub.Infrastructure.Data.Seed
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Common;
     using System.Text.Json;
 
     public static class DataSeeder

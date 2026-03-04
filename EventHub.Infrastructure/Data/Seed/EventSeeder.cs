@@ -1,7 +1,7 @@
 ﻿
 namespace EventHub.Infrastructure.Data.Seed
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Identity;
     using Microsoft.AspNetCore.Identity;

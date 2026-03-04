@@ -2,7 +2,7 @@
 
 namespace EventHub.Infrastructure.Configurations
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

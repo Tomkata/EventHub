@@ -1,7 +1,6 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace EventHub.Core.Models
+namespace EventHub.Core.Models.Users
 {
     public class UserProfileInterest
     {

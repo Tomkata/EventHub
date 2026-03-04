@@ -1,6 +1,7 @@
 ﻿namespace EventHub.Infrastructure.QueryExtensions
 {
-using EventHub.Core.Models;
+    using EventHub.Core.Models.Events;
+
     public static class EventQueryExtensions
     {
         public static IQueryable<Event> FilterByTitle(

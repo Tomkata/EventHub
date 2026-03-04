@@ -18,6 +18,8 @@
             var http = context.HttpContext;
             var controller = context.RouteData.Values["controller"]?.ToString();
             var returnUrl = context.HttpContext.Request.Query["returnUrl"].ToString();
+            if (string.IsNullOrEmpty(returnUrl))
+                returnUrl = context.HttpContext.Request.Form["returnUrl"].ToString();
 
             var tempDataFactory = http.RequestServices.GetRequiredService<ITempDataDictionaryFactory>();
             var tempData = tempDataFactory.GetTempData(http);
@@ -27,14 +29,18 @@
             //Redirect Vulnerability
             var urlHelperFactory = http.RequestServices.GetRequiredService<IUrlHelperFactory>();
             var urlHelper = urlHelperFactory.GetUrlHelper(context);
-            
+
             if (!string.IsNullOrEmpty(returnUrl) && urlHelper.IsLocalUrl(returnUrl))
             {
                 context.Result = new RedirectResult(returnUrl);
             }
             else
             {
-                context.Result = new RedirectToActionResult("Index", controller, null);
+                var referer = http.Request.Headers["Referer"].ToString();
+                if (!string.IsNullOrEmpty(referer) && urlHelper.IsLocalUrl(referer))
+                    context.Result = new RedirectResult(referer);
+                else
+                    context.Result = new RedirectToActionResult("Index", "Events", null);
             }
 
             context.ExceptionHandled = true;

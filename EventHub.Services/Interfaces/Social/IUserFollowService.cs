@@ -1,6 +1,5 @@
 ﻿
 using EventHub.Core.DTOs.Social;
-using EventHub.Core.Models.Social;
 using EventHub.Services.Common;
 
 namespace EventHub.Services.Interfaces.Social

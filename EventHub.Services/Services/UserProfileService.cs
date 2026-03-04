@@ -7,6 +7,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.UserProfile;
     using EventHub.Core.Models;
+    using EventHub.Core.Models.Users;
     using EventHub.Repositories.Interfaces;
     using EventHub.Repositories.Repositories;
     using EventHub.Services.Interfaces;

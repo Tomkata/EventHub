@@ -3,8 +3,8 @@ namespace EventHub.Repositories.Interfaces
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
-    using EventHub.Core.Models;
-    
+    using EventHub.Core.Models.Events;
+
     public interface IEventRepository
     {
         public Task<Event?> GetByIdAsync(Guid id, CancellationToken cancellation);

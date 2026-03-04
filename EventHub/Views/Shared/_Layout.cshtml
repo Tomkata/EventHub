@@ -16,7 +16,10 @@
 
 </head>
 <body>
-   
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm modern-navbar">
             <div class="container-fluid">

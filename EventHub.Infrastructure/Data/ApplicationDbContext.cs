@@ -3,6 +3,7 @@
 namespace EventHub.Infrastructure.Data
 {
     using EventHub.Core.Models;
+    using EventHub.Core.Models.Organizer;
     using EventHub.Core.Models.Social;
     using EventHub.Infrastructure.Configurations;
     using EventHub.Infrastructure.Configurations.Social;

@@ -3,7 +3,7 @@
 namespace EventHub.Repositories.Repositories
 {
     using EventHub.Core.Enums.Organizer;
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Organizer;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.EntityFrameworkCore;

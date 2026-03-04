@@ -1,4 +1,5 @@
 ﻿using EventHub.Core.Models;
+using EventHub.Core.Models.Users;
 
 
 namespace EventHub.Repositories.Interfaces

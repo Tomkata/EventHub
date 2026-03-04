@@ -3,7 +3,7 @@ namespace EventHub.Repositories.Repositories
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.Data;
     using EventHub.Repositories.Interfaces;
     using Microsoft.Data.SqlClient;

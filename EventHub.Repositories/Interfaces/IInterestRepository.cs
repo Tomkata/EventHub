@@ -1,7 +1,7 @@
 ﻿
 namespace EventHub.Repositories.Interfaces
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Common;
 
     public interface IInterestRepository
     {

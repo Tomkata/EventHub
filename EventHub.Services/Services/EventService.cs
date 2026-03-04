@@ -9,7 +9,7 @@
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Exceptions.UserProfile;
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.QueryExtensions;
     using EventHub.Repositories.Interfaces;
     using EventHub.Services.Common;

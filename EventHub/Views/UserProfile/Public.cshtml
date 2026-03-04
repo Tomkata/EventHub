@@ -39,6 +39,7 @@
                     <form asp-controller="UserProfile"
                           asp-action="Unfollow"
                           asp-route-userId="@Model.UserId"
+                          asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
                           method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-light fw-semibold px-4">
@@ -51,6 +52,7 @@
                     <form asp-controller="UserProfile"
                           asp-action="Follow"
                           asp-route-userId="@Model.UserId"
+                          asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
                           method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-light fw-semibold px-4">

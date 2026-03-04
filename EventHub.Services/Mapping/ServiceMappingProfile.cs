@@ -9,6 +9,7 @@ using EventHub.Core.DTOs.Organizer;
 using EventHub.Core.DTOs.Social;
 using EventHub.Core.DTOs.UserProfile;
 using EventHub.Core.Models;
+using EventHub.Core.Models.Organizer;
 
 namespace EventHub.Services.Mapping
 {
