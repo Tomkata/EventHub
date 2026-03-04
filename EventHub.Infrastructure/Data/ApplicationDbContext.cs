@@ -2,11 +2,18 @@
 
 namespace EventHub.Infrastructure.Data
 {
-    using EventHub.Core.Models;
+    using EventHub.Core.Models.Common;
+    using EventHub.Core.Models.Events;
+    using EventHub.Core.Models.Messaging;
     using EventHub.Core.Models.Organizer;
     using EventHub.Core.Models.Social;
-    using EventHub.Infrastructure.Configurations;
+    using EventHub.Core.Models.Users;
+    using EventHub.Infrastructure.Configurations.Common;
+    using EventHub.Infrastructure.Configurations.Event;
+    using EventHub.Infrastructure.Configurations.Messaging;
+    using EventHub.Infrastructure.Configurations.Organizer;
     using EventHub.Infrastructure.Configurations.Social;
+    using EventHub.Infrastructure.Configurations.User;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +36,10 @@ namespace EventHub.Infrastructure.Data
         public virtual DbSet<UserProfileInterest> UserProfileInterests { get; set; }
         public virtual DbSet<UserFollow>  UserFollows { get; set; }
 
+        public virtual DbSet<Message> Messages { get; set; }
+
+        public virtual DbSet<Conversation> Conversations { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,6 +55,8 @@ namespace EventHub.Infrastructure.Data
             builder.ApplyConfiguration(new UserProfileInterestConfiguration());
             builder.ApplyConfiguration(new UserProfileConfiguration());
             builder.ApplyConfiguration(new UserFollowConfiguration());
+            builder.ApplyConfiguration(new MessageConfiguration());
+            builder.ApplyConfiguration(new ConversationConfiguration());
 
             base.OnModelCreating(builder);
         }

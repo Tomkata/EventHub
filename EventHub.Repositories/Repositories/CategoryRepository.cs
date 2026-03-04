@@ -1,4 +1,4 @@
-﻿using EventHub.Core.Models.Common;
+﻿using EventHub.Core.Models.Events;
 using EventHub.Infrastructure.Data;
 using EventHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

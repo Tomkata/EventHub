@@ -1,7 +1,7 @@
-﻿
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Users
 {
     using EventHub.Core.Common.Validation.UserProfile;
+    using EventHub.Core.Models.Common;
     using EventHub.Core.Models.Social;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;

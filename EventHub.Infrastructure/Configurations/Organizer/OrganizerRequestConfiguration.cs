@@ -1,5 +1,4 @@
-﻿
-namespace EventHub.Infrastructure.Configurations
+﻿namespace EventHub.Infrastructure.Configurations.Organizer
 {
     using EventHub.Core.Models.Organizer;
     using Microsoft.EntityFrameworkCore;

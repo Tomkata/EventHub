@@ -1,7 +1,7 @@
 ﻿
 namespace EventHub.Repositories.Interfaces
 {
-    using EventHub.Core.Models.Common;
+    using EventHub.Core.Models.Events;
 
     public interface ICategoryRepository
     {

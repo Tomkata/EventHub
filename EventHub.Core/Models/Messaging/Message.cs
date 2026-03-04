@@ -13,7 +13,6 @@ namespace EventHub.Core.Models.Messaging
         [Key]
         public Guid Id { get; set; }
 
-        [MaxLength(2000)]
         [Required]
         public string Content { get; set; } = null!;
         public bool IsRead { get; set; }

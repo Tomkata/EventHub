@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EventHub.Core.Models.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventHub.Core.Models.Users
 {

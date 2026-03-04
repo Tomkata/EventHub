@@ -14,6 +14,7 @@ namespace EventHub.Services.Services
     using EventHub.Core.Exceptions.Oranizer.ForReject;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Models;
+    using EventHub.Core.Models.Organizer;
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Identity;
     using EventHub.Repositories.Interfaces;

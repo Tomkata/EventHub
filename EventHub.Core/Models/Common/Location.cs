@@ -1,7 +1,6 @@
-﻿
-
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Common
 {
+    using EventHub.Core.Models.Events;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
 

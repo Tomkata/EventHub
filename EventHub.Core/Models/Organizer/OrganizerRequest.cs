@@ -1,17 +1,12 @@
-﻿
-
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Organizer
 {
     using EventHub.Core.Enums.Organizer;
     using System.ComponentModel.DataAnnotations;
     using EventHub.Core.Common.Validation.Organizer;
+    using EventHub.Core.Models.Common;
 
-    public class OrganizerRequest
+    public class OrganizerRequest : BaseModel
     {
-        public OrganizerRequest()
-        {
-            this.CreatedAt = DateTime.UtcNow;
-        }
 
         [Key]
         public Guid Id { get; set; }
@@ -23,7 +18,6 @@ namespace EventHub.Core.Models
         [EmailAddress]
         [Required]
         public string Email { get; set; } = null!;
-        public DateTime CreatedAt { get; set; }
         public DateTime? LastRejectedAt { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿
+﻿using EventHub.Core.Models.Users;
 
-namespace EventHub.Core.Models
+namespace EventHub.Core.Models.Common
 {
     public class Interest
     {

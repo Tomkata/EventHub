@@ -1,4 +1,4 @@
-﻿namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Users
 {
     public class UserBasicInfo
     {

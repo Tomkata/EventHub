@@ -1,6 +1,4 @@
-﻿
-
-namespace EventHub.Infrastructure.Configurations
+﻿namespace EventHub.Infrastructure.Configurations.User
 {
     using EventHub.Core.Models.Users;
     using EventHub.Infrastructure.Identity;

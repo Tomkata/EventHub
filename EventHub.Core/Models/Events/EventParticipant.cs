@@ -1,8 +1,9 @@
-﻿using EventHub.Core.Models.Common;
-using EventHub.Core.Models.Users;
+﻿
 
 namespace EventHub.Core.Models.Events
 {
+    using EventHub.Core.Models.Common;
+    using EventHub.Core.Models.Users;
     public class EventParticipant : BaseModel
     {
         
