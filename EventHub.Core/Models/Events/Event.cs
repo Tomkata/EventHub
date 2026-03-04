@@ -1,20 +1,19 @@
-﻿
-
-namespace EventHub.Core.Models
+﻿namespace EventHub.Core.Models.Events
 {
     using EventHub.Core.Common.Validation;
     using EventHub.Core.Common.Validation.Messages;
     using EventHub.Core.EventValidation;
+    using EventHub.Core.Models.Common;
+    using EventHub.Core.Models.Users;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public class Event 
+    public class Event  : BaseModel
     {
         public Event()
         {
             this.Id = Guid.NewGuid();
-            this.CreatedAt = DateTime.UtcNow;
             this.EventParticipants = new HashSet<EventParticipant>();
         }
 
@@ -40,13 +39,6 @@ namespace EventHub.Core.Models
 
         [Comment("The Description of the Event")]
         public string? Description { get; set; }
-
-
-
-        [Comment("The date when Event was created")]
-        [Required]      
-        public DateTime CreatedAt { get; set; }
-
 
 
         [Comment("The start date of the Event")]
