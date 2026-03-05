@@ -4,7 +4,7 @@ namespace EventHub.Web.Controllers
 {
     using AutoMapper;
     using EventHub.Core.DTOs.Organizer;
-    using EventHub.Services.Interfaces;
+    using EventHub.Services.Interfaces.Organizer;
     using EventHub.Web.ViewModels.Organizers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

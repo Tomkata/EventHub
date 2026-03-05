@@ -6,7 +6,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.Enums.Organizer;
     using EventHub.Infrastructure;
     using EventHub.Services.Common;
-    using EventHub.Services.Interfaces;
+    using EventHub.Services.Interfaces.Organizer;
     using EventHub.Web.ViewModels.Organizers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

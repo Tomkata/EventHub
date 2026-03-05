@@ -8,8 +8,10 @@ namespace EventHub.Web.Controllers
     using EventHub.Core.enums.Image;
     using EventHub.Core.Enums;
     using EventHub.Services.Common;
-    using EventHub.Services.Interfaces;
+    using EventHub.Services.Interfaces.Common;
+    using EventHub.Services.Interfaces.Event;
     using EventHub.Services.Interfaces.Social;
+    using EventHub.Services.Interfaces.User;
     using EventHub.Web.ViewModels.Common;
     using EventHub.Web.ViewModels.Social;
     using EventHub.Web.ViewModels.UserProfile;

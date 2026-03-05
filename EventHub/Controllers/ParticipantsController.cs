@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EventHub.Services.Common;
-using EventHub.Services.Interfaces;
+using EventHub.Services.Interfaces.Event;
 using EventHub.Web.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

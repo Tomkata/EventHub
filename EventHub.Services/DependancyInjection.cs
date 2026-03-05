@@ -2,8 +2,8 @@
 
 namespace EventHub.Services
 {
-    using EventHub.Repositories.Repositories;
-    using EventHub.Services.Services;
+    using EventHub.Repositories.Repositories.Event;
+    using EventHub.Services.Services.Event;
     using Microsoft.Extensions.DependencyInjection;
     public static class DependencyInjection
     {

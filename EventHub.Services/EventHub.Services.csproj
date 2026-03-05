@@ -19,4 +19,12 @@
 	  <ProjectReference Include="..\EventHub.Repositories\EventHub.Repositories.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Services\Common\" />
+	  <Folder Include="Services\Event\" />
+	  <Folder Include="Services\Messaging\" />
+	  <Folder Include="Services\Organizer\" />
+	  <Folder Include="Services\User\" />
+	</ItemGroup>
+
 </Project>

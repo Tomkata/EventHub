@@ -1,6 +1,6 @@
 ﻿namespace EventHub.Web.ViewComponents
-{   
-    using EventHub.Services.Interfaces;
+{
+    using EventHub.Services.Interfaces.User;
     using EventHub.Web.ViewModels.UserProfile;
     using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;

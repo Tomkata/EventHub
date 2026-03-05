@@ -7,8 +7,8 @@ namespace EventHub.Services.Services.Social
     using EventHub.Core.DTOs.Social;
     using EventHub.Core.Exceptions.Social;
     using EventHub.Core.Models.Social;
-    using EventHub.Repositories.Interfaces;
     using EventHub.Repositories.Interfaces.Social;
+    using EventHub.Repositories.Interfaces.User;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces.Social;
     using Microsoft.Data.SqlClient;
