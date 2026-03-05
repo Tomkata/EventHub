@@ -12,7 +12,7 @@
     using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.QueryExtensions;
     using EventHub.Repositories.Interfaces.Common;
-    using EventHub.Repositories.Interfaces.Event;
+    using EventHub.Repositories.Interfaces.Events;
     using EventHub.Repositories.Interfaces.User;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces.Event;

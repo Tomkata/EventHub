@@ -1,8 +1,4 @@
-﻿
-
-
-
-namespace EventHub.Services.Services
+﻿namespace EventHub.Services.Services.Common
 {
     using AutoMapper;
     using AutoMapper.QueryableExtensions;

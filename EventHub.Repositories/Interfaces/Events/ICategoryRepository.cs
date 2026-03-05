@@ -1,4 +1,4 @@
-﻿namespace EventHub.Repositories.Interfaces.Event
+﻿namespace EventHub.Repositories.Interfaces.Events
 {
     using EventHub.Core.Models.Events;
 

@@ -32,6 +32,11 @@ namespace EventHub.Repositories.Repositories.Messaging
             .AsNoTracking()
             .AsQueryable();
 
+        public IQueryable<Conversation>GetAllByUser(string userId)
+       => _applicationDbContext.Conversations
+            .AsNoTracking()
+            .Where(x => x.User1Id == userId || x.User2Id == userId);
+
         public async Task<Conversation?> GetAsync(Guid id, CancellationToken cancellationToken)
         => await _applicationDbContext.Conversations
             .AsNoTracking()

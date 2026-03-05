@@ -3,7 +3,7 @@
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
     using EventHub.Core.DTOs.Category;
-    using EventHub.Repositories.Interfaces.Event;
+    using EventHub.Repositories.Interfaces.Events;
     using EventHub.Services.Interfaces.Event;
     using Microsoft.EntityFrameworkCore;
 

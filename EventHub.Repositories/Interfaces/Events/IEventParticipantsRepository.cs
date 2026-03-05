@@ -1,8 +1,8 @@
-﻿using EventHub.Core.Models.Events;
-using EventHub.Core.Models.Users;
+﻿using EventHub.Core.Models.Users;
+using EventHub.Core.Models.Events;
 
 
-namespace EventHub.Repositories.Interfaces.Event
+namespace EventHub.Repositories.Interfaces.Events
 {
     /// <summary>
     /// The repository return read only model. This ensure not dependancy of Application user.

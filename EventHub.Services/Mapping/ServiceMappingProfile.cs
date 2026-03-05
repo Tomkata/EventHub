@@ -5,11 +5,13 @@ using EventHub.Core.DTOs.Category;
 using EventHub.Core.DTOs.Event;
 using EventHub.Core.DTOs.Interest;
 using EventHub.Core.DTOs.Location;
+using EventHub.Core.DTOs.Messaging;
 using EventHub.Core.DTOs.Organizer;
 using EventHub.Core.DTOs.Social;
 using EventHub.Core.DTOs.UserProfile;
 using EventHub.Core.Models.Common;
 using EventHub.Core.Models.Events;
+using EventHub.Core.Models.Messaging;
 using EventHub.Core.Models.Organizer;
 using EventHub.Core.Models.Users;
 
@@ -76,6 +78,7 @@ namespace EventHub.Services.Mapping
                  opt => opt.MapFrom(src => src.Location.City))
              .ForMember(dest => dest.ProfileImagePath,
                  opt => opt.MapFrom(src => src.ProfileImagePath));
+
 
         }
     }

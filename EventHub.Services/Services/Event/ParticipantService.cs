@@ -1,25 +1,21 @@
-﻿
-
-namespace EventHub.Services.Services
+﻿namespace EventHub.Services.Services.Event
 {
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
     using EventHub.Core.DTOs;
     using EventHub.Core.Exceptions.Event.ForJoin;
     using EventHub.Core.Exceptions.Event.ForLeft;
-    using EventHub.Core.Exceptions.Oranizer.ForApply;
     using EventHub.Core.Exceptions.User;
     using EventHub.Infrastructure;
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Identity;
-    using EventHub.Repositories.Interfaces.Event;
+    using EventHub.Repositories.Interfaces.Events;
     using EventHub.Repositories.Interfaces.User;
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces.Event;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata;
 
     public class ParticipantService : IParticipantService
     {

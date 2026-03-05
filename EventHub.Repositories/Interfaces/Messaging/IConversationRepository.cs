@@ -6,22 +6,24 @@ namespace EventHub.Repositories.Interfaces.Messaging
     public interface IConversationRepository
     {
         public IQueryable<Conversation> GetAll();
-        public Task<Conversation?> GetAsync(Guid id,CancellationToken cancellationToken);
+        public Task<Conversation?> GetAsync(Guid id, CancellationToken cancellationToken);
 
-        Task<Conversation?> GetByUsersAsync(
+        public Task<Conversation?> GetByUsersAsync(
       string user1Id,
       string user2Id,
       CancellationToken cancellationToken);
 
-        Task AddAsync(Conversation conversation, CancellationToken cancellationToken);
+        public IQueryable<Conversation> GetAllByUser(string userId);
 
-        Task<bool> ExistsBetweenUsersAsync(
+        public Task AddAsync(Conversation conversation, CancellationToken cancellationToken);
+
+        public Task<bool> ExistsBetweenUsersAsync(
             string user1Id,
             string user2Id,
             CancellationToken cancellationToken);
 
-        Task<bool> IsUserParticipantAsync(Guid conversationId,string userId);
+        public Task<bool> IsUserParticipantAsync(Guid conversationId, string userId);
 
-        Task SaveChangesAsync(CancellationToken cancellationToken);
+        public Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using EventHub.Core.Models.Events;
 using EventHub.Infrastructure.Data;
-using EventHub.Repositories.Interfaces.Event;
+using EventHub.Repositories.Interfaces.Events;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventHub.Repositories.Repositories.Event
+namespace EventHub.Repositories.Repositories.Events
 {
     public class CategoryRepository : ICategoryRepository
     {

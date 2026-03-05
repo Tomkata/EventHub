@@ -1,6 +1,4 @@
-﻿
-
-namespace EventHub.Services.Services
+﻿namespace EventHub.Services.Services.Event
 {
     using EventHub.Core.Common;
     using EventHub.Core.DTOs;

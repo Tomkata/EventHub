@@ -1,5 +1,4 @@
-﻿
-namespace EventHub.Services.Interfaces
+﻿namespace EventHub.Services.Interfaces.Event
 {
     using EventHub.Core.DTOs.Category;
 

@@ -1,10 +1,10 @@
-﻿namespace EventHub.Repositories.Repositories.Event
+﻿namespace EventHub.Repositories.Repositories.Events
 {
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
     using EventHub.Core.Models.Events;
     using EventHub.Infrastructure.Data;
-    using EventHub.Repositories.Interfaces.Event;
+    using EventHub.Repositories.Interfaces.Events;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
 
