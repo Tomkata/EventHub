@@ -35,7 +35,8 @@ namespace EventHub.Repositories.Repositories.Messaging
         public IQueryable<Conversation>GetAllByUser(string userId)
        => _applicationDbContext.Conversations
             .AsNoTracking()
-            .Where(x => x.User1Id == userId || x.User2Id == userId);
+            .Where(x => x.User1Id == userId || x.User2Id == userId)
+            .OrderBy(x=>x.CreatedAt);
 
         public async Task<Conversation?> GetAsync(Guid id, CancellationToken cancellationToken)
         => await _applicationDbContext.Conversations

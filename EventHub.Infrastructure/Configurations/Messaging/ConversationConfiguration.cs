@@ -15,6 +15,8 @@ namespace EventHub.Infrastructure.Configurations.Messaging
             builder.HasIndex(x => new {x.User1Id,x.User2Id })
                 .IsUnique();
 
+            builder.HasIndex(x => new { x.Id, x.CreatedAt });
+
 
             builder.HasOne(x => x.User1)
                 .WithMany()

@@ -21,6 +21,8 @@ namespace EventHub.Infrastructure.Configurations.Messaging
 
             builder.HasIndex(x => new { x.ConversationId, x.CreatedAt });
 
+            builder.HasIndex(x => new { x.ConversationId, x.CreatedAt, x.Id });
+
             builder.HasOne(x => x.Sender)
                 .WithMany()
                 .HasForeignKey(x => x.SenderId);

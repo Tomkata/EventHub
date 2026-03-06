@@ -72,7 +72,7 @@ namespace EventHub.Services.Services.Messaging
 
                 return getOrCreateConversation.Id;
 
-            }
+            }   
             catch (DbUpdateException ex)
             when (IsUniqueViolation(ex))
             {

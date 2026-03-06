@@ -8,6 +8,6 @@ namespace EventHub.Core.DTOs.Messaging
         public string OtherUserName { get; set; } = null!;
         public string OtherUserProfileImagePath { get; set; } = null!;
 
-    }
+    
     }
 }
