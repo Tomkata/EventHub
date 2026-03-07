@@ -11,6 +11,7 @@ namespace EventHub
     using EventHub.Services.Mapping;
     using EventHub.Web.Filter;
     using EventHub.Web.Filters;
+    using EventHub.Web.Hubs;
     using EventHub.Web.Middleware;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.CodeAnalysis.Elfie.Diagnostics;
@@ -47,7 +48,10 @@ namespace EventHub
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true; 
+            });
 
             var identitySection = builder.Configuration.GetSection("IdentitySettings");
             builder.Services.Configure<IdentitySettings>(identitySection);
@@ -126,8 +130,9 @@ namespace EventHub
             Console.WriteLine(app.Environment.EnvironmentName);
 
             app.UseHttpsRedirection();
-            app.UseRouting();
             app.UseStaticFiles();
+
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -142,6 +147,8 @@ namespace EventHub
 
             app.MapRazorPages()
                .WithStaticAssets();
+
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }

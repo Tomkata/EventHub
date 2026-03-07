@@ -5,14 +5,14 @@ namespace EventHub.Repositories.Interfaces.Messaging
 {
     public interface IMessageRepository
     {
-        public Task AddAsync(Message message,CancellationToken cancellationToken);
+        public Task AddAsync(Message message);
 
-        public Task DeleteAsync(Message message, CancellationToken cancellationToken);
+        public Task DeleteAsync(Message message);
 
-        public IQueryable<Message> GetAllByConversationReadOnly(Guid conversationId);
+        public IQueryable<Message> GetAllByConversationReadOnly(Guid conversationId);   
 
-        Task<Message?> GetAsync(Guid id, CancellationToken cancellationToken);
+        Task<Message?> GetAsync(Guid id);
 
-        public Task SaveChangesAsync(CancellationToken cancellationToken);
+        public Task SaveChangesAsync();
     }
 }

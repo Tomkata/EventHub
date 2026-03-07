@@ -263,6 +263,8 @@ namespace EventHub.Infrastructure.Migrations
 
                     b.HasIndex("ConversationId", "CreatedAt");
 
+                    b.HasIndex("ConversationId", "CreatedAt", "Id");
+
                     b.ToTable("Messages");
                 });
 

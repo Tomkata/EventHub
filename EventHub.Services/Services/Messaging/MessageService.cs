@@ -25,8 +25,7 @@ namespace EventHub.Services.Services.Messaging
         public async Task<Guid> SendMessageAsync(
             Guid conversationId,
             string senderId,
-            string messageContent,
-            CancellationToken cancellationToken)
+            string messageContent)
         {
             if (!await _conversationRepository.IsUserParticipantAsync(conversationId, senderId))
                 throw new UserNotParticipantInConversationException();
@@ -41,8 +40,8 @@ namespace EventHub.Services.Services.Messaging
                 SenderId = senderId
             };
 
-            await _messageRepository.AddAsync(message, cancellationToken);
-            await _messageRepository.SaveChangesAsync(cancellationToken);
+            await _messageRepository.AddAsync(message);
+            await _messageRepository.SaveChangesAsync();
 
 
             return message.Id;
@@ -51,25 +50,25 @@ namespace EventHub.Services.Services.Messaging
         public async Task<IEnumerable<MessageDto>> GetConversationMessagesAsync(
             Guid conversationId,
             Guid? beforeMessageId,
-            int pageSize,
-            CancellationToken cancellationToken)
+            int pageSize)
         {
 
             var query = _messageRepository.GetAllByConversationReadOnly(conversationId);
 
             if (beforeMessageId.HasValue)
             {
-                query = query
-                    .Where(x => x.Id < beforeMessageId.Value);
+                var beforeMessage = await _messageRepository.GetAsync(beforeMessageId.Value);
+                if (beforeMessage != null)
+                    query = query.Where(x => x.CreatedAt < beforeMessage.CreatedAt);
             }
-                
+
             query = query
                  .OrderByDescending(x => x.CreatedAt)
                  .ThenByDescending(x => x.Id)
                 .Take(pageSize);
 
 
-            var messages = await query.ToListAsync(cancellationToken);
+            var messages = await query.ToListAsync();
 
             messages.Reverse();
 
