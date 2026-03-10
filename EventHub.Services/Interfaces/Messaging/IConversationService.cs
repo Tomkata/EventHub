@@ -26,6 +26,7 @@ using EventHub.Core.DTOs.Messaging;
 
         Task<ConversationPreviewDto?> GetConversationInfoAsync(Guid conversationId, string userId, CancellationToken cancellationToken);
 
+        Task<int> GetUnreadConversationsCountAsync(string userId, CancellationToken cancellationToken);
 
         //Later
         //public Task ArchiveConversation(Guid conversationId);

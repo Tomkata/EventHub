@@ -9,10 +9,14 @@ namespace EventHub.Repositories.Interfaces.Messaging
 
         public Task DeleteAsync(Message message);
 
+        public Task MarkAsReadAsync(Guid conversationId,
+            string userId,
+            CancellationToken cancellationToken);
+
         public IQueryable<Message> GetAllByConversationReadOnly(Guid conversationId);   
 
         Task<Message?> GetAsync(Guid id);
 
-        public Task SaveChangesAsync();
+        public Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

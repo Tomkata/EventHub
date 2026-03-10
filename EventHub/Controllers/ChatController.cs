@@ -74,7 +74,7 @@ namespace EventHub.Web.Controllers
                 Messages = _mapper.Map<IEnumerable<MessageViewModel>>(messages)
             };
 
-
+            await _messageService.MarkAsReadAsync(conversationId, currUserId, cancellationToken);
             return View(model);
         }
 

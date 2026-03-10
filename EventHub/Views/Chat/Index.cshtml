@@ -24,7 +24,7 @@
                 <a asp-controller="Chat"
                        asp-action="Conversation"
                        asp-route-conversationId="@conversation.ConversationId"
-                       class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
+                       class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 @(conversation.HasUnreadMessages ? "fw-bold" : "")">
 
                     @if (!string.IsNullOrEmpty(conversation.OtherUserProfileImagePath))
                     {
@@ -42,7 +42,7 @@
                     }
                     <div class="flex-grow-1">
                         <span class="fw-semibold">@conversation.OtherUserName</span>
-                        <div class="text-muted small text-truncate" style="max-width: 300px;">
+                        <div class="@(conversation.HasUnreadMessages ? "fw-bold text-dark" : "text-muted") small text-truncate" style="max-width: 300px;">
                             @conversation.LastMessage
                         </div>
                     </div>

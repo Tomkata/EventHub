@@ -10,6 +10,7 @@ namespace EventHub.Core.DTOs.Messaging
         public string? LastMessage { get; set; } = null!;
         public DateTime? LastMessageAt { get; set; }
 
+        public bool HasUnreadMessages { get; set; }
 
     }
 }

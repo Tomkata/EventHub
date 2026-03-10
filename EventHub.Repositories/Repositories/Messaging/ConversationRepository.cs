@@ -50,6 +50,14 @@ namespace EventHub.Repositories.Repositories.Messaging
                 .AsNoTracking()
                  .FirstOrDefaultAsync(x => x.User1Id == user1Id && x.User2Id == user2Id,cancellationToken);
 
+        public async Task<int> GetUnreadConversationsCountAsync(string userId, CancellationToken cancellationToken)
+          => await _applicationDbContext.Conversations
+            .AsNoTracking()
+           .Where(x => (x.User1Id == userId || x.User2Id == userId) &&
+              x.Messages.Any(m => m.IsRead == false && m.SenderId != userId))
+            .CountAsync(cancellationToken);
+            
+
         public async Task<bool> IsUserParticipantAsync(Guid conversationId, string userId)
         => await _applicationDbContext.Conversations
             .AsNoTracking()

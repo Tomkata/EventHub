@@ -2,7 +2,6 @@
 namespace EventHub.Services.Services.Messaging
 {
     using AutoMapper;
-    using AutoMapper.QueryableExtensions;
     using EventHub.Core.DTOs.Messaging;
     using EventHub.Core.Exceptions.Messaging;
     using EventHub.Core.Models.Messaging;
@@ -117,6 +116,9 @@ namespace EventHub.Services.Services.Messaging
                     .Select(x => x.CreatedAt)
                     .Cast<DateTime?>()
                     .FirstOrDefault(),
+
+                    HasUnreadMessages = c.Messages.Any(m => m.IsRead == false && m.SenderId != userId)
+
                 })
                 .OrderByDescending(x => x.LastMessageAt)
                 .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
@@ -145,5 +147,7 @@ namespace EventHub.Services.Services.Messaging
                 opts.Items["UserId"] = userId);
         }
 
+        public async Task<int> GetUnreadConversationsCountAsync(string userId, CancellationToken cancellationToken)
+        => await _conversationRepository.GetUnreadConversationsCountAsync(userId, cancellationToken);
     }
 }

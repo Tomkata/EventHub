@@ -6,5 +6,7 @@
         public bool HasProfile { get; set; }
         public string? DisplayName { get; set; }
         public string? ImageUrl { get; set; }
+
+        public int UnreadConversationsCount { get; set; }
     }
 }

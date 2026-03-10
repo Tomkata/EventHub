@@ -9,12 +9,19 @@ using EventHub.Core.DTOs.Messaging;
         public Task<Guid> SendMessageAsync(
             Guid conversationId, 
             string senderId,
-            string messageContent);
+            string messageContent,
+            CancellationToken cancellationToken);
+
 
         Task<IEnumerable<MessageDto>> GetConversationMessagesAsync(
              Guid conversationId,
              Guid? beforeMessageId,
              int pageSize);
 
+
+        Task MarkAsReadAsync(
+            Guid conversationId,
+            string userId,
+            CancellationToken cancellationToken);
     }
 }

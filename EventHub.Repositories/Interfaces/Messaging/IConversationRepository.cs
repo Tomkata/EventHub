@@ -22,6 +22,8 @@ namespace EventHub.Repositories.Interfaces.Messaging
             string user2Id,
             CancellationToken cancellationToken);
 
+        public Task<int> GetUnreadConversationsCountAsync(string userId,CancellationToken cancellationToken);
+
         public Task<bool> IsUserParticipantAsync(Guid conversationId, string userId);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken);

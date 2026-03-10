@@ -38,7 +38,8 @@ namespace EventHub.Web.Hubs
                 throw new UserNotFoundException();
 
 
-            var messageId = await _messageService.SendMessageAsync(conversationId, userId, message);
+            var messageId = await _messageService
+                .SendMessageAsync(conversationId, userId, message,CancellationToken.None);
             
             await Clients.Group(conversationId.ToString())
                 .SendAsync("ReceiveMessage", new MessageDto
@@ -48,7 +49,6 @@ namespace EventHub.Web.Hubs
                     SenderId = userId,
                     CreatedAt = DateTime.Now
                 });
-
         }
 
 

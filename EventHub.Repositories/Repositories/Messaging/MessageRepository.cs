@@ -4,7 +4,7 @@ using EventHub.Repositories.Interfaces.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventHub.Repositories.Repositories.Messaging
-    {
+{
     public class MessageRepository : IMessageRepository
     {
         private readonly ApplicationDbContext _context;
@@ -31,7 +31,19 @@ namespace EventHub.Repositories.Repositories.Messaging
         public async Task<Message?> GetAsync(Guid id)
             => await _context.Messages.FindAsync(new object[] { id });
 
-        public async Task SaveChangesAsync()
-            => await _context.SaveChangesAsync();
+        public async Task MarkAsReadAsync(
+            Guid conversationId, 
+            string userId,
+            CancellationToken cancellationToken)
+        {
+            await _context.Messages
+               .Where(x => x.IsRead == false &&
+               x.ConversationId == conversationId &&
+               x.SenderId != userId)
+               .ExecuteUpdateAsync(x => x.SetProperty(x => x.IsRead, true), cancellationToken);
+        }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+            => await _context.SaveChangesAsync(cancellationToken);
     }
 }

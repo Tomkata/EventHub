@@ -9,6 +9,7 @@
         public string OtherUserProfileImagePath { get; set; } = null!;
         public string? LastMessage { get; set; } = null!;
         public DateTime? LastMessageAt { get; set; }
+        public bool HasUnreadMessages { get; set; }
 
     }
 }

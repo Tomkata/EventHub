@@ -25,7 +25,8 @@ namespace EventHub.Services.Services.Messaging
         public async Task<Guid> SendMessageAsync(
             Guid conversationId,
             string senderId,
-            string messageContent)
+            string messageContent,
+            CancellationToken cancellationToken)
         {
             if (!await _conversationRepository.IsUserParticipantAsync(conversationId, senderId))
                 throw new UserNotParticipantInConversationException();
@@ -41,7 +42,7 @@ namespace EventHub.Services.Services.Messaging
             };
 
             await _messageRepository.AddAsync(message);
-            await _messageRepository.SaveChangesAsync();
+            await _messageRepository.SaveChangesAsync(cancellationToken);
 
 
             return message.Id;
@@ -84,6 +85,12 @@ namespace EventHub.Services.Services.Messaging
             return messagesDtos;
         }
 
-
+        public async Task MarkAsReadAsync(
+            Guid conversationId,
+            string userId, 
+            CancellationToken cancellationToken)
+        {
+            await _messageRepository.MarkAsReadAsync(conversationId,userId,cancellationToken);
+        }
     }
 }

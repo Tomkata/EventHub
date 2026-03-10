@@ -2,8 +2,8 @@
 
 @{
     var avatar = string.IsNullOrWhiteSpace(Model.ImageUrl)
-? Url.Content("~/images/default-avatar.jpg")
-: Url.Content("~/" + Model.ImageUrl);
+        ? Url.Content("~/images/default-avatar.jpg")
+        : Url.Content("~/" + Model.ImageUrl);
 }
 
 <ul class="navbar-nav ms-auto align-items-center">
@@ -24,25 +24,26 @@
 
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
-                <a class="dropdown-item"
-                       asp-controller="UserProfile"
-                       asp-action="Details">
-                    My Profile
-                </a>
-            </li>
-            
-            <li>
-                <a class="dropdown-item"
-                       asp-controller="UserProfile"
-                       asp-action="Update">
-                    Edit Profile
+                <a class="dropdown-item" asp-controller="UserProfile" asp-action="Details">
+                    <i class="bi bi-person me-2"></i>My Profile
                 </a>
             </li>
             <li>
-                <a class="dropdown-item"
+                <a class="dropdown-item" asp-controller="UserProfile" asp-action="Update">
+                    <i class="bi bi-pencil me-2"></i>Edit Profile
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item d-flex align-items-center justify-content-between"
                        asp-controller="Chat"
                        asp-action="Index">
-                    <i class="bi bi-chat-dots me-2"></i>My Chats
+                    <span><i class="bi bi-chat-dots me-2"></i>My Chats</span>
+                    @if (Model.UnreadConversationsCount > 0)
+                    {
+                        <span class="badge rounded-pill bg-danger">
+                            @Model.UnreadConversationsCount
+                        </span>
+                    }
                 </a>
             </li>
             <li><hr class="dropdown-divider" /></li>
