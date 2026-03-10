@@ -7,7 +7,9 @@ namespace EventHub.Core.DTOs.Messaging
         public string OtherUserId { get; set; } = null!;
         public string OtherUserName { get; set; } = null!;
         public string OtherUserProfileImagePath { get; set; } = null!;
+        public string? LastMessage { get; set; } = null!;
+        public DateTime? LastMessageAt { get; set; }
 
-    
+
     }
 }

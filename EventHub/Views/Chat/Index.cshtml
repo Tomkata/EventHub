@@ -31,6 +31,7 @@
                         <img src="/@conversation.OtherUserProfileImagePath"
                              class="rounded-circle"
                              style="width: 50px; height: 50px; object-fit: cover;" />
+
                     }
                     else
                     {
@@ -39,8 +40,17 @@
                             👤
                         </div>
                     }
+                    <div class="flex-grow-1">
+                        <span class="fw-semibold">@conversation.OtherUserName</span>
+                        <div class="text-muted small text-truncate" style="max-width: 300px;">
+                            @conversation.LastMessage
+                        </div>
+                    </div>
 
-                    <span class="fw-semibold">@conversation.OtherUserName</span>
+                    @if (conversation.LastMessageAt.HasValue)
+                    {
+                        <small class="text-muted" data-utc="@conversation.LastMessageAt.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")"></small>
+                    }
                 </a>
             }
         </div>

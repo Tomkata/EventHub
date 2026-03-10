@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(el.dataset.utc);
         el.textContent = date.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
     });
+
+    document.querySelectorAll('small[data-utc]').forEach(el => {
+        const date = new Date(el.dataset.utc);
+        el.textContent = date.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
+    });
 });
 
 async function sendMessage() {

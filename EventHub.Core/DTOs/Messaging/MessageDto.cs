@@ -11,3 +11,4 @@ namespace EventHub.Core.DTOs.Messaging
         public DateTime CreatedAt { get; set; }
     }
 }
+    

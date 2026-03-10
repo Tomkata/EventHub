@@ -105,8 +105,20 @@ namespace EventHub.Services.Services.Messaging
 
                     OtherUserProfileImagePath = c.User1Id == userId
                         ? c.User2.ProfileImagePath!
-                        : c.User1.ProfileImagePath!
+                        : c.User1.ProfileImagePath!,
+
+                    LastMessage = c.Messages
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(x => x.Content)
+                    .FirstOrDefault(),
+
+                    LastMessageAt = c.Messages
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(x => x.CreatedAt)
+                    .Cast<DateTime?>()
+                    .FirstOrDefault(),
                 })
+                .OrderByDescending(x => x.LastMessageAt)
                 .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
 
 
