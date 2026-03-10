@@ -52,7 +52,6 @@ namespace EventHub.Web.Hubs
 
         public async Task JoinConversation(Guid conversationId)
         {
-            Console.WriteLine($"User {Context.UserIdentifier} joined {conversationId}");
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
         }
 

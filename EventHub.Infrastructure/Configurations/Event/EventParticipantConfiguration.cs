@@ -17,7 +17,7 @@
                 .HasOne(x=>x.Event)    
                 .WithMany(x=>x.EventParticipants)
                 .HasForeignKey(x => x.EventId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
               .HasOne(ep => ep.UserProfile)

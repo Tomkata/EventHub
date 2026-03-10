@@ -1,30 +1,72 @@
-﻿using EventHub.Services.Interfaces.Messaging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace EventHub.Web.Controllers
 {
-    public class ChatController : Controller
+    using AutoMapper;
+    using EventHub.Services.Common;
+    using EventHub.Services.Interfaces.Messaging;
+    using EventHub.Web.ViewModels.Chat;
+    using EventHub.Web.ViewModels.Events;
+    using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
+    public class ChatController : BaseController
     {
+
+        private readonly IConversationService _conversationService;
+        private readonly IMapper _mapper;
+
+        public ChatController(IConversationService conversationService,
+                              IMapper mapper)
+        {
+            this._conversationService = conversationService;
+            this._mapper = mapper;
+        }
+
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Index(int pageNumber = 1, CancellationToken cancellationToken = default)
+        {
+            var userId = GetUserId();
+
+            var conversations = await _conversationService
+                .GetUserConversationsAsync(userId, pageNumber, 20, cancellationToken);
+
+            var mapped = _mapper.Map<List<ConversationPreviewViewModel>>(conversations.Data);
+
+            var model = new PagedResult<ConversationPreviewViewModel>
+            {
+                Data = mapped,
+                CurrentPageNumber = conversations.CurrentPageNumber,
+                PageSize = conversations.PageSize,
+                TotalRecords = conversations.TotalRecords
+            };
+
+            return View(model);
+        }
+
+
+        [Authorize]
+        [HttpGet]
         public IActionResult Conversation(Guid conversationId)
         {
             return View(conversationId);
         }
 
         [Authorize]
-        public async Task<IActionResult> TestConversation(
-    [FromServices] IConversationService conversationService,
-    CancellationToken cancellationToken)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartConversation(string targetUserId,
+            CancellationToken cancellation)
         {
-            // Замени с реални user IDs от базата
-            var user1Id = "1114f597-8c53-415c-90c5-f540f479631d";
-            var user2Id = "962008b3-f9b1-499f-89cc-757b61bf1020";
 
-            var conversationId = await conversationService
-                .GetOrCreateConversationAsync(user1Id, user2Id, cancellationToken);
+            var currUserId = GetUserId();
 
-            return RedirectToAction("Conversation", new { conversationId });
+            var conversationId = await _conversationService
+                .GetOrCreateConversationAsync(currUserId, targetUserId, cancellation);
+
+            return RedirectToAction(nameof(Conversation), new { conversationId });
         }
+
+      
     }
 }

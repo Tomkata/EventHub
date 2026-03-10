@@ -9,15 +9,12 @@
 
 <input id="messageInput" />
 <button id="sendButton" onclick="sendMessage()">Send</button>
-<button id="sendButton" onclick="console.log('clicked'); sendMessage()">Send</button>
 
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 <script>
     const conversationId = "@Model";
 </script>
 <script src="~/js/chat.js"></script>
-```
 
-После отвори URL-а с реален ID от базата:
-```
-https://localhost:7234/Chat/Conversation?conversationId=ТВОЯ-GUID-ОТ-БАЗАТА
+
+@* https://localhost:7234/Chat/Conversation?conversationId=ТВОЯ-GUID-ОТ-БАЗАТА *@

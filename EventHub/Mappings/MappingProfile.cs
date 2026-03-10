@@ -5,9 +5,11 @@ namespace EventHub.Web.Mappings
     using AutoMapper;
     using EventHub.Core.DTOs;
     using EventHub.Core.DTOs.Event;
+    using EventHub.Core.DTOs.Messaging;
     using EventHub.Core.DTOs.Organizer;
     using EventHub.Core.DTOs.Social;
     using EventHub.Core.DTOs.UserProfile;
+    using EventHub.Web.ViewModels.Chat;
     using EventHub.Web.ViewModels.Events;
     using EventHub.Web.ViewModels.Organizers;
     using EventHub.Web.ViewModels.Social;
@@ -103,6 +105,9 @@ namespace EventHub.Web.Mappings
             CreateMap<PublicUserProfileDto, PublicUserProfileViewModel>();
 
             CreateMap<SocialUserPreviewDto, SocialUserPreviewViewModel>();
+
+            CreateMap<ConversationPreviewDto, ConversationPreviewViewModel>();
+
         }
     }
 }
