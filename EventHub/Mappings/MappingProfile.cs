@@ -108,6 +108,10 @@ namespace EventHub.Web.Mappings
 
             CreateMap<ConversationPreviewDto, ConversationPreviewViewModel>();
 
+            CreateMap<MessageDto, MessageViewModel>();
+
+
+
         }
     }
 }

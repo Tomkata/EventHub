@@ -80,6 +80,20 @@ namespace EventHub.Services.Mapping
                  opt => opt.MapFrom(src => src.ProfileImagePath));
 
 
+
+            CreateMap<Conversation, ConversationPreviewDto>()
+    .ForMember(dest => dest.ConversationId, opt => opt.MapFrom(src => src.Id))
+    .ForMember(dest => dest.OtherUserId, opt => opt.MapFrom((src, _, _, ctx) =>
+        src.User1Id == (string)ctx.Items["UserId"] ? src.User2Id : src.User1Id))
+    .ForMember(dest => dest.OtherUserName, opt => opt.MapFrom((src, _, _, ctx) =>
+        src.User1Id == (string)ctx.Items["UserId"]
+            ? src.User2.FirstName + " " + src.User2.LastName
+            : src.User1.FirstName + " " + src.User1.LastName))
+    .ForMember(dest => dest.OtherUserProfileImagePath, opt => opt.MapFrom((src, _, _, ctx) =>
+        src.User1Id == (string)ctx.Items["UserId"]
+            ? src.User2.ProfileImagePath ?? ""
+            : src.User1.ProfileImagePath ?? ""));
+
         }
     }
 }

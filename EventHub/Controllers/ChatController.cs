@@ -5,21 +5,23 @@ namespace EventHub.Web.Controllers
     using EventHub.Services.Common;
     using EventHub.Services.Interfaces.Messaging;
     using EventHub.Web.ViewModels.Chat;
-    using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Plugins;
+    using Microsoft.AspNetCore.Mvc;
     public class ChatController : BaseController
     {
 
         private readonly IConversationService _conversationService;
         private readonly IMapper _mapper;
+        private readonly IMessageService _messageService;
+
 
         public ChatController(IConversationService conversationService,
-                              IMapper mapper)
+                              IMapper mapper,
+                              IMessageService messageService)
         {
             this._conversationService = conversationService;
             this._mapper = mapper;
+            this._messageService = messageService;
         }
 
         [Authorize]
@@ -47,9 +49,33 @@ using NuGet.Protocol.Plugins;
 
         [Authorize]
         [HttpGet]
-        public IActionResult Conversation(Guid conversationId)
+        public async Task<IActionResult> Conversation(Guid conversationId,
+                                                      Guid beforeMessageId,
+                                        CancellationToken cancellationToken)
         {
-            return View(conversationId);
+            var currUserId = GetUserId();
+
+            if (!await _conversationService.IsUserParticipantAsync(conversationId, currUserId))
+                return Forbid();
+
+
+            var conversationInfo = await _conversationService
+                .GetConversationInfoAsync(conversationId, currUserId, cancellationToken);
+
+            var messages = await _messageService
+                .GetConversationMessagesAsync(conversationId, null, 20);
+
+            var model = new ConversationViewModel
+            {
+                ConversationId = conversationId,
+                OtherUserName = conversationInfo.OtherUserName,
+                CurrentUserId = currUserId,
+                OtherUserProfileImagePath = conversationInfo.OtherUserProfileImagePath,
+                Messages = _mapper.Map<IEnumerable<MessageViewModel>>(messages)
+            };
+
+
+            return View(model);
         }
 
         [Authorize]
@@ -64,9 +90,10 @@ using NuGet.Protocol.Plugins;
             var conversationId = await _conversationService
                 .GetOrCreateConversationAsync(currUserId, targetUserId, cancellation);
 
+
             return RedirectToAction(nameof(Conversation), new { conversationId });
         }
 
-      
+
     }
 }

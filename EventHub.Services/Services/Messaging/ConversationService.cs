@@ -72,7 +72,7 @@ namespace EventHub.Services.Services.Messaging
 
                 return getOrCreateConversation.Id;
 
-            }   
+            }
             catch (DbUpdateException ex)
             when (IsUniqueViolation(ex))
             {
@@ -89,7 +89,7 @@ namespace EventHub.Services.Services.Messaging
             int pageNumber,
             int pageSize,
             CancellationToken cancellationToken)
-        => await  _conversationRepository
+        => await _conversationRepository
                 .GetAllByUser(userId)
                 .Select(c => new ConversationPreviewDto
                 {
@@ -117,5 +117,21 @@ namespace EventHub.Services.Services.Messaging
 
             return false;
         }
+
+        public async Task<bool> IsUserParticipantAsync(Guid conversationId, string userId)
+       => await _conversationRepository.IsUserParticipantAsync(conversationId, userId);
+
+        public async Task<ConversationPreviewDto?> GetConversationInfoAsync(
+    Guid conversationId,
+    string userId,
+    CancellationToken cancellationToken)
+        {
+            var conversation = await _conversationRepository.GetAsync(conversationId, cancellationToken)
+                ?? throw new ConversationNotFoundException();
+
+            return _mapper.Map<ConversationPreviewDto>(conversation, opts =>
+                opts.Items["UserId"] = userId);
+        }
+
     }
 }

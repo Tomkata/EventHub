@@ -39,9 +39,11 @@ namespace EventHub.Repositories.Repositories.Messaging
             .OrderBy(x=>x.CreatedAt);
 
         public async Task<Conversation?> GetAsync(Guid id, CancellationToken cancellationToken)
-        => await _applicationDbContext.Conversations
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+     => await _applicationDbContext.Conversations
+         .AsNoTracking()
+         .Include(x => x.User1)
+         .Include(x => x.User2)
+         .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         public async Task<Conversation?> GetByUsersAsync(string user1Id, string user2Id, CancellationToken cancellationToken)
         => await _applicationDbContext.Conversations

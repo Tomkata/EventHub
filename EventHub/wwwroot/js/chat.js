@@ -7,24 +7,32 @@ var connection = new signalR.HubConnectionBuilder()
 document.getElementById("sendButton").disabled = true;
 
 connection.on("ReceiveMessage", function (message) {
-    console.log("ReceiveMessage:", message);
+    const isMine = message.senderId === currentUserId;
     const div = document.getElementById("messages");
-    div.innerHTML += `<p>${message.senderId}: ${message.content}</p>`;
+
+    div.innerHTML += `
+        <div class="d-flex flex-column ${isMine ? 'align-items-end' : 'align-items-start'}">
+            <div class="message-bubble ${isMine ? 'message-mine' : 'message-theirs'}">
+                ${message.content}
+                <div class="message-time">${new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}</div>
+            </div>
+        </div>`;
+
+    div.scrollTop = div.scrollHeight;
 });
 
 connection.start().then(async function () {
     document.getElementById("sendButton").disabled = false;
-    console.log("Joining conversation:", conversationId);
     await connection.invoke("JoinConversation", conversationId);
-    console.log("Joined!");
 }).catch(function (err) {
     console.error(err.toString());
 });
 
 async function sendMessage() {
     const input = document.getElementById("messageInput");
-    const message = input.value;
-    console.log("Sending:", conversationId, message);
+    const message = input.value.trim();
+
+    if (!message) return;
 
     try {
         await connection.invoke("SendMessage", conversationId, message);
@@ -33,3 +41,7 @@ async function sendMessage() {
         console.error("SendMessage error:", err);
     }
 }
+
+document.getElementById("messageInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") sendMessage();
+});

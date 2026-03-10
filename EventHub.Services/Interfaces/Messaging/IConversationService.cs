@@ -20,9 +20,16 @@ using EventHub.Core.DTOs.Messaging;
             CancellationToken cancellationToken
             );
 
+        public Task<bool> IsUserParticipantAsync(
+            Guid conversationId,
+            string userId);
+
+        Task<ConversationPreviewDto?> GetConversationInfoAsync(Guid conversationId, string userId, CancellationToken cancellationToken);
+
+
         //Later
         //public Task ArchiveConversation(Guid conversationId);
 
-        
+
     }
 }
