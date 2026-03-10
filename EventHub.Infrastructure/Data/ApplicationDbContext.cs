@@ -16,6 +16,7 @@ namespace EventHub.Infrastructure.Data
     using EventHub.Infrastructure.Configurations.User;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
     public class ApplicationDbContext
         : IdentityDbContext
@@ -28,13 +29,13 @@ namespace EventHub.Infrastructure.Data
 
         public virtual DbSet<Event> Events { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Location>  Locations { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<EventParticipant> EventParticipants { get; set; }
         public virtual DbSet<OrganizerRequest> OrganizerRequests { get; set; }
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
-        public virtual DbSet<Interest>  Interests { get; set; }
+        public virtual DbSet<Interest> Interests { get; set; }
         public virtual DbSet<UserProfileInterest> UserProfileInterests { get; set; }
-        public virtual DbSet<UserFollow>  UserFollows { get; set; }
+        public virtual DbSet<UserFollow> UserFollows { get; set; }
 
         public virtual DbSet<Message> Messages { get; set; }
 
@@ -60,5 +61,21 @@ namespace EventHub.Infrastructure.Data
 
             base.OnModelCreating(builder);
         }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+        {
+            builder.Properties<DateTime>()
+                .HaveConversion<UtcDateTimeConverter>();
+        }
+
+
+        public class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+        {
+            public UtcDateTimeConverter() : base(
+                v => v,
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            { }
+        }
+
     }
 }

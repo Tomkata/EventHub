@@ -39,14 +39,16 @@ namespace EventHub.Web.Hubs
 
 
             var messageId = await _messageService.SendMessageAsync(conversationId, userId, message);
-
+            
             await Clients.Group(conversationId.ToString())
                 .SendAsync("ReceiveMessage", new MessageDto
-            {
-                Id = messageId,
-                Content = message,
-                SenderId = userId
-            });
+                {
+                    Id = messageId,
+                    Content = message,
+                    SenderId = userId,
+                    CreatedAt = DateTime.Now
+                });
+
         }
 
 

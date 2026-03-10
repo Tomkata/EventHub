@@ -137,7 +137,7 @@
                 <div class="d-flex flex-column @(isMine ? "align-items-end" : "align-items-start")">
                     <div class="message-bubble @(isMine ? "message-mine" : "message-theirs")">
                         @msg.Content
-                        <div class="message-time">@msg.CreatedAt.ToString("HH:mm")</div>
+                        <div class="message-time" data-utc="@msg.CreatedAt.ToString("o")"></div>
                     </div>
                 </div>
             }
