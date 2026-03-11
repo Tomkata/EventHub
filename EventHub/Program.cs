@@ -3,6 +3,7 @@
 
 namespace EventHub
 {
+    using EventHub.Core.Models.Users;
     using EventHub.Infrastructure.Data;
     using EventHub.Infrastructure.Data.Seed;
     using EventHub.Infrastructure.Identity;
@@ -99,20 +100,74 @@ namespace EventHub
 
             var app = builder.Build();
 
+            var app = builder.Build();
+
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 var context = services.GetRequiredService<ApplicationDbContext>();
-                await context.Database.MigrateAsync();
-
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                await IdentitySeeder.SeedAsync(userManager, roleManager);
-                await DataSeeder.SeedAsync(context);
-                await EventSeeder.SeedAsync(context, userManager);
-                await InterestSeeder.SeedAsync(context);
+                try
+                {
+                    await context.Database.MigrateAsync();
+                    logger.LogInformation("[SEED] Миграции: OK");
+
+                    await IdentitySeeder.SeedAsync(userManager, roleManager);
+                    logger.LogInformation("[SEED] IdentitySeeder: OK");
+
+                    context.ChangeTracker.Clear();
+                    logger.LogInformation("[SEED] ChangeTracker изчистен");
+
+                    await DataSeeder.SeedAsync(context);
+                    logger.LogInformation("[SEED] DataSeeder: OK");
+
+                    var adminUser = await userManager.FindByEmailAsync("admin@eventhub.com");
+                    var orgUser = await userManager.FindByEmailAsync("organizer@eventhub.com");
+
+                    logger.LogInformation("[SEED] admin: {Id}", adminUser?.Id ?? "NULL");
+                    logger.LogInformation("[SEED] organizer: {Id}", orgUser?.Id ?? "NULL");
+
+                    if (adminUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == adminUser.Id))
+                    {
+                        context.UserProfiles.Add(new UserProfile
+                        {
+                            UserId = adminUser.Id,
+                            FirstName = "Admin",
+                            LastName = "User",
+                            CreatedAt = DateTime.UtcNow
+                        });
+                        var rows = await context.SaveChangesAsync();
+                        logger.LogInformation("[SEED] Admin профил записан: {Rows} реда", rows);
+                    }
+
+                    if (orgUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == orgUser.Id))
+                    {
+                        context.UserProfiles.Add(new UserProfile
+                        {
+                            UserId = orgUser.Id,
+                            FirstName = "Event",
+                            LastName = "Organizer",
+                            CreatedAt = DateTime.UtcNow
+                        });
+                        var rows = await context.SaveChangesAsync();
+                        logger.LogInformation("[SEED] Organizer профил записан: {Rows} реда", rows);
+                    }
+
+                    await EventSeeder.SeedAsync(context, userManager);
+                    logger.LogInformation("[SEED] EventSeeder: OK");
+
+                    await InterestSeeder.SeedAsync(context);
+                    logger.LogInformation("[SEED] InterestSeeder: OK");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "[SEED] ГРЕШКА: {Message}", ex.Message);
+                    throw;
+                }
             }
 
 

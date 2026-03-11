@@ -14,8 +14,10 @@ namespace EventHub.Infrastructure.Data.Seed
             if (await context.Events.AnyAsync())
                 return;
 
-            var organizer = await userManager.FindByEmailAsync("organizer@eventhub.com")
-                ?? throw new Exception("Organizer user not found. Identity seeding must run first.");
+            var organizer = await context.UserProfiles.FirstOrDefaultAsync();
+            if (organizer == null)
+                return;
+
 
             async Task<Guid> GetCityId(string city)
                 => await context.Locations
@@ -45,7 +47,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
         new Event
         {
@@ -60,7 +62,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("55555555-5555-5555-5555-555555555555"),
             LocationId = ruseId,
             Address = "Tech Hub Ruse",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
         new Event
         {
@@ -75,7 +77,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("77777777-7777-7777-7777-777777777777"),
             LocationId = sofiaId,
             Address = "Sofia Coworking Space",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
          new Event
         {
@@ -90,7 +92,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
           new Event
         {
@@ -105,7 +107,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
            new Event
         {
@@ -120,7 +122,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
             new Event
         {
@@ -135,7 +137,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
              new Event
         {
@@ -150,7 +152,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
               new Event
         {
@@ -165,7 +167,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
                new Event
         {
@@ -180,7 +182,7 @@ namespace EventHub.Infrastructure.Data.Seed
             CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
             LocationId = plovdivId,
             Address = "Rowing Canal, Plovdiv",
-            OrganizerId = organizer.Id
+            OrganizerId = organizer.UserId
         },
     };
 
