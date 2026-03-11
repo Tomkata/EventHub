@@ -7,9 +7,7 @@ namespace EventHub.Web.Hubs
     using EventHub.Services.Interfaces.Messaging;
     using EventHub.Services.Interfaces.User;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
-    using System.Security.Claims;
     [Authorize]
     public class ChatHub : Hub
     {
