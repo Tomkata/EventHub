@@ -8,7 +8,7 @@ namespace EventHub.Infrastructure.Data.Seed
     using Microsoft.EntityFrameworkCore;
 
     public static class EventSeeder
-    {
+    {   
         public static async Task SeedAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             if (await context.Events.AnyAsync())

@@ -8,14 +8,22 @@ namespace EventHub.Infrastructure.Data.Seed
     {
         public static async Task SeedAsync(ApplicationDbContext context)
         {
+
+
+
             if (context.Locations.Any())
                 return;
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                AppContext.BaseDirectory,
                 "Data",
                 "Seed",
                 "cities.json");
+
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
 
             var json = await File.ReadAllTextAsync(filePath);
 
