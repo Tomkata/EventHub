@@ -8,12 +8,16 @@ namespace EventHub.Web.Hubs
     using EventHub.Services.Interfaces.User;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
+    using System.Collections.Concurrent;
+
     [Authorize]
     public class ChatHub : Hub
     {
         private readonly IMessageService _messageService;
         private readonly IConversationService _conversationService;
         private readonly IUserProfileService _userProfileService;
+        private static readonly ConcurrentDictionary<string, RateLimitData> _limits = new();
+
 
         public ChatHub(IMessageService messageService,
                        IConversationService conversationService,
@@ -31,6 +35,10 @@ namespace EventHub.Web.Hubs
             string message)
         {
             var userId = Context.UserIdentifier;
+            var data = _limits.GetOrAdd(userId,_=>new RateLimitData());
+
+            if (!data.TryConsume())
+                throw new HubException("Rate limit exceeded. Slow down.");
 
             if (!await _userProfileService.ExistsAsync(userId,CancellationToken.None))
                 throw new UserNotFoundException();

@@ -13,11 +13,10 @@ namespace EventHub
     using EventHub.Web.Filter;
     using EventHub.Web.Filters;
     using EventHub.Web.Hubs;
-    using EventHub.Web.Middleware;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.CodeAnalysis.Elfie.Diagnostics;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging.Console;
+    using System.Security.Claims;
+    using System.Threading.RateLimiting;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program
@@ -30,7 +29,7 @@ namespace EventHub
             builder.Services.AddSingleton<SlowQueryInterceptor>();
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
@@ -48,12 +47,43 @@ namespace EventHub
                 .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-           
 
-            builder.Services.AddSignalR(options =>
+            builder.Services.AddRateLimiter(options =>
             {
-                options.EnableDetailedErrors = true; 
+
+                    options.AddPolicy("create-event", httpContext =>
+          RateLimitPartition.GetSlidingWindowLimiter(
+              partitionKey: httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous",
+              factory: _ => new SlidingWindowRateLimiterOptions
+              {
+                  PermitLimit = 3,
+                  Window = TimeSpan.FromHours(1),
+                  SegmentsPerWindow = 6,
+                  QueueLimit = 0
+              }));
+
+            options.AddPolicy("send-message", httpContext =>
+                RateLimitPartition.GetSlidingWindowLimiter(
+                    partitionKey: httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous",
+                    factory: _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = 30,
+                        Window = TimeSpan.FromMinutes(1),
+                        SegmentsPerWindow = 6,
+                        QueueLimit = 0
+                    }));
+
+
+                options.OnRejected = async (context, cancellationToken) =>
+                {
+                    context.HttpContext.Response.StatusCode = 429;
+                    await context.HttpContext.Response.WriteAsync
+                    ("Too many requests. Pleast try again later.", cancellationToken);
+                };
             });
+
+
+          
 
             var identitySection = builder.Configuration.GetSection("IdentitySettings");
             builder.Services.Configure<IdentitySettings>(identitySection);
@@ -97,10 +127,17 @@ namespace EventHub
             });
 
 
+
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+            });
+
             builder.Services.AddRazorPages();
 
+
             var app = builder.Build();
-           
+
 
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
@@ -184,6 +221,7 @@ namespace EventHub
 
             app.MapStaticAssets();
 
+            app.UseRateLimiter();
 
             app.MapControllerRoute(
                 name: "default",
