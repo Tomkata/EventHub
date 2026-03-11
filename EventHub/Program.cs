@@ -100,7 +100,6 @@ namespace EventHub
 
             var app = builder.Build();
 
-            var app = builder.Build();
 
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
