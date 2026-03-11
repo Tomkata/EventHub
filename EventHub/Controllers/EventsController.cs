@@ -99,6 +99,7 @@ namespace EventHub.Web.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         public async Task<IActionResult> Create(CancellationToken cancellation)
         {
             CreateEventViewModel model = await PrepareCreateViewModel(cancellation);

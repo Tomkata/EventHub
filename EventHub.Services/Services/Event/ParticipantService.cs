@@ -61,7 +61,7 @@
             var roles = await _userManager.GetRolesAsync(user);
 
             if (roles.Contains(Roles.Admin))
-                throw new AdminCannnotJoinEventException();
+                throw new AdminCannotJoinEventException();
 
             if (roles.Contains(Roles.Organizer))
             {

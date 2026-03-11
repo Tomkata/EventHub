@@ -4,9 +4,9 @@ using EventHub.Core.AppException;
 
 namespace EventHub.Core.Exceptions.Event.ForJoin
 {
-    public  class AdminCannnotJoinEventException : ForbiddenException
+    public  class AdminCannotJoinEventException : ForbiddenException
     {
-        public AdminCannnotJoinEventException()
+        public AdminCannotJoinEventException()
             :base("Admin cannot join events!")        
         {
         }

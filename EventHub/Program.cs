@@ -48,6 +48,7 @@ namespace EventHub
                 .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+           
 
             builder.Services.AddSignalR(options =>
             {
@@ -99,7 +100,7 @@ namespace EventHub
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
-
+           
 
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
@@ -113,22 +114,16 @@ namespace EventHub
                 try
                 {
                     await context.Database.MigrateAsync();
-                    logger.LogInformation("[SEED] Миграции: OK");
 
                     await IdentitySeeder.SeedAsync(userManager, roleManager);
-                    logger.LogInformation("[SEED] IdentitySeeder: OK");
 
                     context.ChangeTracker.Clear();
-                    logger.LogInformation("[SEED] ChangeTracker изчистен");
 
                     await DataSeeder.SeedAsync(context);
-                    logger.LogInformation("[SEED] DataSeeder: OK");
 
                     var adminUser = await userManager.FindByEmailAsync("admin@eventhub.com");
                     var orgUser = await userManager.FindByEmailAsync("organizer@eventhub.com");
 
-                    logger.LogInformation("[SEED] admin: {Id}", adminUser?.Id ?? "NULL");
-                    logger.LogInformation("[SEED] organizer: {Id}", orgUser?.Id ?? "NULL");
 
                     if (adminUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == adminUser.Id))
                     {
@@ -140,7 +135,6 @@ namespace EventHub
                             CreatedAt = DateTime.UtcNow
                         });
                         var rows = await context.SaveChangesAsync();
-                        logger.LogInformation("[SEED] Admin профил записан: {Rows} реда", rows);
                     }
 
                     if (orgUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == orgUser.Id))
@@ -153,18 +147,15 @@ namespace EventHub
                             CreatedAt = DateTime.UtcNow
                         });
                         var rows = await context.SaveChangesAsync();
-                        logger.LogInformation("[SEED] Organizer профил записан: {Rows} реда", rows);
                     }
 
                     await EventSeeder.SeedAsync(context, userManager);
-                    logger.LogInformation("[SEED] EventSeeder: OK");
 
                     await InterestSeeder.SeedAsync(context);
-                    logger.LogInformation("[SEED] InterestSeeder: OK");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "[SEED] ГРЕШКА: {Message}", ex.Message);
+                    logger.LogError(ex, "[SEED] ERROR: {Message}", ex.Message);
                     throw;
                 }
             }

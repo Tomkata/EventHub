@@ -14,12 +14,13 @@ namespace EventHub.Infrastructure.Data
     using EventHub.Infrastructure.Configurations.Organizer;
     using EventHub.Infrastructure.Configurations.Social;
     using EventHub.Infrastructure.Configurations.User;
+    using EventHub.Infrastructure.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
     public class ApplicationDbContext
-        : IdentityDbContext
+        : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
