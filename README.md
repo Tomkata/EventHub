@@ -1,193 +1,244 @@
 # EventHub
 
-A web-based event management system built with ASP.NET Core MVC as a SoftUni course project. The application allows users to browse events, organizers to create and manage events, and administrators to oversee the platform.
+A full-featured web-based event management platform built with ASP.NET Core MVC as a SoftUni course project. EventHub allows users to discover and join events, organizers to create and manage events, and administrators to oversee the platform. The application also includes a real-time private messaging system and a social follow network between users.
+
+---
 
 ## Architecture
 
-The project follows a layered architecture pattern with clear separation of concerns:
+The project follows a strict 5-layer architecture with clear separation of concerns and one-directional dependency flow (`Core ← Infrastructure ← Repositories ← Services ← Web`).
 
 ### Project Structure
 
 ```
 EventHub/
-├── EventHub.Core/              # Domain models, DTOs, enums, validation attributes, exceptions
-├── EventHub.Infrastructure/    # Data access, EF Core configurations, migrations, Identity setup
-├── EventHub.Repositories/      # Repository pattern implementation (interfaces + concrete classes)
-├── EventHub.Services/          # Business logic layer with validation and rules
-└── EventHub/                   # ASP.NET Core MVC web layer (controllers, views, areas)
+├── EventHub.Core/              # Domain models, DTOs, enums, validation attributes, custom exceptions
+├── EventHub.Infrastructure/    # EF Core DbContext, Fluent API configurations, migrations, seeding, interceptors
+├── EventHub.Repositories/      # Repository pattern (interfaces + implementations)
+├── EventHub.Services/          # Business logic, AutoMapper profiles, DI registration
+└── EventHub/                   # ASP.NET Core MVC — controllers, views, view models, SignalR hubs, filters
 ```
 
 ### Layer Responsibilities
 
-**EventHub.Core**  
-Contains domain models (Event, Category, Location, OrganizerRequest), DTOs for data transfer, custom validation attributes, and domain-specific exceptions. This layer has no dependencies on other layers.
+**EventHub.Core**
+Pure domain layer. Contains entity models (`Event`, `Category`, `Location`, `UserProfile`, `Conversation`, `Message`, `UserFollow`, `OrganizerRequest`), all DTOs, custom validation attributes (`FutureDateAttribute`, `DateGreaterThanAttribute`), and a rich domain exception hierarchy (`DomainException` → `NotFoundException`, `ForbiddenException`, `ConflictException`, etc.). Zero dependencies on other layers.
 
-**EventHub.Infrastructure**  
-Handles database context (ApplicationDbContext), Entity Framework Core configurations, migrations, and data seeding. Includes ASP.NET Core Identity setup with the ApplicationUser model.
+**EventHub.Infrastructure**
+All EF Core concerns. Each entity has its own `IEntityTypeConfiguration<T>` class with full Fluent API configuration. Includes global UTC DateTime conversion, a `SlowQueryInterceptor` for performance monitoring, and an orchestrated data seeding pipeline.
 
-**EventHub.Repositories**  
-Implements the repository pattern with generic base repository and specific repositories for each entity. Provides abstraction over data access operations.
+**EventHub.Repositories**
+Repository pattern with specific interfaces and implementations per entity. Uses `AsNoTracking()` for read queries, `AsSplitQuery()` for complex includes, and an atomic SQL implementation for safe concurrent event joins.
 
-**EventHub.Services**  
-Contains business logic and enforces business rules. Services validate operations before delegating to repositories (e.g., ParticipantService validates join/leave operations, EventService validates event ownership).
+**EventHub.Services**
+All business rules and validation live here. Services receive DTOs, validate them against domain rules, and delegate to repositories. Uses AutoMapper for entity ↔ DTO projections. Services and repositories are auto-registered via Scrutor convention scanning — no manual DI registration required.
 
-**EventHub (Web)**  
-MVC layer with controllers, views, view models, and Razor Pages for Identity UI. Handles HTTP requests, user input validation, and presentation logic.
+**EventHub (Web)**
+Thin MVC layer. Controllers delegate entirely to services and map results to view models via AutoMapper. Includes a `DomainExceptionFilter` for global graceful error handling, a `PerformanceMonitoringFilter` for action-level timing logs, and the SignalR `ChatHub` for real-time messaging.
+
+---
+
+## Features
+
+### Events
+- Browse, search, and filter events by title, date range, location, and category
+- Paginated event listings
+- Create, edit, and delete events (Organizer and Admin roles)
+- Event detail page with full participant list
+- Image upload with magic-byte format validation (JPG, PNG, GIF)
+
+### User Profiles
+- Every registered user can create a personal profile (name, bio, phone, profile image, interests, location)
+- Public profile page visible to other users
+- Edit profile with optional image replacement
+
+### Social Network
+- Follow and unfollow other users
+- Paginated followers and following lists
+- View other users' public profiles
+
+### Organizer System
+- Users can apply to become an organizer
+- Application workflow: **Pending → Approved / Rejected**
+- 7-day cooldown period before reapplying after rejection
+- Admins can approve, reject, or demote organizers
+- Full request history with status filtering
+
+### Real-Time Messaging (SignalR)
+- Private 1-to-1 conversations between users
+- Real-time message delivery via WebSocket
+- Unread message indicators on conversation list
+- Conversations are deduplicated (only one conversation can exist between any two users)
+- Message history with pagination
+
+### Admin Panel
+- View all events in the system
+- Manage organizer requests (approve / reject / demote)
+- Full override access to edit or delete any event
+
+---
 
 ## Database Setup
 
-The application uses SQL Server and Entity Framework Core with automatic initialization on startup.
+The application uses SQL Server with Entity Framework Core. The database is initialized and seeded automatically on every startup.
 
 ### Initialization Sequence
 
-The database is initialized automatically when the application starts (`Program.cs`, lines 71-84):
-
-```csharp
-1. await context.Database.MigrateAsync();           // Apply pending migrations
-2. await IdentitySeeder.SeedAsync(...);             // Create roles and demo users
-3. await DataSeeder.SeedAsync(context);             // Seed locations from cities.json
-4. await EventSeeder.SeedAsync(context, ...);       // Create sample events
 ```
-
-This approach ensures the database is always in a consistent state with test data available for development and evaluation.
+1. context.Database.MigrateAsync()    — Apply all pending migrations
+2. IdentitySeeder.SeedAsync(...)      — Create Admin/Organizer/User roles + demo accounts
+3. DataSeeder.SeedAsync(...)          — Seed locations (cities.json) and categories
+4. EventSeeder.SeedAsync(...)         — Create sample events with participants
+5. InterestSeeder.SeedAsync(...)      — Seed interest tags for user profiles
+```
 
 ### Connection String
 
-Update the connection string in `appsettings.json`:
+Update the connection string in `EventHub/appsettings.json`:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=EventHub;Trusted_Connection=True;MultipleActiveResultSets=true"
+  "DefaultConnection": "Server=.;Database=EventHub;Trusted_Connection=True;TrustServerCertificate=True;"
 }
 ```
+
+---
 
 ## Demo Accounts
 
 Three demo accounts are automatically created during seeding:
 
-| Email | Password | Role | Permissions |
-|-------|----------|------|-------------|
-| admin@eventhub.com | Admin123! | Admin | Full access, can modify any event, manage requests for organizer, cannot join events |
-| organizer@eventhub.com | Admin123! | Organizer | Can create/manage own events, can join other events |
-| user@eventhub.com | User123! | User | Can browse, can join events |
+| Email | Password | Role | Notes |
+|-------|----------|------|-------|
+| admin@eventhub.com | Admin123! | Admin | Full access — modify any event, manage organizer requests. Cannot join events. |
+| organizer@eventhub.com | Admin123! | Organizer | Create and manage own events. Can join events by other organizers. |
+| user@eventhub.com | User123! | User | Browse, join, and leave events. Can apply to become an organizer. |
 
-**Note**: Admin accounts cannot join events. Organizers cannot join events they created.
+---
 
 ## Role-Based Authorization
 
-The application implements three distinct user roles:
-
 ### Admin
-- Can view, edit, and delete any event regardless of ownership
-- Can manage organizer applications (approve/reject)
-- Cannot join events (business rule enforcement)
-- Has unrestricted access to all system features
+- View, edit, and delete **any** event regardless of who created it
+- Approve, reject, and demote organizer requests
+- Cannot join events (enforced as a business rule)
 
 ### Organizer
-- Can create new events
-- Can edit and delete their own events only
-- Can join events created by other organizers
-- Cannot modify events they don't own
+- Create, edit, and delete **their own** events
+- Can join events created by other users
+- Cannot join events they created themselves
 
 ### User
-- Can browse all published events
-- Can join and leave events (subject to capacity and eligibility rules)
-- Can apply to become an organizer
-- Read-only access to event management features
+- Browse and join events (subject to capacity and eligibility rules)
+- Apply to become an organizer
+- Create a personal profile and follow other users
+- Start private conversations with other users
+
+---
 
 ## Business Rules
 
-### Event Join Validation
+### Event Join Validation (`ParticipantService`)
 
-The `ParticipantService` enforces the following rules when a user attempts to join an event:
+| Rule | Exception Thrown |
+|------|-----------------|
+| Event must exist | `EventNotFoundException` |
+| Event must not be expired | `EventExpiredException` |
+| User cannot join the same event twice | `UserAlreadyJoinedException` |
+| Admin users cannot join events | `AdminCannotJoinEventException` |
+| Organizers cannot join their own events | `OrganizerJoinOwnEventException` |
+| Event must not be at maximum capacity | `EventFilledException` |
 
-1. **Event Existence**: Event must exist in the database
-2. **Event Status**: Event must not be expired (EndDate must be in the future)
-3. **Duplicate Prevention**: User cannot join the same event twice
-4. **Admin Restriction**: Admin users cannot join any events
-5. **Organizer Restriction**: Organizers cannot join events they created
-6. **Capacity Check**: Event must not be at maximum capacity (MaxParticipants)
-
-**Known Issue**: The current implementation has a potential race condition when multiple users join simultaneously near capacity. This is acknowledged in the code comments (`ParticipantService.cs`, lines 18-21) and could be addressed with optimistic concurrency control in a production environment.
-
-### Event Leave Validation
-
-Users can only leave events they have previously joined. The service verifies participation before allowing the leave operation.
+**Concurrency safety**: The join operation uses an atomic SQL statement with `UPDLOCK` and `HOLDLOCK` hints to safely handle simultaneous join attempts at full capacity, preventing race conditions at the database level.
 
 ### Event Management Authorization
 
-The `EventService` includes ownership validation (`ValidateUserCanModifyEvent` method):
+Only the event's creator (organizer) or an admin can edit or delete it. This is enforced in `EventService.ValidateUserCanModifyEvent`. Violation throws a `ForbiddenOperationException`.
 
-- Only the event creator (organizer) or an admin can edit/delete an event
-- Throws `UnauthorizedAccessException` if a user attempts to modify an event they don't own
-- Validates that the organizer exists in the system when creating events
+### Organizer Application (`OrganizerService`)
+- Applications move through: **Pending → Approved / Rejected**
+- After a rejection, a **7-day cooldown** period must pass before reapplying
+- Users who are already organizers or admins cannot submit new applications
 
-### Organizer Application System
+### Messaging (`ConversationService`)
+- Only one conversation can exist between any two users — enforced both in application code and via a unique database constraint on `(User1Id, User2Id)`
+- Conversations are identified by normalizing the two user IDs into alphabetical order, so `(A, B)` and `(B, A)` always map to the same record
+- Concurrent conversation creation (race condition) is handled gracefully by catching the unique constraint violation (`DbUpdateException`)
 
-Users can apply to become organizers through the `OrganizerRequest` model:
+---
 
-- Applications have three states: Pending, Approved, Rejected
-- Includes a cooldown mechanism (LastRejectedAt timestamp)
-- Admins can review applications and add notes during approval/rejection
-- Upon approval, the user is granted the Organizer role
+## Security
 
-## Security Considerations
+### CSRF Protection
+All state-changing POST actions are decorated with `[ValidateAntiForgeryToken]`.
+
+### Open Redirect Prevention
+`returnUrl` parameters are validated with `Url.IsLocalUrl()` before use. The `DomainExceptionFilter` also validates redirect targets before executing them — no redirect to external domains is possible.
 
 ### Image Upload Validation
+Images are validated by **file signature (magic bytes)**, not by file extension, preventing attackers from disguising malicious files as images:
 
-The `ImageService` implements magic-byte validation to prevent malicious file uploads:
-
-```csharp
-// Validates actual file content, not just the extension
-private bool IsValidImage(byte[] fileBytes)
-{
-    if (fileBytes.Length < 8) return false;
-    
-    // Check PNG signature: 89 50 4E 47 0D 0A 1A 0A
-    if (fileBytes[0] == 0x89 && fileBytes[1] == 0x50 && ...)
-        return true;
-    
-    // Check JPEG signatures: FF D8 FF E0/E1
-    if (fileBytes[0] == 0xFF && fileBytes[1] == 0xD8 && ...)
-        return true;
-    
-    return false;
-}
+```
+PNG  → 89 50 4E 47 0D 0A 1A 0A
+JPEG → FF D8 FF E0 / FF D8 FF E1
+GIF  → 47 49 46 38
 ```
 
-This prevents attackers from uploading malicious files disguised as images by renaming them with image extensions.
+### Authorization
+- All admin actions are gated with `[Authorize(Roles = "Admin")]`
+- All organizer actions are gated with `[Authorize(Roles = "Admin,Organizer")]`
+- The SignalR `ChatHub` requires authentication at the class level (`[Authorize]`)
+- Both GET and POST endpoints for sensitive actions require the same role authorization
 
-### ASP.NET Core Identity Configuration
+### Account Security
+- Configurable password requirements, lockout thresholds, and cookie expiration via `appsettings.json`
+- Security stamp validation interval of 10 seconds ensures role changes take effect immediately
 
-Identity settings are configurable through `appsettings.json` and applied in `Program.cs` (lines 38-61):
+---
 
-**Password Requirements**
-- Configurable minimum length
-- Optional digit, uppercase, and lowercase requirements
+## Performance
 
-**Account Lockout**
-- Maximum failed login attempts
-- Lockout duration in minutes
+### Monitoring
+- **`SlowQueryInterceptor`** — logs any EF Core query exceeding 500ms along with the full SQL statement
+- **`PerformanceMonitoringFilter`** — logs every controller action's execution time at the appropriate level (Error > 500ms / Warning > 200ms / Info otherwise)
 
-**Cookie Configuration**
-- Sliding expiration window
-- Configurable session timeout
-- Security stamp validation interval (set to 10 seconds)
+### Query Optimisation
+- `AsNoTracking()` on all read-only queries
+- `AsSplitQuery()` on queries with multiple collection includes (avoids Cartesian product explosion)
+- `ProjectTo<T>()` with AutoMapper for server-side column projection (avoids loading full entity graphs)
+- Indexes on: `Events.StartDate`, `EventParticipants(EventId, UserId)`, `Messages(ConversationId, CreatedAt)`, `UserFollows(FollowingId, CreatedAt)`, `UserFollows(FollowerId, CreatedAt)`
 
-### Authorization Enforcement
+---
 
-Controllers use the `[Authorize]` attribute with role requirements:
-- Event creation/editing requires Organizer or Admin role
-- Admin dashboard requires Admin role
-- Organizer applications use role-based access control
+## Technologies Used
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| ASP.NET Core MVC | 10 | Web framework |
+| Entity Framework Core | 10.0.2 | ORM and database migrations |
+| ASP.NET Core Identity | 10.0.2 | Authentication and role-based authorization |
+| SignalR | Built-in | Real-time WebSocket messaging |
+| SQL Server | — | Primary database |
+| AutoMapper | 12.0.1 | DTO / ViewModel mapping |
+| Scrutor | 7.0.0 | Convention-based DI scanning |
+| Bootstrap 5 | — | UI framework |
+| C# | 13 | Language |
+
+### Design Patterns Applied
+- **Repository Pattern** — abstraction over data access
+- **Service Layer Pattern** — business logic encapsulation
+- **DTO Pattern** — clean data transfer between layers
+- **Exception-as-control-flow** — rich domain exception hierarchy handled by a global `IExceptionFilter`
+- **Dependency Injection** — built-in ASP.NET Core DI with Scrutor assembly scanning
+
+---
 
 ## Running the Application
 
 ### Prerequisites
-
-- .NET 8.0 SDK or later
+- .NET 10 SDK
 - SQL Server (LocalDB, SQL Server Express, or full SQL Server)
-- Visual Studio 2022 or JetBrains Rider (optional but recommended)
+- Visual Studio 2022 / JetBrains Rider / VS Code
 
 ### Steps
 
@@ -197,110 +248,61 @@ Controllers use the `[Authorize]` attribute with role requirements:
    cd EventHub
    ```
 
-2. **Update the connection string**  
+2. **Configure the connection string**
    Edit `EventHub/appsettings.json` and set your SQL Server connection string.
 
-3. **Run the application**  
-   The database will be created and seeded automatically on first run.
-   
+3. **Run the application**
+   The database is created, migrated, and seeded automatically on first run.
+
    Using .NET CLI:
    ```bash
    dotnet run --project EventHub
    ```
-   
+
    Using Visual Studio:
-   - Open the solution file
-   - Press F5 or click Run
+   - Open the solution file (`.slnx`)
+   - Press **F5** or click **Run**
 
-4. **Access the application**  
-   Navigate to `https://localhost:5001` (or the port shown in your terminal)
+4. **Open in browser**
+   Navigate to `https://localhost:5001` (or the port shown in your terminal).
 
-5. **Sign in with a demo account**  
-   Use one of the accounts listed in the Demo Accounts section above.
+5. **Sign in with a demo account**
+   Use any account from the [Demo Accounts](#demo-accounts) section above.
 
-## Technologies Used
-
-- **ASP.NET Core 10 MVC** - Web framework
-- **Entity Framework Core** - ORM for data access
-- **ASP.NET Core Identity** - Authentication and authorization
-- **SQL Server** - Database (LocalDB for development)
-- **Bootstrap 5** - UI framework
-- **Razor Pages** - Identity UI scaffolding
-- **C#** - Programming language
-
-### Design Patterns
-
-- **Repository Pattern** - Abstraction over data access
-- **Service Layer Pattern** - Business logic encapsulation
-- **Dependency Injection** - Built-in ASP.NET Core DI container
-- **Unit of Work** (implicit through DbContext)
+---
 
 ## Future Improvements
 
-Based on the current implementation, realistic improvements for a production system would include:
+| # | Improvement | Priority |
+|---|-------------|----------|
+| 1 | Unit tests for the service layer (join rules, organizer cooldown, conversation logic) | High |
+| 2 | `IMemoryCache` for static reference data (categories, locations) | High |
+| 3 | Real-time notifications hub (follow events, organizer request outcomes) | Medium |
+| 4 | Admin dashboard with platform statistics (total events, users, pending requests) | Medium |
+| 5 | Soft delete for events (preserve history, prevent data loss) | Medium |
+| 6 | Rate limiting on chat messages to prevent spam | Medium |
+| 7 | Generic base repository to reduce duplication across repositories | Low |
+| 8 | Blob storage for uploaded images instead of local file system | Low |
+| 9 | Email notifications for organizer status changes and event reminders | Low |
+| 10 | Waitlist system for events at maximum capacity | Low |
 
-1. **Concurrency Handling**  
-   Implement optimistic concurrency control for event joins using row versioning to prevent race conditions when multiple users join near capacity.
-
-2. **Image Handling Enhancements**
-   - Add file size limits (currently unlimited)
-   - Implement image resizing to standardize dimensions
-   - Add support for WebP format
-   - Store images in blob storage instead of file system
-
-3. **Event Notifications**  
-   Email notifications for event updates, cancellations, and reminders using a background job processor (Hangfire or similar).
-
-4. **Search and Filtering**
-   - Full-text search for events
-   - Advanced filtering by date range, category, location
-   - Pagination for event lists (currently loads all events)
-
-5. **Audit Logging**  
-   Track who created, modified, or deleted events for accountability and debugging.
-
-6. **Unit Testing**  
-   Comprehensive test coverage for business rules in the service layer, especially join/leave validation logic.
-
-7. **Caching**  
-   Implement output caching for frequently accessed data (categories, locations) to reduce database load.
-
-8. **Rate Limiting**  
-   Prevent abuse by limiting the number of event joins/leaves per user per time period.
-
-9. **Soft Deletes**  
-   Instead of hard deleting events, mark them as deleted to preserve historical data.
-
-10. **Event Capacity Management**  
-    Implement a waitlist system for events that reach capacity.
-
-11. **Custom Accounts and chat**  
-     User create accounts with information and can invite each other and intruduce them.
-    
-12. **NLP(Natural language processing suggestions)**  
-     On base discription and interests on users. The proiles will be suggested each other.
 ---
 
-**Academic Project Context**: This project was developed as part of a SoftUni course to demonstrate understanding of ASP.NET Core MVC, Entity Framework Core, layered architecture, and secure web application development practices.
+**Academic Project Context**: Developed as part of the SoftUni ASP.NET Advanced course to demonstrate understanding of layered ASP.NET Core MVC architecture, Entity Framework Core, real-time communication with SignalR, and secure web application development practices.
 
-
+---
 
 ## 👨‍💻 Author
 
-**Toma Andreev**  
+**Toma Andreev**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Tomkata-black?logo=github)](https://github.com/Tomkata)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Toma_Andreev-0A66C2?logo=linkedin)](https://bg.linkedin.com/in/toma-andreev-05a7b6399?trk=people-guest_people_search-card)
 [![Instagram](https://img.shields.io/badge/Instagram-toma__andreev-purple?logo=instagram)](https://www.instagram.com/toma_andreev/)
 
-
-
 ---
 
 ## 📧 Contact
 
-For questions, suggestions, or collaboration:
 - Email: tomaandreev12@gmail.com
 - LinkedIn: https://www.linkedin.com/in/toma-andreev-05a7b6399/
-
----

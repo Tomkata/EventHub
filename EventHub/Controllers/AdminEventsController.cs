@@ -1,5 +1,4 @@
 ﻿
-
 namespace EventHub.Web.Controllers
 {
     using AutoMapper;

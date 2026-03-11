@@ -15,12 +15,9 @@ public static class UserProfileSeeder
          .Select(u => u.Id)
          .FirstOrDefaultAsync();
 
-        Console.WriteLine($"[DIAG] Admin ID от context.Users: '{adminId}'");
 
         var viaManager = await userManager.FindByEmailAsync("admin@eventhub.com");
-        Console.WriteLine($"[DIAG] Admin от UserManager: '{viaManager?.Id ?? "NULL"}'");
 
         var profilesBefore = await context.UserProfiles.CountAsync();
-        Console.WriteLine($"[DIAG] Профили преди: {profilesBefore}");
     }
 }

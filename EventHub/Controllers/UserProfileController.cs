@@ -318,7 +318,7 @@ namespace EventHub.Web.Controllers
                 Data = followersModel,
                 PageSize = pageSize,
                 CurrentPageNumber = pageNumber,
-                TotalRecords = followersModel.Count
+                TotalRecords = dtos.TotalRecords
             };
 
             return View(paged);
