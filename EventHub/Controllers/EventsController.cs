@@ -16,6 +16,7 @@ namespace EventHub.Web.Controllers
     using EventHub.Web.ViewModels.Events;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.RateLimiting;
 
     public class EventsController : BaseController
     {
@@ -110,6 +111,7 @@ namespace EventHub.Web.Controllers
 
         [Authorize(Roles = $"{Roles.Admin},{Roles.Organizer}")]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("create-event")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEventViewModel model,CancellationToken cancellation)
         {

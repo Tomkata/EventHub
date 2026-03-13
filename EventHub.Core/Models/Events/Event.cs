@@ -3,13 +3,14 @@
     using EventHub.Core.Common.Validation;
     using EventHub.Core.Common.Validation.Messages;
     using EventHub.Core.EventValidation;
+    using EventHub.Core.Interfaces;
     using EventHub.Core.Models.Common;
     using EventHub.Core.Models.Users;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public class Event  : BaseModel
+    public class Event : BaseModel, ISoftDeletable
     {
         public Event()
         {
@@ -72,6 +73,8 @@
         [StringLength(DataValidations.Event.AddressMaxLength)]
         public string Address { get; set; }
 
+       
+
 
 
         [Required]
@@ -88,5 +91,7 @@
         public string OrganizerId { get; set; }
         public UserProfile OrganizerProfile { get; set; } = null!;
         public virtual ICollection<EventParticipant> EventParticipants { get; set; }
+        public bool IsDeleted { get ; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

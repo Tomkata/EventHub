@@ -134,8 +134,9 @@
             ValidateUserCanModifyEvent(isAdmin, eventEntity.OrganizerId, requestingUserId);
 
 
+            eventEntity.IsDeleted = true;
+            eventEntity.DeletedAt = DateTime.UtcNow;
 
-             _eventRepository.Remove(eventEntity);
             await _eventRepository.SaveChangesAsync(cancellation);
         }
 

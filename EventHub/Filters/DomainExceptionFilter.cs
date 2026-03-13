@@ -17,9 +17,14 @@
 
             var http = context.HttpContext;
             var controller = context.RouteData.Values["controller"]?.ToString();
-            var returnUrl = context.HttpContext.Request.Query["returnUrl"].ToString();
-            if (string.IsNullOrEmpty(returnUrl))
-                returnUrl = context.HttpContext.Request.Form["returnUrl"].ToString();
+            var request = context.HttpContext.Request;
+
+            var returnUrl = request.Query["returnUrl"].ToString();
+
+            if (string.IsNullOrEmpty(returnUrl) && request.HasFormContentType)
+            {
+                returnUrl = request.Form["returnUrl"].ToString();
+            }
 
             var tempDataFactory = http.RequestServices.GetRequiredService<ITempDataDictionaryFactory>();
             var tempData = tempDataFactory.GetTempData(http);

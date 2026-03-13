@@ -22,6 +22,9 @@
                 .HasMaxLength(100);
 
             builder
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            builder
                 .HasOne(x => x.Category)
                 .WithMany(x => x.Events)
                 .HasForeignKey(x => x.CategoryId)
