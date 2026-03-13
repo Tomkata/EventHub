@@ -41,6 +41,7 @@
 	<ItemGroup>
 		<Folder Include="Controllers\Social\" />
 		<Folder Include="ViewModels\Users\" />
+		<Folder Include="Views\Shared\ErrorPages\" />
 		<Folder Include="wwwroot\images\events\" />
 	</ItemGroup>
 

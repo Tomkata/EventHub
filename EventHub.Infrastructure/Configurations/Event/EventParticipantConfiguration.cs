@@ -3,6 +3,8 @@
     using EventHub.Core.Models.Events;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using System.Reflection.Emit;
+
     public class EventParticipantConfiguration : IEntityTypeConfiguration<EventParticipant>
     {
         public void Configure(EntityTypeBuilder<EventParticipant> builder)
@@ -12,6 +14,10 @@
                 HasKey(x => new { x.EventId, x.UserId });   
 
             builder.HasIndex(x => x.UserId);
+
+            builder
+    .HasQueryFilter(ep => !ep.Event.IsDeleted);
+
 
             builder
                 .HasOne(x=>x.Event)    

@@ -3,20 +3,14 @@
 
 namespace EventHub
 {
-    using EventHub.Core.Models.Users;
-    using EventHub.Infrastructure.Data;
-    using EventHub.Infrastructure.Data.Seed;
-    using EventHub.Infrastructure.Identity;
-    using EventHub.Infrastructure.Interceptors;
     using EventHub.Services;
     using EventHub.Services.Mapping;
     using EventHub.Web.Filter;
     using EventHub.Web.Filters;
     using EventHub.Web.Hubs;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
-    using System.Security.Claims;
-    using System.Threading.RateLimiting;
+    using EventHub.Infrastructure.Extensions;
+    using EventHub.Web.Exctensions;
     using static EventHub.Web.Areas.Identity.IdentityConfigurationSettings.Settings;
 
     public class Program
@@ -26,96 +20,22 @@ namespace EventHub
 
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddSingleton<SlowQueryInterceptor>();
+            //Service Registration
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-            {
-                options.UseSqlServer(connectionString);
-
-                var interceptor = serviceProvider.GetRequiredService<SlowQueryInterceptor>();
-                options.AddInterceptors(interceptor);
-            });
-
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder.Services
+            .AddDatabase(builder.Configuration)
+            .AddIdentityConfiguration(builder.Configuration)
+            .AddServicesAndRepositories()
+            .AddRateLimiting()
+            .AddDatabaseDeveloperPageExceptionFilter();
 
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>()
-                .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-            builder.Services.AddRateLimiter(options =>
-            {
-
-                    options.AddPolicy("create-event", httpContext =>
-          RateLimitPartition.GetSlidingWindowLimiter(
-              partitionKey: httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous",
-              factory: _ => new SlidingWindowRateLimiterOptions
-              {
-                  PermitLimit = 3,
-                  Window = TimeSpan.FromHours(1),
-                  SegmentsPerWindow = 6,
-                  QueueLimit = 0
-              }));
-
-            options.AddPolicy("send-message", httpContext =>
-                RateLimitPartition.GetSlidingWindowLimiter(
-                    partitionKey: httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous",
-                    factory: _ => new SlidingWindowRateLimiterOptions
-                    {
-                        PermitLimit = 30,
-                        Window = TimeSpan.FromMinutes(1),
-                        SegmentsPerWindow = 6,
-                        QueueLimit = 0
-                    }));
-
-
-                options.OnRejected = async (context, cancellationToken) =>
-                {
-                    context.HttpContext.Response.StatusCode = 429;
-                    await context.HttpContext.Response.WriteAsync
-                    ("Too many requests. Pleast try again later.", cancellationToken);
-                };
-            });
-
-
-          
-
-            var identitySection = builder.Configuration.GetSection("IdentitySettings");
-            builder.Services.Configure<IdentitySettings>(identitySection);
-
-            var identitySettings = identitySection.Get<IdentitySettings>();
-
-            builder.Services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequiredLength = identitySettings.Password.RequiredLength;
-                options.Password.RequireDigit = identitySettings.Password.RequireDigit;
-                options.Password.RequireUppercase = identitySettings.Password.RequireUppercase;
-                options.Password.RequireLowercase = identitySettings.Password.RequireLowercase;
-
-                options.Lockout.MaxFailedAccessAttempts = identitySettings.Lockout.MaxFailedAttempts;
-                options.Lockout.DefaultLockoutTimeSpan =
-                    TimeSpan.FromMinutes(identitySettings.Lockout.LockoutMinutes);
-            });
-
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.SlidingExpiration = identitySettings.Cookie.IsExpiration;
-
-                options.ExpireTimeSpan =
-                TimeSpan.FromMinutes(identitySettings.Cookie.ExpireMinutes);
-            });
 
             builder.Services.Configure<SecurityStampValidatorOptions>(opt =>
             {
-                opt.ValidationInterval = TimeSpan.FromSeconds(10);
+                opt.ValidationInterval = TimeSpan.FromMinutes(30);
             });
 
-            builder.Services.AddServicesAndRepositories();
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly,
                 typeof(ServiceMappingProfile).Assembly);
@@ -127,7 +47,6 @@ namespace EventHub
             });
 
 
-
             builder.Services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = builder.Environment.IsDevelopment();
@@ -136,69 +55,18 @@ namespace EventHub
             builder.Services.AddRazorPages();
 
 
+
+            //Build app
+
             var app = builder.Build();
 
 
-            var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-                try
-                {
-                    await context.Database.MigrateAsync();
-
-                    await IdentitySeeder.SeedAsync(userManager, roleManager);
-
-                    context.ChangeTracker.Clear();
-
-                    await DataSeeder.SeedAsync(context);
-
-                    var adminUser = await userManager.FindByEmailAsync("admin@eventhub.com");
-                    var orgUser = await userManager.FindByEmailAsync("organizer@eventhub.com");
+            //Database seeder
+            await SeedExtensions.SeedDatabaseAsync(app.Services);
 
 
-                    if (adminUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == adminUser.Id))
-                    {
-                        context.UserProfiles.Add(new UserProfile
-                        {
-                            UserId = adminUser.Id,
-                            FirstName = "Admin",
-                            LastName = "User",
-                            CreatedAt = DateTime.UtcNow
-                        });
-                        var rows = await context.SaveChangesAsync();
-                    }
-
-                    if (orgUser != null && !await context.UserProfiles.AnyAsync(p => p.UserId == orgUser.Id))
-                    {
-                        context.UserProfiles.Add(new UserProfile
-                        {
-                            UserId = orgUser.Id,
-                            FirstName = "Event",
-                            LastName = "Organizer",
-                            CreatedAt = DateTime.UtcNow
-                        });
-                        var rows = await context.SaveChangesAsync();
-                    }
-
-                    await EventSeeder.SeedAsync(context, userManager);
-
-                    await InterestSeeder.SeedAsync(context);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "[SEED] ERROR: {Message}", ex.Message);
-                    throw;
-                }
-            }
-
-
-            // Configure the HTTP request pipeline..
+            // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
