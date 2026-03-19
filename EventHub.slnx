@@ -6,5 +6,5 @@
   <Project Path="EventHub.Infrastructure/EventHub.Infrastructure.csproj" />
   <Project Path="EventHub.Repositories/EventHub.Repositories.csproj" />
   <Project Path="EventHub.Services/EventHub.Services.csproj" />
-  <Project Path="EventHub.Tests/EventHub.Tests.csproj" />
+  <Project Path="EventHub.Tests/EventHub.Tests.csproj" Id="7af7f40c-a161-40fb-a525-f97238b2a5f6" />
 </Solution>
