@@ -36,6 +36,8 @@ namespace EventHub.Web.Exctensions
 
             services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.HttpOnly = true;
+
                 options.SlidingExpiration = identitySettings.Cookie.IsExpiration;
 
                 options.ExpireTimeSpan =

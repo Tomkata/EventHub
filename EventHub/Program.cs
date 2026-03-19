@@ -77,7 +77,6 @@ namespace EventHub
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            Console.WriteLine(app.Environment.EnvironmentName);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
