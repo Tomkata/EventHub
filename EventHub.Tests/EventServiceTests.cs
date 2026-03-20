@@ -4,7 +4,9 @@ namespace EventHub.Tests
 {
     using AutoMapper;
     using EventHub.Core.DTOs;
+    using EventHub.Core.DTOs.Event;
     using EventHub.Core.Exceptions.Category;
+    using EventHub.Core.Exceptions.Event;
     using EventHub.Core.Exceptions.Location;
     using EventHub.Core.Exceptions.User;
     using EventHub.Core.Exceptions.UserProfile;
@@ -19,6 +21,7 @@ namespace EventHub.Tests
 
     public class EventServiceTests
     {
+        //Create tests
         [Fact]
         public async Task CreateAsync_WhenCategoryIsInvalid_ShouldThrowInvalidCategoryException()
         {
@@ -101,6 +104,176 @@ namespace EventHub.Tests
                 service.CreateAsync(NewDto(), "userId", CancellationToken.None));
 
             VerifyNotSaved(eventRepo);
+        }
+
+
+        //Update tests
+
+        [Fact]
+        public async Task UpdateAsync_WhenEventDoesNotExist_ShouldThrowEventNotFoundException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Event)null);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+            await Assert.ThrowsAsync<EventNotFoundException>(() =>
+                service.UpdateAsync(Guid.Empty, dto, "userId", true,CancellationToken.None))  ;
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.VerifyNoOtherCalls();
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WhenUserIsNorOrganizer_ShouldThrowForbiddenOperationException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event
+                {
+                    OrganizerId = "ownerId"
+                });
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+            await Assert.ThrowsAsync<ForbiddenOperationException>(() =>
+                service.UpdateAsync(Guid.Empty, dto, "anotherUser", false, CancellationToken.None));
+
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WhenUserIsOrganizer_ShouldUpdateEventSuccessfully()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            var existingEvent = new Event { OrganizerId = "ownerId" };
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+            
+             await service.UpdateAsync(Guid.Empty, dto, "ownerId", false, CancellationToken.None);
+
+            Assert.Equal(dto.CategoryId, existingEvent.CategoryId);
+
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WhenUserIsAdmin_ShouldUpdateEventSuccessfully()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            var existingEvent = new Event { OrganizerId = "realOwner" };
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+
+            await service.UpdateAsync(Guid.Empty, dto, "anotherUser", true, CancellationToken.None);
+
+            Assert.Equal(dto.CategoryId, existingEvent.CategoryId);
+
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WhenCategoryIsInvalid_ShouldThrowInvalidCategoryException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+            var categoryRepo = new Mock<ICategoryRepository>();
+
+            var existingEvent = new Event { OrganizerId = "organizer" };
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            categoryRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Category)null);
+
+
+
+            var service = CreateService(eventRepo: eventRepo,categoryRepo:categoryRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+
+           await Assert.ThrowsAsync<InvalidCategoryException>(()
+                =>  service.UpdateAsync(Guid.Empty, dto, "organizer", false, CancellationToken.None));
+
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+
+        [Fact]
+        public async Task UpdateAsync_WhenLocationIsInvalid_ShouldThrowInvalidLocationException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+            var locationRepo = new Mock<ILocationRepository>();
+
+            var existingEvent = new Event { OrganizerId = "organizer" };
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            locationRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Location)null);
+
+
+
+            var service = CreateService(eventRepo: eventRepo, locationRepo: locationRepo);
+
+            var dto = new EditEventDto
+            {
+                CategoryId = Guid.NewGuid(),
+                LocationId = Guid.NewGuid()
+            };
+
+
+            await Assert.ThrowsAsync<InvalidLocationException>(()
+                 => service.UpdateAsync(Guid.Empty, dto, "organizer", false, CancellationToken.None));
+
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
 

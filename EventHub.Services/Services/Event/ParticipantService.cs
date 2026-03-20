@@ -15,7 +15,7 @@
     using EventHub.Services.Interfaces.Event;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;    
 
     public class ParticipantService : IParticipantService
     {
