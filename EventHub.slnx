@@ -4,6 +4,7 @@
   </Folder>
   <Project Path="EventHub.Core/EventHub.Core.csproj" />
   <Project Path="EventHub.Infrastructure/EventHub.Infrastructure.csproj" />
+  <Project Path="EventHub.IntegrationTests/EventHub.IntegrationTests.csproj" Id="b2f41ffb-ac0c-44d1-bfc1-438b773ea304" />
   <Project Path="EventHub.Repositories/EventHub.Repositories.csproj" />
   <Project Path="EventHub.Services/EventHub.Services.csproj" />
   <Project Path="EventHub.Tests/EventHub.Tests.csproj" Id="7af7f40c-a161-40fb-a525-f97238b2a5f6" />

@@ -36,6 +36,7 @@ namespace EventHub.Services.Services.Messaging
 
             var message = new Message
             {
+                Id = Guid.NewGuid(),
                 ConversationId = conversationId,
                 Content = messageContent.Trim(),
                 SenderId = senderId

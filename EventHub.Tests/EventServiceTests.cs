@@ -276,6 +276,89 @@ namespace EventHub.Tests
             eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
+        [Fact]
+        public async Task DeleteAsync_WhenEventDoesNotExist_ShouldThrowEventNotFoundException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Event)null);
+
+            var service = CreateService(eventRepo:eventRepo);
+
+            await Assert.ThrowsAsync<EventNotFoundException>(() => service.DeleteAsync(Guid.Empty,"user",false,CancellationToken.None));
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+            eventRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenUserDoesNotHaveAuthorization_ShouldThrowForbiddenOperationException()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            var existingEvent = new Event { OrganizerId = "organizer" };
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            await Assert.ThrowsAsync<ForbiddenOperationException>(() => service.DeleteAsync(Guid.Empty, "user", false, CancellationToken.None));
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+            eventRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenUserIsAdmin_ShouldBeSuccessful()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            var existingEvent = new Event { OrganizerId = "owner" };
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+         await service.DeleteAsync(Guid.Empty, "user", true, CancellationToken.None);
+
+            Assert.True(existingEvent.IsDeleted);
+            Assert.NotNull(existingEvent.DeletedAt);
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenUserIsOwner_ShouldBeSuccessful()
+        {
+            var eventRepo = new Mock<IEventRepository>();
+
+            var existingEvent = new Event { OrganizerId = "owner" };
+
+            eventRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingEvent);
+
+            var service = CreateService(eventRepo: eventRepo);
+
+            await service.DeleteAsync(Guid.Empty, "owner", false, CancellationToken.None);
+
+            Assert.True(existingEvent.IsDeleted);
+            Assert.NotNull(existingEvent.DeletedAt);
+
+            eventRepo.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            eventRepo.VerifyNoOtherCalls();
+        }
+
+
+
 
         //Helpers
         private static CreateEventDto NewDto() => new CreateEventDto
