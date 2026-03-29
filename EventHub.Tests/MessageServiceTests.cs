@@ -141,10 +141,8 @@ public class MessageServiceTests
             .Callback<Message>(m => captured = m)
             .Returns(Task.CompletedTask);
 
-        // Act
         await _sut.SendMessageAsync(ConversationId, SenderId, "  hello  ", default);
 
-        // Assert
         captured!.Content.Should().Be("hello");
     }
 
