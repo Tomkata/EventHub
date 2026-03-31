@@ -16,8 +16,12 @@ namespace EventHub.Infrastructure.Extensions
             )
         {
 
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = "Server=localhost;Database=EventHub;Trusted_Connection=True;";
+            }
 
             services.AddSingleton<SlowQueryInterceptor>();
 
