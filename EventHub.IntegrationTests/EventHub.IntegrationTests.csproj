@@ -19,6 +19,7 @@
     <ProjectReference Include="..\EventHub.Infrastructure\EventHub.Infrastructure.csproj" />
     <ProjectReference Include="..\EventHub.Repositories\EventHub.Repositories.csproj" />
     <ProjectReference Include="..\EventHub.Services\EventHub.Services.csproj" />
+    <ProjectReference Include="..\EventHub\EventHub.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
