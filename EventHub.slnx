@@ -1,7 +1,5 @@
 <Solution>
   <Folder Name="/EventHub/">
-    <File Path=".dockerignore" />
-    <File Path="EventHub/Dockerfile" />
     <Project Path="EventHub/EventHub.Web.csproj" />
   </Folder>
   <Project Path="EventHub.Core/EventHub.Core.csproj" />

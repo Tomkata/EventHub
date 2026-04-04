@@ -46,7 +46,7 @@ namespace EventHub.Infrastructure.Extensions
                 }
 
                 await EventSeeder.SeedAsync(context, userManager);
-                await InterestSeeder.SeedAsync(context);
+                await InterestSeeder.SeedAsync(context);    
             }
             catch (Exception ex)
             {

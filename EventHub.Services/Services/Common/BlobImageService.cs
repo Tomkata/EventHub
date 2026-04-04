@@ -1,18 +1,19 @@
-﻿using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using EventHub.Core.enums.Image;
-using EventHub.Core.Enums;
-using EventHub.Core.Exceptions.Image;
-using EventHub.Services.Images;
-using EventHub.Services.Interfaces.Common;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
+﻿
 
 namespace EventHub.Services.Services.Common
 {
+    using Azure.Storage.Blobs;
+    using Azure.Storage.Blobs.Models;
+    using EventHub.Core.enums.Image;
+    using EventHub.Core.Enums;
+    using EventHub.Core.Exceptions.Image;
+    using EventHub.Services.Images;
+    using EventHub.Services.Interfaces.Common;
+    using Microsoft.Extensions.Configuration;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using static System.Net.Mime.MediaTypeNames;
     public class BlobImageService : IImageService
     {
         private readonly BlobContainerClient _container;

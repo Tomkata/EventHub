@@ -90,6 +90,7 @@ namespace EventHub
 
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
+                app.UseStatusCodePagesWithReExecute("/Home/StatusCode/{0}");
 
                 app.UseRouting();
 
